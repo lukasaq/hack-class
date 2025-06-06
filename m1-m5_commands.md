@@ -1,6 +1,7 @@
 looking for users added to  groups
 
 given
+The following query looks for event codes related to user group modification for the local Administrators group:
 
 event.code:(4728 or 4732 or 4746 or 4751 or 4756 or 4761)
 
