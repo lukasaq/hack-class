@@ -77,6 +77,10 @@ python3 analyzer.py -i dirwalk_1.csv -p
 
 
 
+Sigmac uses the following syntax to translate a query in Elastic syntax using the Winlogbeat configuration:
+
+python sigmac -t <language> <path to file/rule> -c <configuration>
+
 
 
 
