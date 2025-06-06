@@ -56,6 +56,24 @@ event.dataset:conn AND (destination.ip:"172.16.8.5" OR source.ip: "172.16.8.5")|
 When using an ‘OR’ with this tool, parentheses are required with the destination/source IP address fields otherwise source.ip: 172.16.8.5 is enough to satisfy the expression since it has equal priority as the arguments next to the ‘AND’.
 
 
+ Change to the appropriate directory and enter the following command to parse the file ~/Desktop/dirwalk/dirwalk_1.txt:
+(trainee@dmss-kali)-[~/Desktop/dirwalk] $ python3 parser.py -w -i dirwalk_1.txt -o dirwalk_1.csv
+
+
+
+4. Modify the object windows_parser_definitions_2 in parser.py to conform to the file dirwalk_2.txt and enter the following command to parse the directory walk:
+(trainee@dmss-kali)-[~/Desktop/dirwalk] $ python3 parser.py -x -i dirwalk_2.txt -o dirwalk_2.csv
+
+
+
+The script  analyzer.py  has the following options to analyze the output of the script  parser.py :
+-i, -input_data file — input CSV file to analyze
+-m, -lastDay — files modified in the last day
+-b, -knownBad — files that match known a regular expression of "bad" strings
+-p, -images — files with extensions matching a list of image file types
+Use the script analyzer.py to analyze dirwalk_1.csv and dirwalk_2.csv and answer the following questions. The following is an example of the input you may use:
+python3 analyzer.py -i dirwalk_1.csv -p
+
 
 
 
