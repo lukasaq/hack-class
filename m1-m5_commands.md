@@ -197,6 +197,192 @@ Figure 2.2-8, below, describes the different elements of the Sigma rule format a
 
 ![image](https://github.com/user-attachments/assets/d1c6a3f4-71ef-4c01-b883-bd947ff86daa)
 
+------------------------------------------------------------------------------
+########## M2 L3 ############
+############# Options for Endpoint ############
+
+
+
+Enter the following filter in the Kibana query bar at the top of the page to see any Beats data from eng-wkstn-1, on which Winlogbeat was installed in the previous steps:
+event.module:windows_eventlog and agent.hostname:"eng-wkstn-1"
+
+
+n the Kibana Discover tab, use the following filter to find all logs returned by Wazuh with the OSSEC module tag:
+event.module:ossec
+
+
+
+The following values may be used with the field wazuh.data.type to filter for specific information:
+process - The system inventory collector routinely retrieves data about running processes, so process logs may reveal unrecognized processes running on a system, and specific process names may be viewed or filtered with the process.cmd (full path) or process.name fields.
+port - Since the system inventory collector retrieves data about open ports, this log, along with the fields wazuh.data.port.remote_ip and wazuh.data.port.remote_port may yield information about suspicious network connections.
+hotfix - Lists which Windows Update patches have been applied to the respective system.
+program - Lists installed programs on the host, using the list of software in the Uninstall registry key and a query of several other locations for well-known software.
+
+
+Sysmon Event ID 1: Process Creation
+Sysmon Event ID 3: Network Connection
+Sysmon Event ID 12: Registry value created
+Sysmon Event ID 13: Registry value set
+Windows Event ID 4698: A Scheduled task was created
+Windows Event ID 4657: A Registry value was modified
+Windows Event ID 4697: A Service was installed
+Wazuh Data Type Process: Running Processes
+Wazuh Data Type Port: Open Network Connections
+
+
+
+Below are examples of filters already used, which may be helpful:
+
+
+agent.name:"eng-wkstn-3" and event.code: <insert event ID>
+
+
+
+
+agent.name:"eng-wkstn-3" and event.module:ossec and wazuh.data.type: <insert datatype>
+
+
+########## M2 L5 ############
+############# Windows Event Monitoring ############
+
+
+
+Tcpdump also has the ability to combine these commands for a more specific output using operators "and" or "or". The following examples use these operators to combine commands from the list above.
+
+The following are some useful commands analysts can use during a hunt:
+
+tcpdump -D displays the list of available interfaces.
+tcpdump -i eth0 displays all traffic on an interface.
+tcpdump host 172.16.11.1 finds traffic going to or from the specified IP address.
+tcpdump src 172.16.11.1 filters traffic by the specified source.
+tcpdump dst 172.16.11.2 filters traffic by the specified destination.
+tcpdump net 1.2.3.0/24 finds packets going to or from the specified network or subnet.
+tcpdump port 3389 shows traffic for the specified port.
+tcpdump src port 1025 shows traffic for the specified source port.
+
+
+Example 1. Find traffic from a specific IP address and specific port
+tcpdump src 1.2.3.4 and dst port 3389
+
+
+
+Example 2. Filter traffic from one subnet to another
+tcpdump src net 192.168.0.0/24 and (dst net 10.0.0.0/8 or 172.16.0.0/16)
+
+Rule Options
+
+
+The rest of the rule consists of options that must be written in a specific order. Changing the order changes the meaning of the rule. Rule options are enclosed by parentheses and separated by semicolons. The following is an example of a complete rule option:
+alert http any any -> any any (content:"index.php"; http_uri; sid:1;)
+
+
+A content modifier looks back in the rule. In the previous example of the complete rule option, the pattern "index.php" is modified to inspect the HTTP uri buffer. This example is repeated below:
+alert http any any -> any any (content:"index.php"; http_uri; sid:1;)
+
+
+
+A sticky buffer places the buffer name first. All keywords that follow it apply to that buffer. In the following example, the pattern "403 Forbidden" is inspected against the HTTP response line because it follows the keyword http_response_line:
+alert http any any -> any any (http_response_line; content:"403 Forbidden"; sid:1;)
+
+The following is an example of a full signature that comprises options with and without settings, as well as modifiers:
+alert dns 172.0.0.0/24 any -> $EXTERNAL_NET 53 (msg: "GMAIL PHISHING DETECTED"; dns_query; content:"gmail.com"; nocase; isdataat:1, relative; sid:2000; rev:1;)
+
+
+
+########## M2 L5 ############
+############# Windows Event Monitoring ############
+
+The command auditpol displays the categories and subcategories using the Windows command line. To list all subcategories, enter the following command:
+auditpol /list /subcategory:*
+
+
+
+The following command lists the current policy:
+auditpol /get /category:*
+
+
+Use the following command to enable this policy:
+auditpol /set /Category:"User Account Management" /success:enable
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+4688: A new process has been created: New PowerShell commands create the following event when the subcategory Audit Process Creation is configured.
+400: Engine state is changed from None to Available: Details when the PowerShell EngineState has started.
+800: Pipeline execution details for command line: Write-Host Test: Details the pipeline execution information of a command executed by PowerShell.
+
+
+to enable module logging, make the following changes to the registry:
+HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\ModuleLogging
+EnableModuleLogging = 1
+
+
+This enables logging for the following Event ID:
+4103: Executing Pipeline
+
+
+To enable script block logging, make the following changes to the registry:
+HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\ScriptBlockLogging
+EnableScriptBlockLogging = 1
+
+
+
+This enables logging for the following Event ID:
+4104: Execute a Remote Command
+
+
+To enable transcription logging, make the following changes to the registry:
+HKLM\SOFTWARE\Wow6432Node\Policies\Microsoft\Windows\PowerShell\Transcription\
+EnableInvocationHeader = 1
+EnableTranscripting = 1
+OutputDirectory = <path_to_directory>
+
+he TGT response reveals that the session key used for the next step is encrypted by the user's password hash.
+
+Expected Logging
+Event ID: 4768, A Kerberos authentication ticket (TGT) was requested. 
+Event Type: Failure, if the request fails.
+
+
+ This section is signed by the domain's Kerberos account on the DC: krbtgt.
+
+
+Expected Logging
+Event ID: 4768, A Kerberos authentication ticket (TGT) was requested.
+Event Type: Success, when a TGT is returned.
+
+
+
+Registry changes create the following event IDs:
+4663: An attempt was made to access an object4657: A registry value was modified
+
+
+
+
+The event 4768 is when a TGT is requested. There is never a situation where a TGS can be used without a TGT being requested from that system.
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
