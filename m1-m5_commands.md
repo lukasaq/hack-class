@@ -82,6 +82,123 @@ Sigmac uses the following syntax to translate a query in Elastic syntax using th
 python sigmac -t <language> <path to file/rule> -c <configuration>
 
 
+---------------------------------------------------------------------
+
+########## M2 L2 ############
+############# Splunk Refresher ############
+
+
+Common Search Commands
+
+![image](https://github.com/user-attachments/assets/d7dc5552-5f44-4d5e-b099-1dc151bf150d)
+
+
+Although both queries count the number of 4688 process creation events per host, the second query is much more efficient.
+
+
+Query 1
+host="cda*" | stats count by host, EventCode | where EventCode=4688
+
+
+
+Query 2
+host="cda*" | where EventCode=4688 | stats count by host, EventCode
+
+
+Run the following search to return the dataset auth.log that was imported in the previous lab:
+source="auth.log" host="hr-data" sourcetype="linux_secure"
+
+
+Search this dataset for threats by appending the following commands to the search, as displayed in Figure 2.2-5, below:
+| eval ENV=if(isnull(ENV),"na",ENV) | stats count by host, real_user, process, USER, ENV, COMMAND
+
+
+![image](https://github.com/user-attachments/assets/75ec781f-99b2-4f66-b0ab-426e7a24ee04)
+
+
+
+
+
+edit the code
+
+![image](https://github.com/user-attachments/assets/8b75c6fb-9904-4a3d-ab47-925170f7316d)
+
+
+128 <title>Events Count by User and Host</title>
+131 <query>`sysmon` | stats count by User, Computer | sort - count</query>
+
+
+
+EventID of 16. This EventID indicates that a modification has been made to the Sysmon configuration
+
+
+start notepad++ C:\Users\trainee\Desktop\tools\sigma\rules\windows\sysmon\sysmon_config_modification.yml
+
+
+
+
+python sigmac -t splunk -c splunk-windows ..\rules\windows\sysmon\sysmon_config_modification.yml
+
+The Sigmac input above includes the following elements:
+python instructs the computer that a Python script is about to be run.
+sigmac is the Python script to run.
+-t splunk instructs Sigmac that the target is Splunk.
+To find out what targets (-t) are available to use with Sigmac, users can run the command python sigmac –help
+
+-c splunk-windows instructs Sigmac to use the configuration file splunk-windows.yml to determine mappings.
+To  find out what configurations (-c) are available to use with Sigmac, users can run the command dir C:\Users\trainee\Desktop\tools\sigma\tools\config
+
+..\rules\windows\sysmon\sysmon_config_modification.yml is the path to the Sigma rule to convert.
+
+
+The command to translate the rule sudo_priv_esc.yml is as follows:
+python sigmac -t splunk -c splunk-linux-custom C:\Users\trainee\Desktop\tools\sudo_priv_esc.yml | clip
+
+
+Update Sigma Rules
+
+
+The task in step 6 is to review the results of the Splunk search from step 5 and update the Sigma rules falsepositives section to provide context for future hunts.
+
+
+The search returns an event showing privilege escalation through the command find. It also brings up false-positive events showing user accounts being created. This information should be added to the falsepositives section of the rule sudo_priv_esc.yml, as follows:
+
+
+title: Linux Privilege Escalation - Sudo
+id: f47007b3-2042-4822-97b9-3fb0d6cf10a1
+status: experimental
+description: Detects potential privilege escalation using sudo.
+author: SimSpace
+date: 2022/03/23
+references:
+  - https://gtfobins.github.io
+logsource:
+  product: linux
+  service: auth
+detection:
+  selection:
+    command|contains: '/bin/sh'
+  condition: selection
+falsepositives:
+  - User accounts being created.
+level: high
+tags:
+  - attack.privilege_escalation
+  - attack.t1548.003
+
+Writing Sigma Rules
+
+
+Sigma is a signature format for writing SIEM agnostic queries. Sigma is a generic rule language for log files, just like Snort is for network traffic and Yet Another Recursive Acronym (YARA) is for files. Sigma rules are written in the format YAML Ain't Markup Language (YAML). The Sigma repository includes the tool Sigmac to translate the rules into SIEM-specific query languages. The tool Uncoder.io is also available for Sigma rule translations. It is a web app provided by SOC Prime.
+
+
+Figure 2.2-8, below, describes the different elements of the Sigma rule format and their requirements. It is encouraged to fill out as many fields as possible, however, not all of the fields are required. According to the Sigma documentation, the only required fields are title, logsource, detection, and condition.
+
+
+![image](https://github.com/user-attachments/assets/d1c6a3f4-71ef-4c01-b883-bd947ff86daa)
+
+
+
 
 
 
