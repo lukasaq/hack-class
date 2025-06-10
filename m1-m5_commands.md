@@ -372,6 +372,86 @@ Registry changes create the following event IDs:
 The event 4768 is when a TGT is requested. There is never a situation where a TGS can be used without a TGT being requested from that system.
 
 
+########## M3 L2 ############
+############# Recognizing Exploitation Attempts ############
+
+ In the search, enter the following query to filter on the known compromised IP and search for any curl commands:
+source.ip:172.16.4.5 AND curl
+
+
+
+
+
+
+
+########## M3 L3 ############
+############# Recognizing Exploitation Attempts ############
+
+Sysmon Event ID 13: Registry value set
+
+Scheduled Tasks
+
+
+There are several methods to detect persistence via scheduled tasks. Enabling Microsoft-Windows-TaskScheduler/Operational within the Windows Event logging service provides the following six Event Identifiers (ID) specifically geared toward monitoring scheduled tasks:
+Event ID 106 on Windows 7, Server 2008 R2 - Scheduled task registered
+Event ID 140 on Windows 7, Server 2008 R2 / 4702 on Windows 10, Server 2016 - Scheduled task updated
+Event ID 141 on Windows 7, Server 2008 R2 / 4699 on Windows 10, Server 2016 - Scheduled task deleted
+Event ID 4698 on Windows 10, Server 2016 - Scheduled task created
+Event ID 4700 on Windows 10, Server 2016 - Scheduled task enabled
+Event ID 4701 on Windows 10, Server 2016 - Scheduled task disabled
+
+
+
+user added in linux
+![image](https://github.com/user-attachments/assets/fcd5e102-89ec-411a-9f21-3921cdd0f799)
+
+
+changes to run keys
+![image](https://github.com/user-attachments/assets/baf484bb-3403-453f-b037-72a61a54e886)
+
+
+updated to find user group also
+![image](https://github.com/user-attachments/assets/94788947-0ec7-4321-8e3b-c4e2a79df1c3)
+
+
+Which Auditbeat module logged modifications to /etc/profile? 
+![image](https://github.com/user-attachments/assets/0c1d25a7-c44c-4db3-b086-954d733e0f05)
+
+
+########## M3 L4 ############
+############# Recognizing Lateral Movement ############
+
+
+Run the following query to search for the ports that WinRM uses:
+destination.port: (5985 or 5986)
+
+
+ Run the following query to search for any processes that suggest WinRM is being used:
+process.name: wsmprovhost.exe
+
+
+Run the following filter to search for those two files:
+file.name: (nc64.exe or srvchk.exe)
+
+
+Run the following query to search for evidence of a login with explicit credentials:
+event.code: 4648
+
+ecall the following Sysmon Event IDs that may be of assistance during the investigation:
+Event ID 1: ProcessCreate             
+Event ID 3: NetworkConnection
+Event ID 11: FileCreate
+Event ID 15: FileCreateStreamHash
+
+
+
+
+
+
+
+
+
+
 
 
 
