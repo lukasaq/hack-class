@@ -444,6 +444,8 @@ Event ID 11: FileCreate
 Event ID 15: FileCreateStreamHash
 
 
+########## M3 L5 ############
+############# Recognizing C2 and Exfiltration ############
 
 
 
@@ -451,13 +453,45 @@ Event ID 15: FileCreateStreamHash
 
 
 
+########## M3 L5 ############
+############# Recognizing C2 and Exfiltration ############
 
 
 
+########## M4 L1 ############
+############# Using the Linux Shell ############
+
+Query the system's hostname:
+$ hostname
+
+
+Enumerate the running processes on kali-hunt:
+$ ps aux
+
+Open a current process list using the top command. This command is active, so it persists until the user manually quits.
+$ top
+
+Systems can have multiple network adapters. To enumerate the status of all active connections, use the command ifconfig:
+$ ifconfig 
+
+
+Sometimes a specific distribution version is vulnerable to a known exploit. Determine the current system version using one or both of the commands below, which display the current kernel version in different formats.
+$ cat /proc/version
+
+or
+$ uname -a
+
+
+Another important capability is enumerating installed packages. There are two commands depending on which distribution of Linux the system is currently running. The output of these commands is often too long to be useful inside of a terminal, and it is recommended they be logged to a text file.
+
+
+For Debian-based distributions:
+$ dpkg -l
 
 
 
-
+For Fedora-based distributions:
+# rpm -qa
 
 
 
