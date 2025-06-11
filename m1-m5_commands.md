@@ -548,20 +548,196 @@ ls -lisa <file_path> | grep 2022
 grep the year as for the year that the file system was modified and you see what the newest file is
 
 
+ls -alt /usr/bin | less
+
+########## M4 L3 ############
+############# Linux Permissions ############
+
+To make a file immutable, the i attribute is added. For example, to write-protect the /etc/passwd file, the command is:
+sudo chattr +i /etc/passwd
 
 
 
+To set or unset the immutable attribute sudo privileges must be used. With the immutable attribute set, the file cannot be tampered with. To edit the file, the attribute needs to be removed with the command:
+sudo chattr -i /etc/passwd
+
+-------------------------------------------------------------
+
+Viewing File Permissions
+
+
+Identify file permissions of several different files using the commands learned. 
+
+
+Workflow
+
+
+1. Log in to the Virtual Machine (VM) kali-hunt using the following credentials:
+Username: trainee
+Password: CyberTraining1! 
 
 
 
+2. Open a terminal console.
+
+
+3. Run the following code to change directories:
+cd lab
 
 
 
+4. Run the following code to view the files within the lab directory:
+ls
 
 
 
+5. Run the following code to view the file permissions and file owner of the file myfile:
+ls -l myfile
 
 
+
+This file has the permissions read, write, execute for User, read and execute for Group, and read for Other.
+
+
+6. Run the following command to view the permissions for both files within the lab directory:
+ls -l
+
+
+
+7. Look at the permissions for the file project. It has read, write, and execute permissions for all three file ownership types. This is considered the least secure type of permission, and this file is considered insecure.
+
+
+8. Run the following commands to create a file, and look at the default permissions for that file:
+touch myfile2
+ls -l myfile2
+
+
+
+The default permissions for any newly-created files for this system are read and write for User, read for Group, and read for Other. 
+
+
+9. Run the following command to change to the home/trainee/analyst directory:
+cd ../analyst
+
+------------------------------------------------------------
+
+The command to search for world-writable files is: 
+find /dir -xdev -type f -perm -0002 -ls
+
+
+The command to search for an incorrectly assigned SUID bit is:
+find /dir -uid 0 -perm -4000 -type f 2>/dev/null | xargs ls -la
+
+
+The /dir can be replaced with the directory that should be searched. This command can also be edited to check for an incorrectly assigned SGID bit. The following command finds any SGID bits that are incorrectly assigned:
+find /dir -group 0 -perm -2000 -type f 2>/dev/null | xargs ls -la
+
+--------------------------------------
+
+command to see files with incorrect perms in /etc
+
+find /etc -xdev -type f -perm -0002 -ls
+
+
+########## M4 L4 ############
+############# Syslog and Auditlog ############
+
+Workflow
+
+
+1. Open Terminal Emulator.
+
+
+2. To create a filesystem rule, enter the following command:
+(trainee@kali-hunt)-[~] $ sudo auditctl -w /etc/hosts -p wa -k hosts_file_change 
+
+
+To ensure the rule is in place, enter the following command:
+ (trainee@kali-hunt)-[~] $ sudo auditctl -l
+
+
+
+Step 3 returns the following output, which indicates the rule was successfully added to the Linux Audit system:
+-w /etc/hosts -p wa -k hosts_file_change 
+
+
+
+4. To ensure the rule is enforced and works as expected, navigate to the following path:
+(trainee@kali-hunt)-[~] $ sudo vi /etc/hosts
+
+
+
+5. Select i to insert text to the file. 
+
+
+6. On a new line, enter the following:
+New Text
+
+
+
+7. Save the text by entering the following command:
+:wq!
+
+
+
+8. To confirm the rule is collected query the Audit log with the following command:
+(trainee@kali-hunt)-[~] $ ausearch -k hosts_file_change
+
+------------------------------------------------
+
+![image](https://github.com/user-attachments/assets/d796aed9-e9c0-4d43-acc6-248311d5ea0a)
+
+
+First Log Entry
+The log entry below shows that the first log was collected at 09:02:23, with a client IP address of 71.55.82.68.
+
+﻿
+
+71.55.82.68 - - [28/Feb/2022:09:02:23 +0100] "GET /student/vcityu-login.php HTTP/1.1" 200 1568 "-"
+﻿
+![image](https://github.com/user-attachments/assets/27feccbd-430e-4d64-ba18-8c2cd3330dd2)
+
+![image](https://github.com/user-attachments/assets/dd33d93e-8bdd-42fb-82e4-01776a988b0e)
+
+the correct username
+
+
+the following text helps answerer the next question in the following SS
+
+Attack Analysis
+The logs contain information regarding a malicious attack to the vCityU web server. It was determined that the file r57.php is malicious and associated with the attack. The file likely included a large amount of bytes to upload to the server. Using this information, answer the next set of questions.
+
+
+![image](https://github.com/user-attachments/assets/267ba4af-dd8f-43cf-8c84-abba7210bc69)
+
+
+Bytes Uploaded
+The following log entry contains 12459 bytes sent. The large number of bytes relative to the other logs, paired with its location, prior to any log containing r57.php, indicates this is likely the log of the malicious file upload.
+
+﻿
+
+71.55.82.68 - - [28/Feb/2022:09:05:41 +0100] "GET /vcity/student/plugin-install.php HTTP/1.1" 200 12459 "http://www.vcityu.com/victyu/student/plugin-install.php?tab=upload"
+
+--------------------------------------------------------------------
+
+![image](https://github.com/user-attachments/assets/90a76d67-5c91-4f99-80a9-fa138620cb83)
+
+![image](https://github.com/user-attachments/assets/075d4a27-9953-4d69-a5bf-227f2eb49eaf)
+
+yellow is correct and orange is not correct  showed up before just not how i expected it to.
+
+First Occurrence
+The following log entry includes the first occurrence of r57.php:
+
+﻿
+
+71.55.82.68 - - [28/Feb/2022:09:10:563 +0100] "GET /vcityu/student/admin-ajax.php?action=connector&cmd=upload&target=l1_d3AtY29udGVudA&name%5B%5D=r57.php&FILES=&_=1460873968131 HTTP/1.1" 200 731 "http://www.vcityu.com/victyu/student/admin.php?page=file-manager_settings"
+﻿
+
+Summary
+﻿
+
+All logs are different, so the CPT reviews syntax, fields, and descriptions prior to analysis. By using the vCityU apache web server logs, the CPT identifies relevant information to an investigation. They determine the timing of the logs, the client IP address, a nd the time the first occurrence of the malicious file, r57.php, was note d. 
 
 
 
