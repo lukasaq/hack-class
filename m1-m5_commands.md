@@ -740,5 +740,199 @@ Summary
 All logs are different, so the CPT reviews syntax, fields, and descriptions prior to analysis. By using the vCityU apache web server logs, the CPT identifies relevant information to an investigation. They determine the timing of the logs, the client IP address, a nd the time the first occurrence of the malicious file, r57.php, was note d. 
 
 
+########## M5 L1 ############
+############# Linux Internals ############
+
+
+View all running processes on the system in hierarchical order, one page at a time, by entering the following command:
+(trainee@dmss-kali)-[~] $ ps -ejH | less
+
+
+
+NOTE: In Linux, the command less is used to display the content of a file or the output of a command, one page at a time. To navigate the pages, use the up and down arrow keys. Enter q to exit after using this command to continue working in the terminal. 
+
+
+4. Search for any instance of telnet in the process name by entering the following command:
+(trainee@dmss-kali)-[~] $ ps -aux | grep 'telnet'
+
+
+
+Analysts can use the command from step 5 to find the PID for a specific process name. In this case, they would replace telnet with the suspicious process name.
+
+
+5. Output a dynamic, real-time view of all the running processes on a system by entering the following command:
+(trainee@dmss-kali)-[~] $ top
+
+
+
+The processes in the top dashboard can be sorted by different values. 
+
+
+6. Enter the keys shift and N together to sort by PID. 
+
+
+7. Enter q to exit the top utility.
+
+
+8. Display all processes opened by a specific user and the command and filename they belong to by running the following command:
+(trainee@dmss-kali)-[~] $ lsof -u trainee | less
+
+
+
+9. Search for processes that are still locked on a system (even after being deleted) by entering the following command:
+(trainee@dmss-kali)-[~] $ lsof | grep deleted
+
+
+
+10. Display all files within the directory /proc by entering the following command: 
+(trainee@dmss-kali)-[~] ls -al /proc | less
+
+
+
+11. Display all files within the directory /proc for PID 1 by entering the following command:
+(trainee@dmss-kali)-[~] ls -al /proc/1 | less
+
+
+
+12. Display the status of a process within the directory /proc for PID 1 by entering the following command:
+ (trainee@dmss-kali)-[~] cat /proc/1/status | less
+
+
+
+This file provides the process name systemd and the process state S (sleeping). An analyst can use this file, when investigating a suspicious process, to find the process name, PID, and the state the process is in.
+
+
+13. Display the command line of the process PID 1 by entering the following command:
+(trainee@dmss-kali)-[~] cat /proc/1/cmdline
+
+
+
+14. Display the executable path of the process PID 1 by entering the following command:
+(trainee@dmss-kali)-[~] sudo ls -al /proc/1/exe
+[sudo] password for trainee: CyberTraining1!
+
+
+
+This file can be used when troubleshooting a process or investigating a process that is under suspicion.
+
+
+15. Display a list of all of the files or devices that the process PID 1 is using by entering the following command:
+(trainee@dmss-kali)-[~] sudo ls -al /proc/1/fd
+
+-------------------------------------------------------------------------------------------
+
+Observe Linux Host Communications
+Manual Observation of Linux Host Communications
+﻿
+
+Use the networking commands from the previous section to view detailed information about the Linux system. Then, use the commands to view and observe how a Linux host communicates.
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM kali-hunt using the following credentials:
+
+Username: trainee
+Password: CyberTraining1! 
+﻿
+
+2. Open a terminal console.
+
+﻿
+
+3. Display the interfaces with their basic information by entering the following command:
+
+(trainee@dmss-kali)-[~] $ ifconfig
+﻿
+
+4. Enter the command ip addr to observe the same interfaces as in step 3 and compare the differences between both commands.
+
+﻿
+
+When using the command ip addr, the MAC address and IP address of each interface are highlighted in color to make them easier to observe. 
+
+﻿
+
+5. Display the default routes for a Linux system by entering the following command:
+
+(trainee@dmss-kali)-[~] $ ip route
+﻿
+
+6. Change the interface of eth1 to down by entering the following command:
+
+(trainee@dmss-kali)-[~] $ sudo ip link set eth1 down
+[sudo] password for trainee: CyberTraining1! 
+﻿
+
+7. Enter the command ip addr to observe the eth1 interface. 
+
+﻿
+
+The interface eth1 displays DOWN in red.
+
+﻿
+
+8. Set eth1 back to up by entering the following command:
+
+(trainee@dmss-kali)-[~] $ sudo ip link set eth1 up
+[sudo] password for trainee: CyberTraining1!
+﻿
+
+9. Search for suspicious processes on the system by entering the following command:
+
+(trainee@dmss-kali)-[~] $ netstat -nap | less
+﻿
+
+This command displays processes from a networking point of view. This command can be used to view the file and protocol that is being used and the state that the process is in.
+
+﻿
+
+10. Search for any instance of the process ssh by entering the following command:
+
+(trainee@dmss-kali)-[~] $ netstat -nap | grep 'ssh'
+﻿
+
+Netstat can also be used to search for any instance of a running process by name to determine whether it is in a listening state. This is helpful in searching for any adversaries that are listening for a specific process or port to use in an attack. In the above command, ssh can be replaced with any process or port that is unknown or suspected of being used by an adversary.
+
+---------------------------------------------------------------------
+
+![image](https://github.com/user-attachments/assets/1b72323a-12b8-403b-8691-a20020c86802)
+
+
+![image](https://github.com/user-attachments/assets/340d2ad5-a7f1-4d51-a689-84cad4dc70f9)
+
+
+![image](https://github.com/user-attachments/assets/bc88a288-5075-4422-bff1-e0c85f2832fb)
+
+
+-------------------------------------------------------
+
+########## M5 L2 ############
+############# Common Linux Exploits ############
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
