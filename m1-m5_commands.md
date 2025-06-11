@@ -493,6 +493,59 @@ $ dpkg -l
 For Fedora-based distributions:
 # rpm -qa
 
+########## M4 L2 ############
+############# Linux File System ############
+
+
+Run the following commands and review their output to determine the identity and behavior of the file named unknown. The next question refers to this step.
+(trainee@kali-hunt)-[~/lab] file unknown
+
+
+
+(trainee@kali-hunt)-[~/lab] stat unknown
+
+
+
+(trainee@kali-hunt)-[~/lab] strings unknown
+
+
+
+(trainee@kali-hunt)-[~/lab] readelf -a unknown
+
+
+
+(trainee@kali-hunt)-[~/lab] ldd unknown
+
+
+
+(trainee@kali-hunt)-[~/lab] hexdump -n 100 --canonical unknown
+
+------------------------------------------------------------------
+
+In a terminal window in the VM kali-hunt, analyze the following directories and examine the creation times of the files to determine which binaries were most recently added to the protected binary directories. The next question refers to this step.
+
+
+/bin
+
+
+
+/sbin
+
+
+
+/usr/bin
+
+
+
+/usr/sbin
+
+
+how i got the answer
+![image](https://github.com/user-attachments/assets/9370b047-7605-49bf-b642-0537fda727b3)
+
+ls -lisa <file_path> | grep 2022
+
+grep the year as for the year that the file system was modified and you see what the newest file is
 
 
 
