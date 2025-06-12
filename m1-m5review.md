@@ -50,7 +50,7 @@ Linux shells contain a wide range of features. The table below compares some of 
 
 
 -------------------------------------------------------------------------
-### *command line in linux to get network info ifconfig switched ip route ip addr netstat* 
+### *command line in linux to get network info ifconfig ip route ip addr netstat AND ALL SWITCHES* 
 
 
 
