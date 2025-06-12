@@ -1042,6 +1042,105 @@ process.title: */usr/local/bin* OR file.path: */usr/local/bin*
 -------------------------------------------------------------
 
 
+########## M5 L4 ############
+############# Responding to a Linux Incident ############
+
+Processes
+The command ps -ef returns processes executed, sorted sequentially. 
+
+﻿
+
+Review the output of the command ps -ef.
+
+-------------------------------------------------------------
+
+Outlier Processes
+The following line is an outlier in the output of processes executed from the command ps -ef:
+
+﻿
+
+root 8322  1     0  13:13  ?      00:00:000  /usr/bin/nc -l -p 17321
+﻿
+#**shows nc listening on port 17321**#
+
+The line item shows that the root user accessed Netcat using the command /usr/bin/nc -l -p 17321.
+ Netcat is a tool known to be leveraged for suspicious activity. The use of this process must be investigated further.
+
+﻿
+
+The value held by the 1 indicates that the parent process. The value 1 in the parent process defines that the process is running as a service. The services must also be investigated. 
+
+-----------------------------------------------
+
+Services Running
+The command systemctl list-units --type=service returns services found on the host. Upon review of the services, nothing is inherited. The output does not find the association between services and process. Additional commands are needed to identify processes and their associated services.
+
+command to see running services systemctl list-units --type=service
+--------------------------------------------------------
+
+Processes and Services
+The command systemctl status | less returns processes and associated services found on the host. Query the output to discover which service is associated with the Netcat process /nc. 
+
+--------------------------------------------------------------------
+
+Suspicious Service
+The service netlibconf.service is associated with the Netcat process found on the host. 
+
+the previous command let us look through and find the answer
+![image](https://github.com/user-attachments/assets/3d70bca3-011f-4ed3-930f-552942ec4452)
+
+
+-------------------------------------------------------------------------
+
+Suspicious Service Details
+Figure 5.4-1, below, displays the output of the command systemctl status netlibconf. This command provides details associated with the service, such as the directory. 
+
+![image](https://github.com/user-attachments/assets/9758016c-b686-49da-ae82-c308ec2c2a01)
+
+---------------------------------------------------------
+
+User Privileges
+The command ls -la /lib/systemd/system/netlibconf.service provides the user and their permissions associated with the service. The output from the command is below:
+
+﻿
+
+-rw-r--r– 1 bob bob 140 Apr 21 13:09 /lib/systemd/system/netlibconf.service
+﻿
+
+This output indicates that the user bob had read and write privileges and accessed the configuration file /lib/systemd/system/netlibconf.service on April 21 at 13:09. The user bob was the only user to access the service.
+
+﻿
+
+Additional investigation may be necessary to definitively confirm that the file was modified by the user bob.
+![image](https://github.com/user-attachments/assets/66b4bc96-0de8-478c-8d6a-df6491cb211c)
+
+-----------------------------------------------------------------
+
+Confirming the Incident
+The command ls -ld usr/lib/systemd/system/ provides output that indicates the directory is world-writable. A world-writable directory allows any user with access to the host to write to the directory. In the incident that occurred, the user bob gained access to the host uws. Once in the host, bob created a service (netlibconf.service) and ran the process Netcat out of the service. The activity bob implemented on uws was directed with the goal of maintaining persistence on the host. 
+
+![image](https://github.com/user-attachments/assets/132e5454-6e66-46a8-b9a0-5fad77241ced)
+
+------------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
