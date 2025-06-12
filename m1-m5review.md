@@ -106,7 +106,17 @@ Open Terminal Emulator.
 ![image](https://github.com/user-attachments/assets/cb9dbd48-d7b8-4cc5-9a7f-0cb6d905ddf6)
 
 
+Attack Analysis
 
+The logs contain information regarding a malicious attack to the vCityU web server. It was determined that the file r57.php is malicious and associated with the attack. The file likely included a large amount of bytes to upload to the server. Using this information, answer the next set of questions.
+
+Bytes Uploaded
+
+The following log entry contains 12459 bytes sent. The large number of bytes relative to the other logs, paired with its location, prior to any log containing r57.php, indicates this is likely the log of the malicious file upload.
+
+﻿
+
+71.55.82.68 - - [28/Feb/2022:09:05:41 +0100] "GET /vcity/student/plugin-install.php HTTP/1.1" 200 12459 "http://www.vcityu.com/victyu/student/plugin-install.php?tab=upload"
 
 -------------------------------------------------------------------------
 ### *terminal commands to view a file cat less more nnano vi * ##
@@ -137,14 +147,21 @@ The following is an example of a log entry:
 
 
 This example includes the following elements:
+
 Client IP address: 77.54.21.11
+
 Time stamp: 12/Dec/2018:05:03:34 +0100
+
 Type of request
+
 Method: GET
+
 Resource: /vcityu/student/documents.php?file=220.php&theme=twentysixteen
+
 Protocol: HTTP/1.1
 
 HTTP response code: 200
+
 Bytes sent: 4291
 
 
