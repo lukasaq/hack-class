@@ -28,7 +28,7 @@ my file with chnages
 ![image](https://github.com/user-attachments/assets/a89dd067-d405-4b38-a2ab-8bf522315434)
 
 given file / original
-![image](https://github.com/user-attachments/assets/1c21165b-ca7e-46c5-a66f-d4aeb4952bae)
+![image](https://github.com/user-attachments/assets/609514e7-518e-4b8c-9722-83acf9333137)
 
 command to get the query for kibana
 
@@ -41,7 +41,11 @@ python sigmac -t es-qs ../rules/windows/sysmon/sysmon_quarkspw_filedump.yml -c w
 --------------------------------------------------------------------------
 ### *diffrence between the shells in linux borne again c shell posix* 
 
+Comparing Linux Shells
 
+Linux shells contain a wide range of features. The table below compares some of the most common shells and the systems in which they are found.
+
+![image](https://github.com/user-attachments/assets/e4822f90-9146-46a7-8722-65ed61093351)
 
 
 
