@@ -66,7 +66,44 @@ Linux shells contain a wide range of features. The table below compares some of 
 -------------------------------------------------------------------------
 ### *analyze logs in linux* m4,4
 
+Enter the following command to access root privileges on the host:
+$ sudo su
 
+When prompted, enter the password for the user trainee:
+Password: CyberTraining1!
+
+Enter the following command to access the log directory:
+(root@kali-hunt)-[~] # cd /var/log/
+
+Enter the following command to view the log directory:
+(root@kali-hunt)-[/var/log] # ls
+
+Step 6 returns the files within the directory, as displayed below in Figure 4.4-3:
+![image](https://github.com/user-attachments/assets/ad3df09c-bec6-4208-af6e-6e64c5014e0e)
+directory /var/log/ stores the log files on a Linux host.
+
+Enter the following command to view the log directory:
+(root@kali-hunt)-[/var/log] # less syslog
+
+9. Enter the following command to view the log directory:
+(root@kali-hunt)-[/var/log] # tail syslog
+
+
+
+![image](https://github.com/user-attachments/assets/c91f4f89-fa5a-42d3-a735-3c6c54b5ec87)
+![image](https://github.com/user-attachments/assets/9b1d4955-d2f1-4cbe-9dc1-a37675c09dd8)
+![image](https://github.com/user-attachments/assets/73030cec-dc23-4efc-80cf-5e27600250b1)
+
+
+apache log
+
+Open Terminal Emulator.
+
+
+3. Access the log file, located on the following path:
+(trainee@kali-hunt)-[~] less /var/log/apache2/feb28_logs.log.1
+
+![image](https://github.com/user-attachments/assets/cb9dbd48-d7b8-4cc5-9a7f-0cb6d905ddf6)
 
 
 
@@ -82,9 +119,36 @@ Linux shells contain a wide range of features. The table below compares some of 
 -------------------------------------------------------------------------
 ### *appache logs get host web request login php* m3,
 
+written in 
+
+apache log
+
+Open Terminal Emulator.
+
+
+3. Access the log file, located on the following path:
+(trainee@kali-hunt)-[~] less /var/log/apache2/feb28_logs.log.1
+
+![image](https://github.com/user-attachments/assets/cb9dbd48-d7b8-4cc5-9a7f-0cb6d905ddf6)
+
+The following is an example of a log entry:
+77.54.21.11 - - [12/Dec/2018:05:03:34 +0100] "GET /vcityu/student/documents.php?file=220.php&theme=twentysixteen HTTP/1.1" 200 4291 
 
 
 
+This example includes the following elements:
+Client IP address: 77.54.21.11
+Time stamp: 12/Dec/2018:05:03:34 +0100
+Type of request
+Method: GET
+Resource: /vcityu/student/documents.php?file=220.php&theme=twentysixteen
+Protocol: HTTP/1.1
+
+HTTP response code: 200
+Bytes sent: 4291
+
+
+![image](https://github.com/user-attachments/assets/08cfdf08-d3d8-4107-bec8-36326f9967a9)
 
 
 
