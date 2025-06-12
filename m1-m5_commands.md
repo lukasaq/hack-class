@@ -914,23 +914,132 @@ Netstat can also be used to search for any instance of a running process by name
 
 
 
+-------------------------------------------
+
+########## M5 L3 ############
+############# Persistence Mechanisms on Linux ############
 
 
+Knowledge Check
+Question:
+﻿
+
+What suspicious binary was made executable in /usr/local/bin?
+﻿
+
+(Enter the binary name or the absolute path to the binary)
+
+file located in the correct file pah and using chmod to make it executable
+
+![image](https://github.com/user-attachments/assets/0fdbfd40-c020-4b48-8bf0-5dc10943b216)
 
 
+Knowledge Check
+Question:
+﻿
+
+For which user was the file authorized_keys modified?
+﻿
+the home directory is the location for all users is so the user is JCTE even when it looks like root
+
+![image](https://github.com/user-attachments/assets/6834a9fb-3961-4258-9aad-eec3d4d91193)
 
 
+Knowledge Check
+Question:
+﻿
 
+What is the name of the suspicious service that was created?
 
+ systemctl is the commanbd to change or edit services so that is why we look for it in the query as seen below then the highlighted is the corret answer
 
+![image](https://github.com/user-attachments/assets/fe69cf3c-1a5a-4554-b8bc-07ba3e13adaf)
 
+querys from the previous questions
 
+Indications of Linux Persistence
+All four of the common Linux persistence methods were used in the large dataset from the previous workflow. These methods include the following:
 
+Systemd service
 
+SSH authorized_keys
 
+Web shell
 
+Binary wrapping
 
+Systemd Service
+﻿
 
+Description
+﻿
+
+A malicious service was created called ntsh.service. It was started, enabled, and daemon-reload was run.
+
+﻿
+
+Query
+﻿
+
+Running the following query and then creating a table visualization to review all the process.title values reveals the suspicious process:
+
+process.title: (*systemctl* OR *service*)
+﻿
+
+SSH Authorized Keys
+﻿
+
+Description
+﻿
+
+The root user modified /home/JCTE/.ssh/authorized_keys and /etc/ssh/sshd_config.
+
+﻿
+
+Query
+﻿
+
+Running the following query reveals this activity:
+
+event.module: file_integrity AND file.path: (*.ssh/authorized_keys* OR */etc/ssh/sshd_config*)
+﻿
+
+Web Shell
+﻿
+
+Description
+﻿
+
+A suspicious php script named bdoor.php was created in /var/www/html.
+
+﻿
+
+Query
+﻿
+
+Running the following query reveals this activity:
+
+process.title: */var/www/html* OR file.path: */var/www/html*
+﻿
+
+Binary Wrapping
+﻿
+
+Description
+﻿
+
+A suspicious binary named date was created in /usr/local/bin. The binary date is a standard system binary that is located in /bin by default.
+
+﻿
+
+Query
+﻿
+
+Running the following query reveals this activity:
+
+process.title: */usr/local/bin* OR file.path: */usr/local/bin*
+
+-------------------------------------------------------------
 
 
 
