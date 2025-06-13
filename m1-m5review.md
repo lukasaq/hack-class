@@ -261,5 +261,10 @@ rwxrwxrwx uiser group
 
 ![image](https://github.com/user-attachments/assets/78274fda-1595-479a-9250-2887155c0a23)
 
+![image](https://github.com/user-attachments/assets/4549302f-32a6-462e-ad0c-af549b9fe60c)
+
+![image](https://github.com/user-attachments/assets/22b5cd8b-4b6a-41a5-a343-0faf9f0b13be)
 
 
+
+https://rcs08-portal.pcte.mil/#/events/outlook/structured-content/event-d719c4a3-c596-4b73-b4f6-ef837c3fcce9/exam/7e49c144-5e2e-4555-b338-75beaf8f0f6d
