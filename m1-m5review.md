@@ -212,3 +212,47 @@ Bytes sent: 4291
 
 
 
+
+
+-----------------------------------------
+Q3
+![image](https://github.com/user-attachments/assets/303c0ee5-cd57-4b22-8ba5-b88a64112028) 
+
+Q4
+![image](https://github.com/user-attachments/assets/fdf20519-4ee1-4907-be15-cea5048324b0)
+Q5
+
+![image](https://github.com/user-attachments/assets/703b2e61-5467-4e7e-90f9-72b68011ed3d)
+![image](https://github.com/user-attachments/assets/cb465b60-5754-402a-bdf9-4b6dafb4405c)
+Q7
+diffrence in shells
+Q8
+mac address on linux
+Q9
+
+Q14
+.103 not .102
+![image](https://github.com/user-attachments/assets/a71d6779-7802-4ec3-acfe-3a1b0e21822c)
+
+Q16
+to get the parent process 
+ps -elf | grep ncat
+ps -elf
+
+![image](https://github.com/user-attachments/assets/b2eb3902-181e-4d2a-9df0-a05d5d32f8a8)
+
+Q17
+
+![image](https://github.com/user-attachments/assets/3bd89688-e5e6-45b1-8b16-43c3c7d761df)
+![image](https://github.com/user-attachments/assets/d4786886-97fb-495b-9940-d73bf24c8b6c)
+
+
+
+
+
+
+
+
+
+
+
