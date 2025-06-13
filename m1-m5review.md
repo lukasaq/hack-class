@@ -249,9 +249,9 @@ or
 ![image](https://github.com/user-attachments/assets/d761170d-9ef4-4518-adc2-6a370b66ae1f)
 ![image](https://github.com/user-attachments/assets/d761170d-9ef4-4518-adc2-6a370b66ae1f)
 
-
-
-
+ls
+777 user group
+rwxrwxrwx uiser group
 
 
 
