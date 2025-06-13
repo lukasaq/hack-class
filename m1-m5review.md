@@ -254,8 +254,12 @@ ls
 rwxrwxrwx uiser group
 
 
+![image](https://github.com/user-attachments/assets/de1b5f2d-47a3-4611-8ca1-1f766f274725)
+
+![image](https://github.com/user-attachments/assets/101f9524-b52f-4ee6-9c36-ff5cbcd6187f)
 
 
+![image](https://github.com/user-attachments/assets/78274fda-1595-479a-9250-2887155c0a23)
 
 
 
