@@ -245,6 +245,9 @@ Q17
 
 ![image](https://github.com/user-attachments/assets/3bd89688-e5e6-45b1-8b16-43c3c7d761df)
 ![image](https://github.com/user-attachments/assets/d4786886-97fb-495b-9940-d73bf24c8b6c)
+or
+![image](https://github.com/user-attachments/assets/d761170d-9ef4-4518-adc2-6a370b66ae1f)
+![image](https://github.com/user-attachments/assets/d761170d-9ef4-4518-adc2-6a370b66ae1f)
 
 
 
