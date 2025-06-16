@@ -49,3 +49,36 @@ http.response.body.length
 
 ![image](https://github.com/user-attachments/assets/f9b0dd53-f275-42c3-a4b9-28569e052cc6)
 
+
+run the following query to filter out web connections from different hosts:
+
+event.dataset:http and source.ip:199.63.64.51
+
+notice the stranges uri's
+
+![image](https://github.com/user-attachments/assets/87f37e22-f64f-485c-9d29-dd33a878a1ec)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
