@@ -1,3 +1,11 @@
+Run the following query to filter for only Zeek connection logs.
+
+event.dataset:conn
+
+![image](https://github.com/user-attachments/assets/5df234ea-0198-4c45-8c6b-01dcd9a5a0fd)
+
+
+
 Run the following query to search for scanning behavior:
 
 event.dataset:conn and source.ip:199.63.64.51 and ((client.packets>=1 and client.packets<=3) and server.packets<=1)
