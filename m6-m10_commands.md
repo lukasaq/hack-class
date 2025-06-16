@@ -1,4 +1,4 @@
-########## M6 L1 ############
+![image](https://github.com/user-attachments/assets/98b78774-4ff3-405a-9aef-e72d52e27214)########## M6 L1 ############
 ######### Harvesting Credentials ###########
 
 Workflow
@@ -968,6 +968,494 @@ wlan.fc.type_subtype == 12
 ![image](https://github.com/user-attachments/assets/0fa37f9a-e866-42dd-8e64-7abb6b600e86)
 
 ![image](https://github.com/user-attachments/assets/6a02fde5-c0fa-43a7-8909-5afea01ea7d8)
+
+----------------------------
+
+########## M6 L4 ############
+######### SNMP Enumeration ###########
+
+
+snmpwalk
+
+
+An SNMP application that uses SNMP GetNextRequest to query a network entity for a tree of management information. snmpwalk is distributed under various open-source licenses as part of the Net-SNMP suite of tools.
+
+
+snmp-check
+
+
+Similar to snmpwalk. It is used to automate the process of enumerating SNMP devices to gather information and output the resulting data in a more human-friendly manner than snmpwalk. snmp-check is distributed under the Gnu Public License (GPL) from Nothink! as a part of the Kali Linux toolkit.
+
+---------------------------------------------------
+
+SNMP Enumeration | Techniques
+There are many tools that network and system administrators use to interact with agents/devices. Attackers often use the same tools as a mechanism to blend in with legitimate activity. Both open-source and commercial network monitoring suites exist with varying levels of automation and ease of use. Both snmpwalk and snmp-check are common Linux command-line utilities that use SNMP GETNEXT requests to query an agent for a tree of MIB values. snmpwalk can request only a portion of the MIB by specifying an OID space to start using GETNEXT requests — essentially a sub-tree. In the following lab, trainees use two CLIs to review examples of the data that networking devices may expose through SNMP.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the kali-hunt Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Terminal.
+
+﻿
+
+3. Run the command below to perform an SNMP enumeration against the 172.35.1.37 networking device:
+
+$ snmp-check -c simspace 172.35.1.37 | less
+﻿
+
+Figure 6.4-5 shows the output of this command. The exact output differs when run as the output depends on the system's state at the time the information is queried.
+
+﻿
+![image](https://github.com/user-attachments/assets/3fe0a929-ef93-4d1e-8292-757ec9329093)
+
+![image](https://github.com/user-attachments/assets/fb300d17-dad1-4dc9-b2ab-c111927c0091)
+
+
+![image](https://github.com/user-attachments/assets/fea0acf7-97e3-4cec-82d7-c2e88a139229)
+
+![image](https://github.com/user-attachments/assets/4297b99d-0482-4cff-93d8-cd52856240cf)
+
+--------------------------------------
+
+SNMP Analysis in Kibana
+Analyzing SNMP activity in a network can be accomplished using a Security Information and Event Management (SIEM) like Security Onion using Kibana. In this scenario, the Cyber Protection Team (CPT) has been tasked to assist local defenders of the City Hall network. Threat intelligence indicates attackers may be using SNMP to gain detailed network configuration details in order to gain access and laterally move within similar city networks. City Hall administrators requested assistance due to the discovery of a router configuration posted on GitHub that contained the device's SNMP community string by accident and was publicly accessible. Local defenders have provided the following overview:
+
+IP address space: 172.35.0.0/16
+
+Public IP address: 104.53.222.32
+
+Edge firewall: 156.74.85.2
+
+Demilitarized Zone (DMZ): 172.35.3.0/24 (Network Address Translation [NAT] from ch-edge-rtr to public IP address)
+
+SNMP: simspace community string, but not used by City Hall network administrators
+
+A Deployable Mobile Support System (DMSS) kit has been attached to the City Hall core router using the 199.63.64.0/24 subnet
+
+Take note of the above information and use it to analyze any SNMP activity in the following tasks.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the kali-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Firefox and navigate to the Discover - Elastic bookmark — or https://199.63.64.92/kibana/app/discover#/ — and log on using the following credentials to open the Kibana Discover dashboard:
+
+﻿
+
+NOTE: The training Security Onion server uses a self-signed certificate in this training environment.
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. Change the date/time picker for the absolute timeframe Oct 25, 2021 @ 00:00:00.00 → Oct 25, 2021 @ 15:00:00.00 and execute the following filter in the Search box to filter for SNMP events:
+
+event.dataset.keyword: snmp
+﻿
+
+4. In the Search field names box on the left, search for, and add the following fields using the plus sign:
+
+source.ip
+
+destination.ip
+
+snmp.version
+
+snmp.community
+
+snmp.get.requests
+
+snmp.get.responses
+
+snmp.get.bulk_requests
+
+snmp.set.requests
+
+![image](https://github.com/user-attachments/assets/3b3ea905-b78c-4c55-af81-46c3e0775e23)
+
+The results look similar to Figure 6.4-7. Notice three versions of SNMP were captured — SNMPv1, SNMPv2c, and SNMPv3. This can be confirmed by selecting the snmp.version field in the left panel.
+
+![image](https://github.com/user-attachments/assets/e08f84ed-d904-4555-bd88-b1499cc50116)
+
+6. Perform a similar analysis on the destination.ip field and answer the question in the next task.
+
+
+![image](https://github.com/user-attachments/assets/2a8462a4-cb6d-4769-b20d-fa64c37ab01e)
+
+![image](https://github.com/user-attachments/assets/729562df-423e-47df-bfd6-89355bc110c1)
+
+----------------------------------------------------------------
+
+Analyzing the Results
+﻿
+![image](https://github.com/user-attachments/assets/1e021973-2894-4f1e-ac79-35869044b8c5)
+
+As is seen in Figure 6.4-9, at least five IP addresses were seen receiving SNMP requests. In order to see the full list, use a visualization to see the full list.
+
+
+Use the information from the scenario to identify SNMP activity that is suspicious.
+
+
+![image](https://github.com/user-attachments/assets/326b05fb-03cb-499c-aeb0-e8c9ca66cd21)
+
+![image](https://github.com/user-attachments/assets/0af9fd86-2c22-44c6-944f-56629fa74031)
+
+-----------------------------------------------------
+
+Workflow
+
+
+1. Add a filter to exclude the source IP address 199.63.64.51. One method is to hover over the relevant IP address and select the minus sign.
+
+![image](https://github.com/user-attachments/assets/938f8d1d-ab62-4644-a9e7-c36d349820a1)
+
+
+Notice the event around 08:50 and the large gap until approximately 13:40 in Figure 6.4-11.
+
+
+2. Select the event around 08:50 and analyze the results.
+
+
+![image](https://github.com/user-attachments/assets/1d3a7cdb-bd18-4ed7-87ea-0c52b2cf3d90)
+
+Notice the large number of responses — 4,382 OIDs were requested and the same number of responses. Recall from the earlier exercise how much data was returned from an snmpwalk enumeration and how long that quantity of data takes to analyze. The large time gap suggests an attacker performed a single successful SNMP enumeration of the 156.74.85.2 device and an analysis to plan additional hosts to target. Additional time gaps suggest similar actions with a shorter time for analysis needed since some information about the network had already been revealed. This analysis and planning is often seen in the attacker lifecycle as part of the discovery of externally accessible hosts, and then using that information to dig deeper into the network to identify and discover additional devices that may be vulnerable to attacks or abuse through their configurations. From one external enumeration, it appears enough information was revealed that the attacker was able to discover additional networking devices and gain even more configuration data. Since the same community string was used on more devices than the initially leaked configuration file, an attacker can use SNMP to map out a network to gain additional situational awareness. The vast majority of valid SNMP traffic only occurs between known hosts. SNMP traffic that communicates outside of the organization's network and internal SNMP traffic to non-management hosts is suspicious and should be investigated immediately.
+
+----------------------------------------------
+
+SNMP Mitigation
+SNMP agents are not installed or started by default on most Windows Operating Systems (OS). For Windows OSs, SNMP runs as a service and can be seen in the Services control panel. Disabling the SNMP service is one method to mitigate risk due to SNMP. Changing the community strings and restricting what hosts can reach the SNMP service are other ways to mitigate SNMP on Windows OSs. Routers and other networking devices are all different, but references to SNMP in the configuration files indicate if the agents are running. Mitigating these devices varies and the documentation should be consulted in order to ensure the appropriate configuration changes are made. The following workflow walks through the mitigation of SNMP on a Windows server.
+
+
+Workflow
+
+
+1. Log in to the ch-dc1 VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open the Services control panel and scroll down to SNMP Service.
+
+![image](https://github.com/user-attachments/assets/f48b5acd-6c7c-4e1b-895d-5cc756a62acf)
+
+In this case, the SNMP Service — the agent — is installed and running. The management service that would receive SNMP traps — SNMP Trap — is not running.
+
+
+3. Open the SNMP Service properties, and select the Security tab:
+
+![image](https://github.com/user-attachments/assets/bfeee055-58c0-4ec6-88b0-5d9bcfea031f)
+
+Notice the simspace community string is listed with read-only rights, and this system is configured to Accept SNMP packets from any host. Limiting SNMP to management IP addresses only is one way to mitigate risk, as well as ensuring there are no write SNMP community strings. Configuring the SNMP agent to send Traps is made on the Traps tab. Microsoft has deprecated the use of SNMP in Windows OSs, so there is no native support for SNMPv3 with authentication. The use of Windows Management Instrumentation (WMI) or Windows Remote Management (WinRM) tools are the preferred and supported methods for obtaining the configuration and performance data of other systems using SNMP.
+
+
+4. Select the General tab, stop the service, and set the Startup type to be Disabled.
+
+![image](https://github.com/user-attachments/assets/a44b8d3d-6c68-4f4b-80d7-a4798192d9ab)
+
+5. Apply the changes, and select OK. 
+
+
+The same steps can be used to disable the SNMP Trap service. While there is less risk from leaving the SNMP Trap service enabled, if it is not being used, the best practice is to remove or disable any services not intended to be used to reduce the potential attack surface. Group Policy Objects (GPO) can also be created to ensure the SNMP service is disabled or removed across Windows domains.
+
+
+![image](https://github.com/user-attachments/assets/e009b015-bd88-42b2-8b2e-7855744dde19)
+
+![image](https://github.com/user-attachments/assets/d95ba8de-166d-481d-92a2-543660b08b62)
+
+---------------------------------------------------
+
+########## M6 L5 ############
+######### Active Directory Enumeration ###########
+
+AD Enumeration with NET.exe
+The CPT has been assigned to a mission to audit an AD environment. A domain account has been provided to the CPT to assist local defenders. Enumerate the AD environment and identify misconfigurations that an adversary may be able to take advantage of.
+
+﻿
+
+Workflow﻿﻿
+
+﻿
+
+1. Log in to the ch-tech-1 Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a command prompt.
+
+﻿
+
+3. Run the following command to check password login restrictions for the domain:
+
+C:\Users\trainee>net accounts /domain
+
+![image](https://github.com/user-attachments/assets/d357dcb4-a5b8-4e05-ad52-a1c59a9f36df)
+
+
+4. The CPT was provided a network map and knows the DC is ch-dc1. Run the following command to see if any shares are accessible:
+C:\Users\trainee>net view \\ch-dc1
+
+![image](https://github.com/user-attachments/assets/e4054735-5929-4004-ad3e-a072932b09fa)
+
+5. An open bkup share — which is likely used for backups — is on the DC. Connect and see what information this could provide an adversary.
+C:\Users\trainee>net use x: \\ch-dc1\bkup
+
+![image](https://github.com/user-attachments/assets/a630dc16-c10e-46fc-9768-41611eef7859)
+
+6. List what is in the share.
+C:\Users\trainee>dir \\ch-dc1\bkup
+
+![image](https://github.com/user-attachments/assets/a4039de0-e3dc-47b9-846c-ad5378819bbf)
+
+7. Open the user-list.txt file in Notepad.
+C:\Users\trainee>\\ch-dc1\bkup\user-list.txt
+
+![image](https://github.com/user-attachments/assets/b63ac9c2-1be3-4d48-b48f-864a74def614)
+
+
+8. Check whether any of these users are in the Domain Admins group.
+C:\Users\trainee>net group "Domain Admins" /domain
+
+![image](https://github.com/user-attachments/assets/13cdee24-ac34-4397-873b-7027661bcb8f)
+
+
+9. As indicated in Figure 6.5-6, the users did not show up in the Domain Admins group. Check the user details to see which groups they are in.
+C:\Users\trainee>net user helpdesk /domain
+
+C:\Users\trainee>net user lewis /domain
+
+![image](https://github.com/user-attachments/assets/8207472e-a400-4fe0-afbe-5400ab531835)
+
+![image](https://github.com/user-attachments/assets/42083665-dac4-4cae-a1ec-fa9551d05419)
+
+This audit was a success. A share was found that contained sensitive information an adversary could have used to advance access. It was also found that enumeration of user account details was successful using a non-admin domain user and without an elevated command prompt.
+
+![image](https://github.com/user-attachments/assets/a9523661-e6c5-4488-b299-13e814c1bf66)
+
+
+----------------------------------------------------
+
+Enumeration with PowerSploit (PowerView)
+This lab demonstrates use of PowerSploit to find information on shares, users, and groups.
+
+﻿
+
+The CPT has been assigned to a mission to audit an AD environment.  Access to a technician's desktop has been provided to allow the team to perform AD enumeration in an attempt to find misconfigurations before an adversary does.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-tech-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open PowerShell.
+
+﻿
+
+3. Search the domain for shares.
+
+PS C:\Users\trainee> Find-DomainShare
+﻿
+
+This command can require significant time to finish because it enumerates all the machines that have entries in AD.
+
+﻿
+
+NOTE: The order in which the systems are enumerated may differ from the screenshot.
+
+﻿![image](https://github.com/user-attachments/assets/78d9a922-e5fa-4b78-85d7-386926e62c23)
+
+PowerSploit/PowerView can use find cmdlets like Find-DomainShare to do the hard work of stringing commands together to complete a complex task. Find-DomainShare uses multiple commands to look for systems and check them for shares.
+
+
+The search can be refined to return only shares to which the current account has read access and that exist in the vcch.lan domain.
+PS C:\Users\trainee> Find-DomainShare -ComputerDomain vcch.lan -CheckShareAccess
+
+
+
+The bkup share has been found on the ch-dc1 system, as it was in the NET.exe lab. Because this is the same share that was detected in the NET.exe lab, the contents of the user-list.txt file is provided below to save time.
+helpdesk:p@ssw0rd
+lewis:password!
+
+
+
+4. Check the Domain Admins group to see if these users are members.
+PS C:\Users\trainee> Get-NetGroup 'Domain Admins'
+
+
+![image](https://github.com/user-attachments/assets/5cda04c9-f605-441f-8dfe-fde1da634908)
+
+To check who is in the group, review the member list in the command output.
+
+
+5. Look up more information on the users from the .txt file.
+PS C:\Users\trainee> Get-NetUser helpdesk, lewis
+
+![image](https://github.com/user-attachments/assets/1173098f-13cb-40ad-bcf6-2c4151c06335)
+
+![image](https://github.com/user-attachments/assets/7142685a-8bc8-45b1-a7c8-4cf6c60cebc2)
+
+This audit provided an example of how much more efficient third-party tools can be over built-in system tools. Specifically, PowerView's find commands automate much of the manual work an a  dversary would otherwise have to do.
+
+![image](https://github.com/user-attachments/assets/7ae1b2c8-0ed4-4e92-84af-b34f71e1e050)
+
+![image](https://github.com/user-attachments/assets/b4a21aad-16a9-49b8-aba4-f7f7afc027e9)
+
+![image](https://github.com/user-attachments/assets/37157047-90a3-483b-9594-77b7be702faa)
+
+-----------------------------------------------
+
+Detecting BloodHound/SharpHound Usage
+This lab uses Sysmon event ID 3 to detect SharpHound's initiation on a system.
+
+﻿
+
+The CPT has been assigned to a mission to hunt for AD enumeration. The team has received intel that an adversary known to target city government networks has used BloodHound/SharpHound in the past, so that will be the focus of the hunt. The time range used is Oct 27, 2021 @ 14:30:00.000 → Oct 27, 2021 @ 15:30:00.000.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Chrome.
+
+﻿
+
+3. Select the Discover - Elastic bookmark.
+
+﻿
+
+4. Log in to Security Onion using the following credentials (if needed):
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Add the following fields to the search, and set the time range to align with this hunt as Oct 27, 2021 @ 14:30:00.000 → Oct 27, 2021 @ 15:30:00.000.
+
+host.name
+
+user.name
+
+event.code
+
+event.action
+
+source.ip
+
+source.port
+
+destination.ip
+
+destination.port
+
+process.executable
+
+process.name
+
+﻿![image](https://github.com/user-attachments/assets/9144f14e-1df6-4252-96e7-18ab809c681b)
+
+6. Create a query to show only Sysmon event ID 3 network connection logs.
+event.code: 3
+
+![image](https://github.com/user-attachments/assets/56e7fee4-0a31-43ac-acf3-d7e246d0feef)
+
+7. Narrow the search to look for logs where the destination port is 389 or 636 or 445.
+event.code: "3" AND destination.port: ("389" OR "636" OR "445")
+
+
+
+Check the process.name field to see the top process names in the results.
+
+
+![image](https://github.com/user-attachments/assets/3353b054-afbe-4f44-be05-616783b46bb6)
+
+
+SharpHound.exe constitutes 19% of the results.
+
+
+8. Select the plus sign next to "19%" to see more information.
+
+![image](https://github.com/user-attachments/assets/73bb3384-4e67-4020-b121-a08bd67d6254)
+
+
+![image](https://github.com/user-attachments/assets/a6af7ed3-8193-42e7-8c76-e03d41691ba0)
+
+There are 19 SharpHound logs, some with a destination port of 389 and some with a destination port of 445, as expected. Notice that process.executable provides the path where SharpHound was run on the system.
+
+
+This activity on ch-tech-1 should be reported right away.
+
+
+![image](https://github.com/user-attachments/assets/e3291d41-cdbc-4ef4-abda-045f43455508)
+
+
+
+---------------------------------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
