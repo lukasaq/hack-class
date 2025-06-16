@@ -860,36 +860,114 @@ DMZ Network: 172.35.3.0/24
 
 ![image](https://github.com/user-attachments/assets/caf9664d-26cf-4b61-9670-29c67034de49)
 
+----------------------------------------------------------
+
+########## M6 L3 ############
+######### Wireless Sniffing ###########
+
+Practical Defenses | Detecting Rogue Access Points
+Workflow
+
+﻿
+
+1. Log in to the win-hunt Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the eviltwin-wlan.cap file on the desktop.
+
+![image](https://github.com/user-attachments/assets/6aac0fd7-90ef-4280-bc04-ecab7dd8eb7e)
+
+In this mission partner network, the adversary has been sniffing on the PublicLibrary network.
+
+
+3. Filter for the PublicLibrary SSID by entering the following Wireshark filter:
+wlan.ssid == "PublicLibrary"
 
 
 
+This filter matches a specific portion of the wireless packet frame with the hexadecimal characters given. This section of the frame corresponds to the SSID of the packet and the string PublicLibrary.
+
+![image](https://github.com/user-attachments/assets/dcb110c8-74c5-42db-850b-c3621744f32e)
+
+The following is a list of known good BSSIDs employed by the mission partner in their wireless networks:
+
+1c:87:2c:68:2c:18
+
+03:e6:b8:54:cd:2a
+
+7e:12:6d:00:9f:b2
+
+25:aa:4d:89:b3:cf
+
+Below is an example of a known good BSSID found in this network capture:
+
+![image](https://github.com/user-attachments/assets/a991de6e-3a90-4abd-9497-570a942f636f)
+
+4. Observe the BSSID field in the management packets transmitted on this network. Observe any discrepancies in the BSSID field compared to the list above.
+
+filtered out all known good bssid to find the unknown / bad bssid
+
+![image](https://github.com/user-attachments/assets/6f8db29a-225c-4e19-bb63-7a8f1700f8bb)
+
+![image](https://github.com/user-attachments/assets/fe6789f4-4615-4204-b4a8-de1d677e2053)
+
+
+---------------------------------------------------------------------------------
+
+Practical Defenses | Detecting Rogue Access Points
+
+Workflow
+
+
+NOTE: The following steps continue from the previous task.
+
+
+5. Observe that the device with BSSID 00:0f:66:05:a9:11 is transmitting wireless management packets with the same SSID PublicLibrary as the legitimate access point. 
+
+![image](https://github.com/user-attachments/assets/742b365b-31c2-420c-b179-5c0ae22c384f)
 
 
 
+This device is successfully emulating the legitimate PublicLibrary access point. Any device that connects to this rogue access point — even though they may experience uninterrupted service — are likely to have their entire communication captured by the attacker.
 
 
+![image](https://github.com/user-attachments/assets/ac1e82c5-ab6f-4160-9f0e-3b05007da62e)
 
 
+![image](https://github.com/user-attachments/assets/0fa7dd1f-1534-459b-9eba-a19cfad85af4)
+
+---------------------------------------------------------------------
+
+Practical Defenses | Detecting Rogue Access Points
+Workflow
+
+﻿
+
+NOTE: The following steps continue from the previous task.
+
+﻿
+
+6. Observe that the legitimate access point is operating on channel 11, which is identified in the 802.11 radio information header.
 
 
+![image](https://github.com/user-attachments/assets/bae3d8cf-b4d4-48ba-ab4f-9eb4a3b27477)
+
+7. Open deauth_capture.pcap from the desktop.
+
+![image](https://github.com/user-attachments/assets/264d50db-5d77-4f43-b4a9-dbe47ace7689)
+
+8. Enter the following Wireshark filter to locate all the 802.11 frames of type 12 — deauthentication frame:
+wlan.fc.type_subtype == 12
+
+![image](https://github.com/user-attachments/assets/1fd24c8a-0c14-4585-b64d-1fc2f9bd20af)
 
 
+![image](https://github.com/user-attachments/assets/0fa37f9a-e866-42dd-8e64-7abb6b600e86)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/6a02fde5-c0fa-43a7-8909-5afea01ea7d8)
 
 
 
