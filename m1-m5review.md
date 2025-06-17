@@ -267,4 +267,98 @@ rwxrwxrwx uiser group
 
 
 
+
 https://rcs08-portal.pcte.mil/#/events/outlook/structured-content/event-d719c4a3-c596-4b73-b4f6-ef837c3fcce9/exam/7e49c144-5e2e-4555-b338-75beaf8f0f6d
+
+
+
+review 2 -----------------------------------------------------------------------------------
+
+find net cat port 
+
+ps -elf | nc
+systemctl status | grep nc
+
+-------------------------------------------
+
+search for file names to see who got fished
+ips to find ports
+
+felds for workstation name
+agent.name hostname
+
+--------------
+
+maybe add to script
+
+| select -expandproperty message
+
+--------------------
+
+between 2 ips
+
+104.53.222.103 and 172.16.5.2
+payload name
+
+host ip
+source and destination ip
+
+------------------
+
+installed packages choose first one
+
+dpkg -l 
+
+-------------------
+
+exe="program that is used"
+cwd=" current working directory "
+
+--------------------------
+http method look for get or post
+
+bytes from server response
+
+read correct timestamp
+
+-----------------------------
+
+name of web shell
+
+ls /var/www/html
+
+linux persistence lesson
+
+-----------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
