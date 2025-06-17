@@ -330,7 +330,7 @@ ls /var/www/html
 linux persistence lesson
 
 -----------------------
-
+4,1 5,1 1,1 
 
 
 
