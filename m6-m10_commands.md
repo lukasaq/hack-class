@@ -1425,41 +1425,206 @@ This activity on ch-tech-1 should be reported right away.
 
 ---------------------------------------------------------------
 
+########## M7 L1 ############
+######### Social Engineering ###########
+
+Phishing Review | Identifying Phishing Messages
+Understanding what constitutes phishing messages is important, but identifying them in practice and training others to do so is even more important. Use the knowledge gained in this lesson to identify phishing messages in a mission partner user's inbox. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-edu-1 Virtual Machine (VM) as Karen Smith using the following credentials:
+
+Username: ksmith
+Password: CyberTraining1!
+﻿
+
+2. Open Karen Smith's Chrome browser, and select the Outlook Web App bookmark to observe the message that she reported.
+
+﻿
+
+NOTE: The Outlook Exchange server uses a self-signed certificate in this training environment, so the certificate exception must be acknowledged to proceed to the mailbox.
+
+﻿![image](https://github.com/user-attachments/assets/f6268961-08fb-4d43-b28c-c87cc2088dba)
+
+3. Use the same credentials to log in to the Outlook Web App:
+Username: vcch\ksmith
+Password: CyberTraining1!
+
+![image](https://github.com/user-attachments/assets/eda172b0-8619-4db6-ba65-2867ff551bcb)
+
+4. Open the email with the subject Peterson, Jack N shared "TP20-DS6308 (UNCLASSIFIED)" with you:
+
+![image](https://github.com/user-attachments/assets/dc7bd642-01bc-4b64-8f1d-9d4cf8e5a932)
+
+5. Observe the following attributes that identify this message as a phishing email:
+
+![image](https://github.com/user-attachments/assets/5dc6f453-a83c-48b8-9741-2ec27a57561a)
+
+This sender's address purports to be from the US Department of State, but without any cryptographic signature. The sender opens the email with a generic greeting that does not identify Karen by name. They proceed to include a spelling error and a link that is suspicious because the domain of the link is not an official government domain. For all these reasons, Karen was correct to flag the message as suspicious, and responders should analyze it and remove it.
+
+
+6. Examine the other messages in her inbox one at a time, and then answer the following question.
+
+![image](https://github.com/user-attachments/assets/f3a4da58-9633-483d-9a89-9aae36dd78e3)
+
+----------------------------------------------------------------
+
+Responding to Phishing Campaigns | Common Attributes
+In addition to a suspicious message from the State Department, Karen also had an email supposedly reporting a security concern from Facebook. Other users in the mission partner organization have reported similar messages in their inboxes, so this is likely part of a larger phishing effort targeting this organization. Once a message is identified as likely part of a phishing campaign, it is essential to develop Indicators of Compromise (IOC) to identify other messages that may be circulating around the organization.
+
+﻿
+
+Workflow
+
+﻿
+
+NOTE: The following steps continue from the previous task.
+
+﻿
+
+7. The first step is to categorize the metadata of the message.
+
+﻿
+
+What was the subject line?
+
+﻿
+
+In this case, it was Suspicious Login, which is designed to create a pretext of fear — ironically — that one's account is being attacked. It is important to determine if there are any variations on this subject line in other messages.
+
+﻿![image](https://github.com/user-attachments/assets/a76202db-a00a-4e4e-aed7-7790cd285458)
+
+8. Determine if the email contained any suspicious attachments or links.
+
+
+In this case, there were no suspicious attachments, but the included hyperlink is not from the Facebook domain. 
+
+
+In fact, this hyperlink domain was shown in the attached Volexity threat report to be associated with the Advanced Persistent Threat (APT) actor APT 29 — Dukes.
+
+![image](https://github.com/user-attachments/assets/12993d2b-25fa-4c64-9c2a-cf52793f11eb)
+
+If the message did contain an attachment, the next step would be to determine the file type, extension, hash, and any naming conventions, if different versions of the file were being distributed. 
+
+
+9. Determine the true source of the message.
+
+
+a. Select View Message Details.
+
+
+This opens the email header information that is stored by the exchange server when it receives a new message:
+
+![image](https://github.com/user-attachments/assets/2a03daf6-3e51-4f6f-bb97-fd21508c8639)
+
+b. Observe the message metadata and the source address listed:
+
+![image](https://github.com/user-attachments/assets/66dac4ea-5630-4178-ab0c-d705b904cd49)
+
+This particular source was using the Simple Mail Transfer Protocol (SMTP) server as an open relay to masquerade as a legitimate address, which is a common technique used by threat adversaries during phishing attacks. The intelligence support cell of the Cyber Protection Team confirms that the IP address listed in the email header does not match the official Facebook domain and the SMTP server that the message was routed through has an open port facing the internet, which is a common attribute of open relay servers used for this sort of spoofing. 
+
+
+At this point, if the message was not sent through an SMTP relay, consider Open-Source Intelligence (OSINT) tools to determine if the source IP address or domain used a known malicious mail proxy. 
+
+
+If there is any unique data in the other message header fields — such as X-Authenticated-User or X-Sender-Id — take note to determine any other source information.
+
+
+10. Having obtained the necessary details about this campaign that could lead to identifying other messages like it, proceed to an analysis system to query the rest of the network. 
 
 
 
+----------------------------------------------------
+
+Responding to Phishing Campaigns | Practical Analysis
+
+Having identified socially engineered phishing messages and gathering several important IOCs regarding the phishing campaign that this is a part of, use a Security Information and Event Management (SIEM) system to locate Zeek logs of the suspicious email traffic. This skill is useful in identifying similar messages propagating through the organization.
+
+Workflow
+
+
+1. Log in to the win-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
 
 
+2. Log in to Security Onion through the Chrome browser bookmark Discover - Elastic.
+
+
+This service is located at address https://199.63.64.92/kibana/app/discover#/.
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
 
 
 
+NOTE: The Security Onion server uses a self-signed certificate in this training environment, so the certificate exception must be acknowledged to proceed to the website.
+
+
+![image](https://github.com/user-attachments/assets/8156849f-8335-430b-a641-6be6a067b396)
 
 
 
+This opens the Discover dashboard. Since Kibana uses a default query for events in the most recent 24 hours, the details in Figure 7.1-15 differ from the lab environment.
+
+![image](https://github.com/user-attachments/assets/e6bfb8dc-2031-4da3-90da-5ed8f3c07fa4)
+
+3. Set the dates to 28 October 2021 from 12:00 – 23:30, since this is the time found in Karen Smith's mail receipt.
 
 
+![image](https://github.com/user-attachments/assets/bdb85516-b42c-43ae-b6fa-419b21b5957f)
 
 
+4. Use the IOCs identified earlier as filters to identify the message that was just discovered.
 
 
+This Kibana query helps identify the message:
+source.ip:128.0.7.205 AND smtp.recipient_to.keyword: ksmith@vcch.gov
 
 
+![image](https://github.com/user-attachments/assets/f05efe97-fa33-47e8-ba1a-87ffda218683)
+
+The message was found in Security Onion's Zeek logs from the external interface monitored by one of the forward nodes. That node captured the communication between the threat actor IP address and the SMTP server, and the message traffic included these email details, which allowed the analyst to identify this message and any others like it. This hunt is performed shortly, but it is important to fully educate users about their sensitive data and the danger of these messages so that no compromise occurs before they can be fully cleaned out of the network. 
 
 
+-------------------------------------------
 
 
+Knowledge Check
+In addition to Karen Smith, several other recipients in the mission partner organization received messages during this phishing campaign that targeted Facebook users. Using the IOCs developed earlier, determine which other users were targeted.
+
+﻿
+
+Recall that the helpful filters are:
+
+source.ip:1.2.3.4 
+smtp.recipient_to.keyword:*string*
+smtp.mail_from.keyword:*string*
+smtp.subject:*string*
+﻿
+
+And recall that several of the identified IOCs include:
+
+Subject: Suspicious Login
+Source address: security@facebook.com
+Suspicious link domain:  r20.rs6.net ﻿
+Question:
+﻿
+Which other accounts received emails like that of Karen Smith?
+﻿
+
+(Select all that apply)
 
 
+![image](https://github.com/user-attachments/assets/4c386873-1273-41c0-8e69-44adc09366f7)
 
 
-
-
-
-
-
-
-
+-----------------------------------------------------------
 
 
 
