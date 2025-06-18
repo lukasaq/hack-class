@@ -177,8 +177,13 @@ proxychains nmap -Pn --top-ports 25 128.0.7.25
 ![image](https://github.com/user-attachments/assets/1800679c-659d-47ed-a69a-4c6729938d64)
 
 
+CDAH-M8L4-Persisting in Windows Artifacts
 
 
+HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce
+HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce
 
 
 
