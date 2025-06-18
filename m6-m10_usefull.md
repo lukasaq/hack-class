@@ -150,6 +150,45 @@ The SQLI attack on the network helped the adversary gain information about the c
 ########### CDAH-M7L4 Stack Exploitation ############
 
 
+####### CDAH-M7L6 Credential Stuffing/Password Cracking #######
+
+GPO -> default domain -> settings -> security settings -> account policies/password policy
+
+CDAH-M7L7 Using an Attack Proxy
+
+In order to save time, only the top 25 ports are scanned.
+
+nmap -Pn --top-ports 25 128.0.7.25
+
+![image](https://github.com/user-attachments/assets/5ef6383a-d07b-4aef-ab28-2507fb92c6aa)
+
+Create a dynamic SSH tunnel between the attacker machine and a peer device that has been co-opted for use in this reconnaissance campaign.
+
+ssh -D 0.0.0.0:9050 -N -f trainee@128.0.7.207
+
+![image](https://github.com/user-attachments/assets/adf25577-a15b-49ed-9c27-a56e741a242f)
+
+
+Execute the same scan again, but this time, direct all traffic through the proxy SOCKS4 created by the SSH tunnel.
+
+proxychains nmap -Pn --top-ports 25 128.0.7.25
+
+
+![image](https://github.com/user-attachments/assets/1800679c-659d-47ed-a69a-4c6729938d64)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
