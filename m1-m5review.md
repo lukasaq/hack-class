@@ -362,12 +362,31 @@ Web Shell
 
 Analysts can audit changes to public folders to catch any malicious web scripts being added. These folders include /var/www/html and any other directory hosting internet-facing files
 
+Path Interception by Search Order Hijacking (Binary Wrapping)
+
+threat actor can hijack the use of common system commands on Linux to create a stealthy backdoor. For example, adding a binary named hostname to the directory /usr/local/bin/ hijacks the use of /bin/hostname. This is because the user-specific bin directory has priority over the system-wide bin directory when running a command without the absolute path. The threat actor can add anything they want to the directory /usr/local/bin/hostname, make it executable, and then use that binary in a scheduled task to inconspicuously launch their backdoor. A defender can check the search order by running the command echo $PATH to list the current $PATH configuration. The search order priority is presented left to right. A threat actor can modify the $PATH to change the search order in preparation for a persistence method they plan on using. Organizations should always use absolute paths in system administration scripts to avoid search order hijacking.
+
+command chmod may help analysts identify suspicious files in user-specific bin locations that threat actors are making executable. However, a threat actor may not need chmod if they change the command umask to 000 and then create a file because this makes the file globally executable. Analysts should be suspicious if they see a normal system command that is located by default in /bin or if the command is added to /usr/local/bin and made an executable. Additionally, monitoring surrounding network traffic after the execution of a suspicious binary often leads to the detection of suspicious network traffic.
+
+![image](https://github.com/user-attachments/assets/1abfea6a-13a9-4556-8b89-a9b278279dc5)
 
 
+Running the following query reveals this activity:
+event.module: file_integrity AND file.path: (*.ssh/authorized_keys* OR */etc/ssh/sshd_config*)
 
 
+Query
 
 
+Running the following query reveals this activity:
+process.title: */var/www/html* OR file.path: */var/www/html*
+
+
+Query
+
+
+Running the following query reveals this activity:
+process.title: */usr/local/bin* OR file.path: */usr/local/bin*
 
 
 
