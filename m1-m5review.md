@@ -333,16 +333,34 @@ linux persistence lesson
 4,1 5,1 1,1 
 
 
+-------------------------------------
+
+Systemd Service and RC Scripts
+
+ Every service has a service unit file that controls how and when the service is run. These files are located in the directories
+ /etc/systemd/system and /usr/lib/systemd/system and have an extension of .service
+
+To detect the systemd services used for persistence, defenders should monitor for usage of the commands systemctl and service. Defenders should also monitor for new or modified files in the following directories:
+
+/etc/systemd/system
+
+/usr/lib/systemd/system/
+
+~/.config/systemd/user/
 
 
+hreat actors can modify the RC scripts to contain paths to malicious binaries and shell commands. Detecting this activity requires monitoring and auditing the file /etc/rc.local for unapproved changes.
+
+SSH Authorized Keys
+
+The SSH file /home/<user>/.ssh/authorized_keys defines the keys that are authorized for use during key-based authentication. Threat actors abuse this feature to gain persistence on a host by creating their own SSH key and adding the public key to the file authorized_keys
 
 
+Another file that should be monitored is /etc/ssh/sshd_config. A threat actor may add their public key to authorized_keys and find that the file sshd_config does not allow for public key authentication. In this case, the threat actor must edit the configuration file sshd_config and change the values for the fields PubkeyAuthentication and RSAAuthentication to yes
 
+Web Shell
 
-
-
-
-
+Analysts can audit changes to public folders to catch any malicious web scripts being added. These folders include /var/www/html and any other directory hosting internet-facing files
 
 
 
