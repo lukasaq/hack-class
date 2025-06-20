@@ -187,6 +187,216 @@ HKCU\Software\Microsoft\Windows\CurrentVersion\RunOnce
 
 
 
+#### CDAH-M9L3-UNIX Privilege Escalation ####
+
+
+GTFOBins
+GTFOBins is a curated list of UNIX binaries that can exploit common misconfigurations to gain elevated privileges.
+
+﻿
+
+Although GTFOBins was made for pentesters to reference ways to perform privilege escalation while living off the land, it is also quite useful for defenders. GTFOBins is used to reference the commands used by adversaries to escalate privileges and hunt for their usage in logs.
+
+﻿
+
+A defender performing a routine audit on their UNIX systems can use GTFOBins to check different binaries found in the sudoers file or that have the Set User Identification (SUID) or Set Group Identification (SGID) bits set.
+
+﻿
+
+Figure 9.3-2 shows the GTFOBins page for the find binary. Privilege escalation is possible with find if the SUID is set or if the user has the ability to run find using sudo. If the user has a restricted shell, they may be able to break out using find.
+
+﻿
+![image](https://github.com/user-attachments/assets/659e173d-1391-4ce5-9f87-33879a79fe90)
+
+
+Sudo
+Sudo — sometimes referred to as Superuser Do! — can be misused by adversaries to gain elevated privileges. This is not due to vulnerabilities in sudo but, rather, to configuration options sudo provides for users to be allowed to run only certain applications with elevated privileges.
+
+﻿
+
+The command sudo -l shows a user which binaries the current user has the permission to run using sudo (a specific user can be specified with the -U user option). Once the list of binaries is obtained via sudo -l, a quick search on GTFOBins provides the adversary with available privilege escalation methods.
+
+﻿
+
+Figure 9.3-3 provides example output of sudo -l, where the user sam has the ability to run find, less, and vim using sudo without being prompted for a password.
+
+﻿
+![image](https://github.com/user-attachments/assets/556bd1ae-e63e-45ac-be7a-c8c5e5c64fcb)
+
+A search on GTFOBins for “find” returns the privilege escalation methods available for that command. In this case, running the following command is one option to escalate privileges to root:
+sudo find . -exec /bin/sh \; -quit
+
+![image](https://github.com/user-attachments/assets/4cafb84a-3372-4603-b429-74bc7806e5ae)
+
+less and vim can also be used for privilege escalation in this case.
+
+
+For less, the following command will escalate privileges to root:
+sudo less /etc/profile
+!/bin/sh
+
+
+
+For vim, the following command will escalate privileges to root:
+sudo vim -c ':!/bin/sh'
+
+
+
+Multiple commands thus far have contained !/bin/sh. !/bin/sh can be used as a catchall Security Information and Event Management (SIEM) search to hunt for most of these basic privilege escalation commands. However, an adversary may know that and use other methods to be stealthier.
+
+
+For example, the following command also escalates privileges using vim but without using the !/bin/sh string in the command. The !/bin/sh string is also found in many standard scripts that may return as false-positive results for the analyst to analyze and exclude.
+sudo vim
+:shell
+
+
+SUID and SGID
+SUID and SGID are features of UNIX permissions that allow a binary to be configured to always run in the context of the owner or group of the file rather than of the user who ran the binary. Adversaries abuse binaries where the SUID or SGID bits are set. Setting these privileges opens up the potential for privilege escalation, privileged file reads, and privileged file writes. An adversary finds such binaries by running a search using the find command.
+
+﻿
+
+The following command returns all files with the SUID bit set:
+
+find / -type f -perm -04000 -ls 2>/dev/null
+﻿
+
+The following command returns all files with the SGID bit set:
+
+find / -type f -perm -02000 -ls 2>/dev/null
+
+
+![image](https://github.com/user-attachments/assets/4680eaab-9946-4d20-8452-747a90c58a13)
+
+he path /usr/libexec/platform-python3.6 is where CentOS stores the platform-specific python3 binary. According to the Fedora Project, “Platform Python will be a separate stack of Python packages aimed to provide all necessary dependencies.”
+
+
+/usr/bin/python3 is a string of links that eventually lead to /usr/libexec/platform-python3.6, as shown in Figure 9.3-6.
+
+![image](https://github.com/user-attachments/assets/a215dc32-6ed7-453c-9a4f-06c99b960e07)
+
+Searching the files on GTFOBins helps the adversary know which files can be used to get them closer to privilege escalation. In this case, /usr/libexec/platform-python3.6 has the SUID bit set. This is enough to allow for privilege escalation using the following command:
+./python3 -c 'import os; os.execl("/bin/sh", "sh", "-p")'
+
+
+
+Below is a breakdown of the Python command:
+./python3 executes the python3 binary.
+-c tells Python that a command is going to be executed.
+The single quotes encapsulate the command.
+import os tells Python to import the os module.
+os.execl is the execl function that executes a new program.
+"/bin/sh" is the path.
+"sh" and "-p" are the arguments to spawn a shell.
+
+![image](https://github.com/user-attachments/assets/4c63feb7-a209-4609-aa49-34b3cc1d0bc7)
+
+Not all binaries are able to do direct privilege escalation. Some only allow for file reads or writes as the privileged user. If file read or write is allowed, the adversary uses that to perform privilege escalation via a script.
+
+----------------------------------
+
+
+Finding and Testing Privilege Escalation Methods in UNIX
+Understanding how adversaries perform privilege escalation is extremely valuable for a CPT analyst. The CPT analyst can not only perform better hunts but also more effectively test privilege escalation methods to ensure fixes are successful.
+
+﻿
+
+1. Log in to the kali-hunt Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the terminal.
+
+﻿
+
+3. Use the Secure Shell (SSH) protocol to connect to the ch-dev-cent VM:
+
+(trainee@dmss-kali)-[~] $ ssh sam@ch-dev-cent
+sam@ch-dev-cent's password: CyberTraining1!
+﻿
+
+4. Check if there are any binaries the user is allowed to run using sudo.
+
+[sam@centos ~]$ sudo -l
+
+![image](https://github.com/user-attachments/assets/60f3d33a-4586-4499-b42c-3b2172d3b577)
+
+5. Search for all three binaries on the GTFOBins GitHub page. According to GTFOBins, find, less, and vim all have privilege escalation methods available with SUID or sudo privileges. The commands to escalate privileges using find, less, and vim, respectively, are as follows:
+sudo find . -exec /bin/sh \; -quit
+
+sudo less /etc/profile
+!/bin/sh
+
+sudo vim -c ':!/bin/sh'
+
+
+
+6. Enter the following command to escalate privileges using the find command:
+[sam@centos ~]$ sudo find . -exec /bin/sh \; -quit
+
+![image](https://github.com/user-attachments/assets/75cbc8d7-6245-47c7-858d-eadd181e9a0a)
+
+7. Verify that privilege escalation was successful by running the id command after the privilege escalation attempt:
+sh-4.4# id
+
+https://rcs08-minio.pcte.mil/portal-bucket/portal/learning-server/rich-content-images/839aa93f-f5ba-44fe-afed-9855cadad8a0?X-Amz-Algorithm=AWS4-HMAC-SHA256&X-Amz-Credential=PCTE-SimSpaceCorp%2F20250617%2Fus-east-1%2Fs3%2Faws4_request&X-Amz-Date=20250617T000000Z&X-Amz-Expires=604800&X-Amz-SignedHeaders=host&X-Amz-Signature=cd66258410214def666ff0b14601a7c78037e4b5e3b58b1aeaaa785ec7edfd99
+
+8. Find evidence of the privilege escalation activity in /var/log/secure:
+sh-4.4# cat /var/log/secure | grep /bin/sh
+
+![image](https://github.com/user-attachments/assets/0974ee4c-a6b6-491a-a342-0d3ad277de3a)
+
+
+9. Use the exit command to leave the privileged shell and return to the sam user shell:
+sh-4.4# exit
+
+10. Escalate privileges using the less and vim commands from step 5.
+
+
+Note that after exiting the privileged shells gained in the above step both less and vim will still be running. Each of those processes must be exited to return to the original shell command prompt.
+
+
+Escalating privileges on UNIX systems can be quite simple when the right misconfigurations are in place. Systems must be monitored and audited often to ensure such misconfigurations do not occur on systems and lead to simple escalation paths for adversaries.
+
+------------------------------------
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
