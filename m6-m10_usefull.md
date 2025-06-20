@@ -361,7 +361,16 @@ Escalating privileges on UNIX systems can be quite simple when the right misconf
 
 ------------------------------------
 
+#### CDAH-M9L4-Windows Privilege Escalation ####
 
+The command where /r C:\ chrome.exe displays the full path to the Google Chrome executable. 
+
+
+Some registry keys that have previously been discussed that are used to set startup folders for persistence are as follows:
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
+HKEY_CURRENT_USER\Software\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\Shell Folders
+HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell Folders
 
 
 
