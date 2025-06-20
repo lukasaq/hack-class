@@ -4127,50 +4127,371 @@ NOTE: The following step continues from the previous steps.
 
 #### CDAH-M9L3-UNIX Privilege Escalation ####
 
+Find and Correct Unquoted Service Paths
+Find and correct unquoted service paths on the Windows system. In the following tasks, the ch-tech-3 Virtual Machine (VM) is used as the vulnerable Windows system that has unquoted service paths that need to be corrected. 
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-tech-3 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a command prompt with administrator privileges.
+
+﻿
+
+3. Enter the following command to identify all unquoted service paths:
+
+C:\Windows\system32>wmic service get name,displayname,pathname,startmode |findstr /i "Auto" |findstr /i /v "|findstr /i /v """
+﻿
+
+In the above command the PowerShell wmic service get switch will return a list of the services on a Windows system using the "Service" application management tool. The command will return the name, displayname, pathname, and startmode of the services. This command is piped with the findstr command. The findstr command will search for patterns of text in files. In the above command the /i switch will ignore the characters that are specified when searching for a string. The /v switch will print only the lines that don't contain a match. In the above command those switches combined will ignore any characters containing the word "Auto" and any objects that have quotation marks. It will then print all of the other lines.  
+
+﻿
+
+Note the three paths outside C:\Windows\ that have spaces in the service path.
+
+﻿
+
+4. Enter the following command to identify unquoted service paths outside C:\Windows\:
+
+C:\Windows\system32>wmic service get name,displayname,pathname,startmode |findstr /i "Auto" |findstr /i /v "C:\Windows\\" |findstr /i /v """
+﻿
+
+The findstr commands filter for services that automatically start and do not contain quotation marks.
+
+﻿
+
+All services with unquoted executable paths are listed.
+
+﻿
+
+5. Open the Windows Registry Editor (regedit.exe).
+
+﻿
+
+6. Navigate to the following registry key, and examine the ImagePath value:
+
+﻿
+
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\Some Vulnerable Service
+
+![image](https://github.com/user-attachments/assets/4ed6293f-13c7-451f-929b-0fabeefe90d3)
+
+The ImagePath entry does not have quotation marks surrounding it. 
+
+
+7. Place quotation marks around the registry entry in the value ImagePath (see Figure 9.4-2):
+
+![image](https://github.com/user-attachments/assets/d728e92d-a666-4973-ad41-80401111c8aa)
+
+8. Return to the command prompt, and run the below command again: 
+C:\Windows\system32>wmic service get name,displayname,pathname,startmode |findstr /i "Auto" |findstr /i /v "C:\Windows\\" |findstr /i /v """
+
+ 
+There is now one less vulnerable unquoted service path.
+
+![image](https://github.com/user-attachments/assets/4f1a12e2-266e-47ca-8dd1-9a49e91ed91c)
+
+9. Return to the Registry Editor, and navigate to the below path:
+ 
+HKEY_LOCAL_MACHINE\SYSTEM\CurrentControlSet\Services\VMwareCAFManagementAgentHost
+ 
+Again, the ImagePath value does not have any quotation marks.
+ 
+10. Place quotation marks around the ImagePath value (see Figure 9.4-4):
+
+![image](https://github.com/user-attachments/assets/356192dc-10e6-40a2-9db1-b5291229285e)
+
+11. Run the following command again to verify the changes: 
+C:\Windows\system32>wmic service get name,displayname,pathname,startmode |findstr /i "Auto" |findstr /i /v "C:\Windows\\" |findstr /i /v """
+
+ 
+Only one unquoted service path is left. 
+ 
+Keep the windows open to respond to the following questions.
+
+
+--------------------------------------
+
+#### CDAH-M9L4-Windows Privilege Escalation ####
+
+Display the Current PATH Variables
+In the following exercise, review how to display the current PATH variables for the logged-on user. The exercise also demonstrates the where command and when and how it can be used. 
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-treasr-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+
+﻿
+
+2. Open a command prompt, and run the following command to view the PATH variable: 
+
+C:\Users\trainee>echo %PATH%
+﻿
+
+Another useful Windows command is the where command. This command can be used to display the path or location of any files or executables that match the given search pattern.
+
+﻿
+
+3. Enter the following command to view any files that reside in the Public directory:
+
+C:\Users\trainee>where $public:*.*
+﻿
+
+4. To view any files named Secret and their file paths, input the following command:
+
+C:\Users\trainee>where /r C:\ Secret.txt
+﻿
+
+A break down of the above command can be found below:
+
+where - command that searches for and displays the location of a file
+/r - tells the where command to run recursively
+C:\ - tells the where command to start the search from C:\ directory. 
+Secret.txt - tells the where command to search for the file Secret.txt
+The where command can also be used to view the file size and the last modified date and time for all files that match the given parameters within the command. The command where /f /t *.dll displays all DLL files on the system and the last modified date of each of them. The where command can also be used to search a single directory to narrow down the results. The command where /r C:\ chrome.exe displays the full path to the Google Chrome executable. 
+
+﻿
+
+Keep the windows open to respond to the following question.
 
 
 
+------------------------------
+
+
+Use Autoruns to Identify Suspicious Programs
+In this exercise, use the Windows Sysinternals Autoruns tool to identify suspicious programs that run when a user logs into the computer.
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-treasr-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Start the Autoruns application from the desktop with administrator privileges.
+
+﻿
+
+3. Select the Logon tab at the top:
+
+﻿![image](https://github.com/user-attachments/assets/07d1ddad-c217-49bf-9eab-cb6581fba28b)
+
+Under the Logon tab, a run key is highlighted in red for a file called VulnerableProcess.
+
+
+![image](https://github.com/user-attachments/assets/59ecc38d-0e62-4b78-aedc-1a7547fe5dfa)
+
+
+Also, the registry entry is one of the Windows default run keys mentioned earlier.
+
+
+This is a common technique used by malware to survive a reboot and achieve persistence on a target. The Description column is empty, and the Publisher column says “(Not Verified).” Although that alone does not mean that the process is malicious, it is worthy of further investigation. The WindowsDefender row is also highlighted in red, but the Publisher column has a valid digital signature, Microsoft Corporation. The reason that Autoruns is saying WindowsDefender is not verified is because Sysinternals is not connected to the internet in this environment; therefore, it cannot verify the file hash for those components. The same is true for the Windows Mail entry a few rows below WindowsDefender. In an environment connected to the internet, if these entries are still highlighted in red and they do not have a verified publisher, further inspection is warranted.
+
+
+--------------------------
+
+
+Check the Privileges of the Current User
+The following exercise demonstrates how to check the Windows privileges of a current logged-in user. This can be helpful to trainees to ensure that users have only the privileges they need to perform their job roles. 
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-treasr-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a command prompt, and enter the following command to view the trainee user’s privileges:
+
+C:\Users\trainee>whoami /priv
+
+
+![image](https://github.com/user-attachments/assets/6338dea8-470b-44dd-a7a8-a71e03bdfc2d)
+
+
+3. Open a command prompt as administrator, and enter the following command to view the elevated privileges:
+C:\Windows\system32>whoami /priv
+
+
+![image](https://github.com/user-attachments/assets/6707ed5b-4bcf-4075-ac52-9768b1bde5b2)
+
+
+-----------------
+
+Find and Correct the AlwaysInstallElevated Settings
+In the following exercise, find the incorrect Windows privilege settings on the system using PowerShell. Then create a domain-level GPO on the Domain Controller to mitigate the incorrect settings.
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-tech-1 VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open PowerShell as a regular user.
+
+﻿
+
+3. Enter the following commands to use the Test-Path cmdlet to see if the registry path is present on a system:
+
+PS C:\Users\trainee> Test-Path -Path 'HKCU:SOFTWARE\Policies\Microsoft\Windows\Installer'
+PS C:\Users\trainee> Test-Path -Path 'HKLM:SOFTWARE\Policies\Microsoft\Windows\Installer'
+﻿
+
+Figure 9.4-9 shows the results if the path is present on the system:
+
+
+![image](https://github.com/user-attachments/assets/44dc45bb-e221-418a-ac9b-e5fed0b590fc)
+
+
+4. Use the Get-ItemProperty command to see what the values for the AlwaysInstallElevated entries are set to:
+PS C:\Users\trainee> Get-ItemProperty -Path 'HKCU:SOFTWARE\Policies\Microsoft\Windows\Installer'
+
+PS C:\Users\trainee> Get-ItemProperty -Path 'HKLM:SOFTWARE\Policies\Microsoft\Windows\Installer'
 
 
 
+Because the values on this system are set to 1, the settings are enabled. The proper way to mitigate this is to create a domain-level GPO on the Domain Controller and have that GPO set to disable the AlwaysInstallElevated setting. 
+
+
+5. Log in to the ch-dc1 VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
 
 
+6. Open the PowerShell shortcut on the desktop with administrator privileges.
+
+
+7. Enter the following command to create a new GPO related to the setting that is being enforced:
+PS C:\windows\system32> New-GPO -Name "AlwaysInstallElevatedPolicy" -Comment "Enforces AlwaysInstallElevated policy to be disabled."
 
 
 
+8. Enter the following commands to set the registry value of the settings that are being enforced:
+PS C:\windows\system32> Set-GPRegistryValue -Name "AlwaysInstallElevatedPolicy" -Key "HKLM\SOFTWARE\Policies\Microsoft\Windows\Installer" -ValueName AlwaysInstallElevated -Type String -Value "0"
+
+PS C:\windows\system32> Set-GPRegistryValue -Name "AlwaysInstallElevatedPolicy" -Key "HKCU\SOFTWARE\Policies\Microsoft\Windows\Installer" -ValueName AlwaysInstallElevated -Type String -Value "0" 
 
 
 
+9. Enter the following command to link the new GPO to the domain:
+PS C:\windows\system32> New-GPLink -Name "AlwaysInstallElevatedPolicy" -Target "ou=Systems,dc=vcch,dc=lan"
+
+------------------------------------
+
+Challenge: Detecting Windows Privilege Escalation
+Use all of the mitigation and detection techniques in this lesson to detect the technique used to gain privilege escalation on the target.
+
+﻿
+
+Scenario
+﻿
+
+In this mission partner’s environment, the CPT all-source intelligence cell has received reporting indicating that an Advanced Persistent Threat (APT) known to use Windows privilege escalation techniques has infiltrated the environment and is attempting to gain higher privileges to further attack the infrastructure. A City Hall Parks employee (tjonathan) reported that Google Chrome will not open on their machine ch-parks-1. They reported the incident on January 13, 2022, at 1530. Use the absolute dates January 12, 2022 0900 to January 14, 2022 0900 for this investigation. 
+
+﻿
+
+Recall the following Sysmon Event IDs that may be of assistance during the investigation:
+
+1: ProcessCreate
+
+3: NetworkConnection
+
+11: FileCreate
+
+15: FileCreateStreamHash
+
+
+Recall the following Kibana fieldnames that may be of assistance during the investigation:
+
+source.ip - Used to search for any results using a specific source IP address.
+
+destination.ip - Used to search for any results using a specific destination IP address. 
+
+event.code - Used to search through logs using a specific Sysmon Event Id. 
+
+agent.hostname - Used to search for any logs with a specific hostname.
+
+Recall the following Kibana syntax when using Security Onion:
+
+fieldName: value AND fieldName: value
+
+fieldName: value AND NOT fieldName: value
+
+fieldName: value OR fieldName: value
+
+fieldName: (value OR value OR value)
+
+Using Elastic in Security Onion, investigate the ch-parks-1 (172.35.5.2) machine, and determine the technique(s) used to escalate privileges. 
+
+﻿
+
+1. Log in to the VM win-hunt and VM ch-parks-1 machines using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. In the VM win-hunt, open Google Chrome.
+
+﻿
+
+3. Select the bookmark Discover - Elastic.
+
+﻿
+
+4. Log in to Security Onion with the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+![image](https://github.com/user-attachments/assets/b936b0ea-4325-40ff-9930-08495a77d3b7)
+
+chrome.dll
+
+![image](https://github.com/user-attachments/assets/a26bec8a-51cb-4f3c-a7e8-97bc4dd2a3b1)
 
 
 
+![image](https://github.com/user-attachments/assets/5854ddf7-8b4d-4071-88ed-356d7c146dfa)
+
+![image](https://github.com/user-attachments/assets/3c68adb6-08b7-435a-bffd-592d99c1510f)
 
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+![image](https://github.com/user-attachments/assets/002e48b3-2034-400c-8a2c-0dab8b714738)
 
 
 
