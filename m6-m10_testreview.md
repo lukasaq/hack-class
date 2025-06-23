@@ -2,7 +2,7 @@
 2 kibana questions
 pull ou key points in text
 
-snmp walk and snmp check m6 l4
+snmp-walk and snmp-check m6 l4
 
 event veiwer to chech log use find and filter m6 l5
 
