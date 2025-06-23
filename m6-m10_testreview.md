@@ -23,7 +23,7 @@ smbmap nc nmap commands analyize the output m10 l2
 
 event logs use find and filter
 
-uac look at it and teel about it m9 l4
+uac look at it and teel about it open user account controllsm9 l4
 
  bcdeditm7 l4 
 
