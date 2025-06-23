@@ -4924,7 +4924,8 @@ Password: CyberTraining1!
 
 ![image](https://github.com/user-attachments/assets/1088049d-ec58-4836-9a43-e35b02a6efae)
 
-![image](https://github.com/user-attachments/assets/7b249ee9-78f2-4e91-aa5a-c421b57ae32a)
+![image](https://github.com/user-attachments/assets/c8646e45-0896-46d5-852b-d8600b5d6c2b)
+
 
 ------------------
 
