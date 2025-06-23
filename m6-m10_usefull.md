@@ -374,15 +374,29 @@ HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Explorer\User Shell
 
 
 
+#### CDAH-M7L4 Stack Exploitation ####
+
+
+The levels of DEP that can be applied to a system are as follows:
+0: AlwaysOff. DEP is disabled for all processes.1: AlwaysOn. DEP is enabled for all processes. Applications cannot explicitly disable DEP with this setting.2: OptIn. DEP is enabled only for Windows system components and services, though processes may enable it.3: OptOut. DEP is enabled for all processes. Administrators can manually create specific exceptions to this. This is the default configuration.
 
 
 
 
 
+2. Open PowerShell as the administrator, and assess the status of DEP protection with the following command:
+PS C:\Windows\system32> BCDEdit /enum "{current}"
 
 
 
+![image](https://github.com/user-attachments/assets/00b341b1-5893-4e7b-9f13-f0b2ffc197d2)
 
+
+
+Alternatively, the Windows Management Instrumentation Command-Line (WMIC) utility can be used to check this system setting:
+PS C:\Windows\system32> wmic OS Get DataExecutionPrevention_SupportPolicy  
+
+![image](https://github.com/user-attachments/assets/a240ba20-6dd3-4371-9b95-652b94311111)
 
 
 
