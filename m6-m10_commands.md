@@ -4929,69 +4929,446 @@ Password: CyberTraining1!
 
 ------------------
 
+#### CDAH-M10L3-Data Exfiltration through Allowlisted Cloud Services ####
+
+Hunt for DNS Exfiltration
+Complete the following walkthrough for developing hunting strategies and visualizations using Elastic Stack, through Kibana. The visualizations help identify DNS traffic occurring on the network. Through the implementation of hunting strategies potentially malicious DNS traffic to an allowlisted cloud service will be detected. 
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM win-hunt using the following credentials:
+
+Username: trainee
+Password: CyberTraining1! 
+﻿
+
+2. Open Google Chrome.
+
+﻿
+
+3. Select the bookmark for Visualize - Elastic to open the Visualize Library. 
+
+﻿
+
+4. Open Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Select Create visualization, located on the top right of the page. 
+
+﻿
+
+6. Within the New visualization window, select Aggregation based, then select Data table.
+
+﻿
+
+7. Within the New Data table / Choose a source window, select *:so-*﻿
+
+﻿
+
+8. Set the time span to the following one-hour time frame:
+
+January 28, 2022 @ 10:00:00.000 → January 28, 2022 @ 11:00:00.000
+﻿
+
+9. Add a bucket using split rows with the following information:
+
+Aggregation: Terms
+
+Field: dns.question.registered_domain.keyword
+
+Metric: Count
+
+Order: Descending 
+
+Size: 100
+
+Figure 10.3-2, below, displays the resulting data table. The field dns.question.registered_domain.keyword displays all domains that were reached throughout the VCCH network.
+
+![image](https://github.com/user-attachments/assets/6b3fa579-6631-461f-a5ad-e0079707d38f)
+
+10. Add a filter to the data table to only display data from the VM ch-tech-1, as shown in Figure 10.3-3, below:
+
+![image](https://github.com/user-attachments/assets/32a75a4a-3518-444a-b979-058c96820102)
+
+Figure `0.3-4, below, displays the resulting data table. The VCCH network uses a cloud infrastructure with Google and Microsoft. Both services are allowlisted, making them easy vehicles for data exfiltration. The table indicates that the google.com domain has been reached 892 times in the 60-minute time span.
+
+![image](https://github.com/user-attachments/assets/4b68142a-b344-4bb7-9f10-8cbef11e7a2a)
+
+11. In a new tab, select the Discover - Elastic bookmark. 
+
+
+12. Set the time span to the same one-hour time frame, as in step 8: 
+January 28, 2022 @ 10:00:00.000 → January 28, 2022 @ 11:00:00.000
 
 
 
+13. In the Search Bar enter the following query:
+event.dataset:dns
 
 
 
+The query filters and displays DNS traffic exclusively as the data exfiltration occurs over DNS. This enables focusing on DNS traffic on the Discover page.
+
+
+14. Add a filter to only show logs collected on the VM ch-tech-1, as shown in Figure 10.3-5, below:
+
+![image](https://github.com/user-attachments/assets/93213b41-1fc9-4b94-9e1f-1cd8506c4c3b)
+
+Figure 10.3-6, below, displays the Discover page after implementing the filter from step 14. The resulting graph indicates an apparent uptick in DNS traffic. This is a clear sign of data exfiltration. An uptick indicates a large spike in the number of DNS messages. The DNS messages could be to one domain or numerous different domains. Any upticks in traffic need to be analyzed and reviewed to identify whether the activity is suspicious or intentional.
+
+![image](https://github.com/user-attachments/assets/9ff4e35e-f6f1-4bef-90e7-80ffcf9c01f7)
 
 
 
+15. Modify the query in the search bar to include the following information:
+
+event.dataset: dns AND dns.question.registered_domain: google.com
 
 
 
+Google.com is a known allowlisted cloud service. Analysts must determine if the uptick in DNS traffic is attributed to this cloud service. Figure 10.3-7, below, displays the results of this query. This verifies that the uptick in DNS traffic is in requests and communications sent to google.com, which must be investigated further. 
+
+![image](https://github.com/user-attachments/assets/58079620-3bce-41b0-84eb-920e73760bd2)
 
 
 
+16. Return to the Visualize Library - Elastic tab, containing the newly created data table.
+
+
+17. Add the following filter to remove any of the dns.highest_registered_domain that end with vcch.lan:
+agent.hostname: ch-tech-1 and NOT dns.question.registered_domain: *vcch.lan
 
 
 
+This allows queries to ignore unrelated DNS logs as a workaround for the inconsistencies present in the DNS server. See Figure 10.3-8.
+
+![image](https://github.com/user-attachments/assets/31d813ca-a8f1-454f-96b6-bd55ac3ff8ab)
+
+18. Modify the existing bucket and update the data table to contain the following information:
+Aggregation: Terms
+Field: dns.question.name.keyword
+Metric: Count
+Order: Descending 
+Size: 100
+
+The dns.question.name field contains all of the domain information with the request, including the subdomain, as Figure 10.3-9 indicates, below:
+
+![image](https://github.com/user-attachments/assets/b3194aaf-28af-4994-b806-06cf187b34b1)
+
+Navigate to page 3 of the data table. Figure 10.3-10 displays this page, which reveals a large amount of alphanumeric text prior to the subdomain for connections made to google.com. The text indicates suspicious activity by which the subdomain is sending hexadecimal data through the DNS traffic. 
+
+![image](https://github.com/user-attachments/assets/b316913b-b772-4616-9309-5b8f1ca03c3a)
+
+As  explained  earlier in this lesson, a DNS request for 68656c6c6f776f726c64.34.google.com contains a hex-encoded ASCII string in the subdomain in the request. Attackers will convert back this large string of characters to plain ASCII to make the data legible. This prevents local defend ers from e asily identifying the data that has been stolen. However, the defenders can use a SIEM to identify the large amount of characters in the subdomain as suspicious activity. The defenders need to investigate the activity further, to discover what data was stolen, how the machine was compromised, and if the a dversary s till maintains a presence on the host. 
 
 
 
+--------------------
+
+Hunt with Lens Visualizations
+Complete the following walkthrough to develop lens visualizations that aid in hunting and detection for exfiltration. Lens is an intuitive, "drag-and-drop" tool that allows users to easily create and manipulate visualizations to display data for faster analysis.  
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM win-hunt using the following credentials:
+
+Username: trainee
+Password: CyberTraining1! 
+﻿
+
+2. Open Google Chrome.
+
+﻿
+
+3. Select the bookmark for Discover - Elastic. 
+
+﻿
+
+4. Open Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Within the Discover page, set the time span to the following one-hour time frame:
+
+January 26, 2022 @ 11:00:00.000 → January 26, 2022 @ 12:00:00.000
+﻿
+
+6. Show DNS requests on the Discover page by entering the following query that uses the wildcard operator (*) to return all DNS requests from across the network: 
+
+dns.question.registered_domain.keyword: *
+﻿
+
+7. Add the following filter to the query to remove all data pertaining to live.com, vcch.lan, and microsoft.com, as shown in Figure 10.3-11, below:
+
+NOT dns.question.registered_domain.keyword is one of vcch.lan, live.com, microsoft.com
+
+![image](https://github.com/user-attachments/assets/89e0d428-ab87-4892-bc7b-22a04f74089c)
+
+
+NOTE: Due to inconsistencies in how data is handled in the network, these sites must be removed for this lab.
+
+
+Figure 10.3-12, below, displays the resulting data. The chart displays an increase in DNS requests starting after 11:40:00.000 and ending prior to 11:45:00.000. Analysts must review this further to assess if there is potential Malicious Cyberspace Activity (MCA). 
+
+
+![image](https://github.com/user-attachments/assets/74dab8ce-c710-494e-924f-bd77a81d378f)
+
+8. In a new tab, select the bookmark Visualize - Elastic.
+
+
+9. Select Create visualization.
+
+
+10. Within the New visualization window, select Lens. 
+Figure 10.3-13 displays the screen that appears: 
+
+![image](https://github.com/user-attachments/assets/b9207805-b8cd-48af-8e3c-19d20c6c94b1)
+
+NOTE: Kibana Lens is an intuitive, “drag-and-drop” user interface (UI) that simplifies data visualization within Elastic Stack. While this lab provides a brief introduction, upcoming lessons in this course provide an in-depth view of Kibana Lens. 
+
+
+11. Set the time span to the following five-minute time frame for a closer view of the increase in the DNS requests:
+January 26, 2022 @ 11:40:00.000 → January 26, 2022 @ 11:45:00.000
 
 
 
+12. Drag and drop the dns.question_registered_domain.keyword to the pane labeled Drop some fields here to start location, as Figure 10.3-14 displays, below: 
+
+![image](https://github.com/user-attachments/assets/e777a2ab-d67d-4c14-9559-555e84d8a50c)
+
+13. Add the same filter from step 7 to remove all data pertaining to live.com, vcch.lan, and microsoft.com, as displayed in Figure 10.3-15, below:
+
+![image](https://github.com/user-attachments/assets/77dc0267-fd9c-4401-9d15-fa55609386ba)
+
+14. On the right pane, under Horizontal Axis, select Top values of dns.question.registered_domain.keyword.
+
+
+15. In the Number of values input box, select 100, so that the vertical bar chart matches Figure 10.3-16, below:
+
+
+![image](https://github.com/user-attachments/assets/3609b199-4cfa-41d5-8f13-050651c68806)
+
+
+The setup in Figure 10.3-16 reveals that the top DNS requests within the timeframe of the increase is privatebin.com. Additionally, privatebin.info also appears further down on the chart. PrivateBin is an online, open source pastebin that claims to use a server that has zero knowledge of the data saved in it. PrivateBin states that their data is, “encrypted and decrypted in the browser.” PrivateBin offers no security or coverage from items in the pasted data, which makes it a preferred choice among adversaries attempting to exfiltrate data out of a compromised host. DNS requests to privatebin.com are not by themselves necessarily malicious. However, the large quantity of requests in comparison with the other domains seems out of place, especially compared to google.com. This requires further investigation.
+
+
+16. Open the Discover page in a separate tab and set the time span to the following one-hour time frame:
+January 26, 2022 @ 11:00:00.000 → January 26, 2022 @ 12:00:00.000
 
 
 
+17. Modify the current query to filter all data by privatebin.com or privatebin.info, using the following syntax:
+dns.question.registered_domain.keyword: privatebin.com OR privatebin.info
 
 
 
+Figure 10.3-17, below, displays the results of this step:
+
+![image](https://github.com/user-attachments/assets/30f02b96-2029-44fe-88b5-7b98f2251ccf)
+
+The query results that include PrivateBin in Figure 10.3-17 reveal a clear overlap of the increase in DNS traffic identified from step 7 of this lab. Figure 10.3-18, below is a snapshot of the chart from step 7. This chart highlights the increase, which starts at 11:40:00.000 and ends prior to 11:45:00.000.  
+
+![image](https://github.com/user-attachments/assets/5a7b215c-bf30-4723-8e99-2b205d2eb768)
+
+The updated query displayed in Figure 10.3-19, below, highlights additional traffic to PrivateBin between 11:45:00.000 and 11:50:00.000. While an increase can be quickly identified using a chart or visualization, activity may still be occurring without showing an increase, as it may blend in with normal network activity.  
+
+![image](https://github.com/user-attachments/assets/a25056eb-8d50-4e83-824b-5c06442dedac)
+
+
+----------------------------------
+
+Exfiltration Through Cloud Services
+This workflow identifies and illustrates data exfiltration to the cloud service PrivateBin. In this scenario, the data being exfiltrated uses PrivateBin's HTTP interface to upload the data. The attacker retrieves the uploaded data using an alternate communications path. Investigate any HTTP traffic to PrivateBin.
+
+﻿
+
+Workflow
+﻿
+
+1. In the VM win-hunt, navigate to the bookmark Visualize - Elastic. 
+
+﻿
+
+2. Create a new Lens data table visualization using the following fields to display an overview of HTTP traffic for the time period Feb 1, 2022 @ 00:00.000 - Feb 14, 2022 @ 23:30:00.00:
+
+source.ip
+
+server.domain.keyword
+
+http.request.method.keyword
+
+﻿
+
+Below, Figure 10.3-20 displays the resulting table. There is very little traffic for this two-week period and all traffic is going to two domains: privatebin.com and pastebin.com. 
+
+﻿![image](https://github.com/user-attachments/assets/2cab1cce-3d30-4f00-b96a-6183d8cd50cc)
+
+3. In a new tab, use Discover filters to analyze the HTTP GET traffic to privatebin.com:
+server.domain: privatebin.com
+http.request.method: get
 
 
 
+4. Review the following fields to analyze the events:
+client.ip
+server.domain
+server.ip
+http.request.method
+url.full
+user_agent.original
+http. request.head ers.content-type
+
+![image](https://github.com/user-attachments/assets/4109e23b-5616-415a-b47f-fd1c632a89fc)
+
+![image](https://github.com/user-attachments/assets/b0907297-24bc-40c4-868f-9fe97cbf296e)
+
+----------------------
+
+PrivateBin Exfiltration
+Follow the workflow, below, to continue investigating privatebin.com from step 2 of the previous workflow. This time, focus on HTTP POST traffic.
+
+﻿
+
+Workflow
+﻿
+
+1. Navigate to the Visualize-Elastic page in the VM win-hunt. 
+
+﻿
+
+2. Change the filter http.request.method to show the POST traffic:
+
+http.request.method: post﻿
+
+﻿
+
+3. Analyze the associated results.
+
+﻿
+
+Use the information from this exercise to answer the n ext Knowledge  Check.
+
+![image](https://github.com/user-attachments/assets/b6bdb9d9-ec6b-4483-a114-21bac6144d66)
+
+![image](https://github.com/user-attachments/assets/e1a1ffc8-751a-4ce4-9a80-b28235c8f5ef)
+
+-----------------------
+
+Investigate DNS Exfiltration in VCCH
+Scenario 
+﻿
+
+A Cyber Protection Team (CPT) has been assigned a mission within the VCCH network. The primary object of the mission is to execute a hunt operation for MCA. Perform an individual hunt for exfiltration as part of the hunt operation. The VCCH network uses a variety of cloud infrastructures to help perform daily tasks, below is the allowlist of cloud services:
+
+Apple 
+Google
+Microsoft/Azure
+All queries in the scenario should be run against the *:so-* index, with the timeframe set to January 28, 2022 @ 11:00:00.000 – January 28, 2022 @ 12:30:00.000.
+
+﻿
+
+Workflow
+﻿
+
+1. Log in to the VM win-hunt using the following credentials:
+
+Username: trainee
+Password: CyberTraining1! 
+
+﻿
+
+2. Open Google Chrome.
+
+﻿
+
+3. Select the bookmark Discover - Elastic. 
+
+﻿
+
+4. Open Security Onion using the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Use Kibana to aid in the investigation while answering the upcoming series of Knowledge Checks.
+
+![image](https://github.com/user-attachments/assets/65eafd8f-211a-4fe0-a3d8-9b61b997e95b)
+
+![image](https://github.com/user-attachments/assets/6132f6d8-848a-4968-8577-254e90e0d474)
+
+![image](https://github.com/user-attachments/assets/c8d4aedf-9401-4287-b6bd-18be721d7636)
+
+![image](https://github.com/user-attachments/assets/398303b2-12f2-4c67-b4c6-1f47c875727e)
+
+![image](https://github.com/user-attachments/assets/e5516229-1fbe-4e22-9a89-bf0583a5083f)
+
+---------------------
+
+Spikes in DNS Traffic
+The graph populated on the Discover page reveals two spikes in DNS traffic that occurred over the timespan identified in the last question. Figure 10.3-22 highlights these spikes, below. The first spike occurs at 11:47, with more than 3,500 logs collected. The second, smaller spike occurs at 12:00, with around 1,100 logs collected. 
+
+![image](https://github.com/user-attachments/assets/284a7403-ca5e-49a5-9312-9df3794614c7)
+
+---------------------------
+
+click on spinl and filter for hostname
+
+![image](https://github.com/user-attachments/assets/960f46de-e198-467a-b588-e0525609ef01)
+
+![image](https://github.com/user-attachments/assets/3a02e490-b731-4d17-93b8-58824227ab3b)
+
+------------------
+
+DNS Traffic by Host
+There are many paths to identify which host experienced the spike in DNS traffic. For example, by using the Discover graph and table to find the host, as displayed in Figure 10.3-23, below:
+
+﻿
+![image](https://github.com/user-attachments/assets/612f8e6e-7611-44b3-8e60-8dabbe45e7e1)
+
+Figure 10.3-24, below, shows how selecting the first spike in DNS traffic causes the graph’s x-axis to change from five-minute increments to five-second increments:
+
+![image](https://github.com/user-attachments/assets/af120049-32ee-4d96-88f3-7ae8827d077a)
 
 
+Selecting the entirety of the spike, from 11:47:00.000 to 11:48.00.000, and adding the field agent.hostname to a column easily identifies which host experienced the spike. Figure 10.3-25, below, displays this information:
+
+![image](https://github.com/user-attachments/assets/5306551e-b29b-4df3-99ab-11c3dff92530)
 
 
+After selecting this spike, the Discover page displays a graph similar to Figure 10.3-26, below. Use this information to answer the next series of Knowledge Checks.
 
 
+![image](https://github.com/user-attachments/assets/c1f715d2-306b-4f20-aa8a-84d9ab03981d)
+
+NOTE: The exact time increments may be slightly different on your machine, based on how precisely the DNS spike columns were selected.
+
+![image](https://github.com/user-attachments/assets/5ea26e99-447b-40da-a467-152397247c0f)
+
+![image](https://github.com/user-attachments/assets/8c367c62-74d4-4cf4-8157-5b568136cb5b)
 
 
+-------------------------------
 
+User on ch-tech-3
+Below, Figure 10.3-28 displays that user account linwood.patterson was logged on during the timespan of the spike identified in the last workflow, 11:35:00.000 to 11:55.00.000. While a user may be logged in or active during a specific time frame, C2 traffic is not usually generated via interactive sessions, but by malware implanted on the host. It is best to investigate further both the account and the host to assess how the C2 traffic was generated. 
 
+![image](https://github.com/user-attachments/assets/203f6216-2155-4bff-8d6b-8e96a9bc21d4)
 
+![image](https://github.com/user-attachments/assets/d62a8d7a-9173-40f3-8279-06ef7cd0731b)
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+----------------------
 
 
 
