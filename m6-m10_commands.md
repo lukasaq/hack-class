@@ -1425,7 +1425,7 @@ This activity on ch-tech-1 should be reported right away.
 
 ---------------------------------------------------------------
 
-########## M7 L1 ############
+##########  L1 ############
 ######### Social Engineering ###########
 
 Phishing Review | Identifying Phishing Messages
@@ -1626,7 +1626,7 @@ Which other accounts received emails like that of Karen Smith?
 
 -----------------------------------------------------------
 
-########## M7 L2 ############
+##########  L2 ############
 ######### Finding and Using an Exploit ###########
 
 
@@ -1942,7 +1942,7 @@ Password: CyberTraining1!
 
 -----------------------------------
 
-############## CDAH-M7L3 Web Application Attacks ##############
+############## CDAH-L3 Web Application Attacks ##############
 
 
 CDAH-M7L3 Web Application Attacks
@@ -1995,8 +1995,238 @@ Information Obtained
 The SQLI attack on the network helped the adversary gain information about the current database user. This information contains portions of the user's credentials. The credential information obtained may lead the adversary to perform other types of attacks in an attempt to break into the user's account. To mitigate this attack, measures to sanitize input in the network application portal must be enacted. 
 
 --------------------------------------------------
-
 ########### CDAH-M7L4 Stack Exploitation ############
+
+Stack Exploitation | Executing a Buffer Overflow
+Understanding how a buffer overflow works on a theoretical level is certainly helpful, but experiencing it in action and seeing the power of such an attack can be just as valuable, or more so. The following lab demonstrates the execution of a prepared buffer overflow attack against an intentionally vulnerable program. 
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt Virtual Machine (VM) with the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Run vulnerable.exe on the desktop.
+
+﻿
+
+NOTE: When prompted to run the software with an unverified publisher, select Run. This is not an advised security practice; however, running this software in a virtual environment demonstrates the risks associated with running software with unknown origins.
+
+
+![image](https://github.com/user-attachments/assets/3b99d372-14c5-4a90-948d-d0c1ad5831a8)
+
+
+When the process is running, a terminal window indicates that it is listening for connections.
+
+
+![image](https://github.com/user-attachments/assets/a1497512-fc6e-4edd-bfd0-81140b776ba7)
+
+3. Log in to the kali-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+4. Open two terminal windows. One of these is used to send input to the vulnerable machine, and one is used to receive a connection when the attack is successful.
+
+![image](https://github.com/user-attachments/assets/e0b0d413-2f75-426e-ae18-f97a91c61004)
+
+5. Test the function of the vulnerable program with the preconfigured test script in the trainee home folder.
+(trainee@dmss-kali)-~ $ ./test.py
+
+
+
+The vulnerable program is essentially an echo server, in which the program echoes any input received with the greeting Hello, <input>!!
+
+![image](https://github.com/user-attachments/assets/45b31a0f-c77a-4674-9472-e4c209df4697)
+
+Examining the win-hunt VM reveals that the program has received the input and sent a reply.
+
+![image](https://github.com/user-attachments/assets/c5731cfa-deea-49ae-902a-fd323f665abc)
+
+Though the output does not indicate it, an examination of the vulnerable code would reveal that the program-allocated buffer to receive input into and echo back to a client is only 146 bytes long. This buffer is what the prepared attack script overwrites.
+
+
+6. In kali-hunt, open a Netcat listener on port 5555 in the other terminal window with the following command:
+(trainee@dmss-kali)-~ $ nc -lvnp 5555
+
+
+
+This allows interaction with the reverse shell when the attack is executed.
+
+![image](https://github.com/user-attachments/assets/708c2868-7a42-4c4d-9dbe-e9395738db2e)
+
+7. In the first terminal window, execute the attack script:
+(trainee@dmss-kali)-~ $ ./attack.py
+
+![image](https://github.com/user-attachments/assets/067643ce-d549-498e-ba01-3296a23c23d6)
+
+
+The data sent to the vulnerable program far overwrites the 146-byte buffer. After 146 bytes of padding, the malicious payload overwrites the original return address of the parent process with the address of a command that jumps to the malicious code, which immediately follows the new return address. Finally, more padding is sent at the end of the payload.
+
+
+The malicious code sent with this attack first opens an instance of cmd.exe with the current privileges and user context. It then serves that process to the remote kali-hunt host on remote port 5555. If the attacker were listening on a different Internet Protocol (IP) address or a different port, this attack would fail. This is why these types of attacks require such hand-crafted shellcode.
+
+
+8. Observe the access granted to the win-hunt VM through the Netcat listener. A simple command reveals that this command shell provides remote access to the win-hunt VM under the context of its trainee user.
+C:\Users\trainee\Desktop>whoami
+
+![image](https://github.com/user-attachments/assets/108df7b1-e721-4771-822d-b5344896429e)
+
+9. Select CTRL+C in the kali-hunt terminal windows to close the connection. 
+
+----------------------------------------------
+
+Memory Safeguards | Employing DEP as Mitigation
+Testing DEP
+﻿
+
+Because this protection was not in place during the original exploit, turn DEP on and run the buffer overflow attack again to observe that it effectively prevents the attack from succeeding by halting execution and throwing an error. This illustrates the value of such protections and demonstrates how to check and set the status of DEP on a Windows system. The following lab offers this demonstration by testing the DEP protections on win-hunt when the vulnerable executable is run.
+
+﻿
+
+Workflow
+
+﻿
+
+1. Log in to the win-hunt VM using the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open PowerShell as the administrator, and assess the status of DEP protection with the following command:
+
+PS C:\Windows\system32> BCDEdit /enum "{current}"
+﻿
+![image](https://github.com/user-attachments/assets/ae51afd9-9b9c-402b-8f45-35419e8e2fdd)
+
+
+If the value for nx is not OptOut, this is potentially an issue to raise with the network owner. For networks following the Defense Information Systems Agency (DISA) Security Technical Implementation Guides (STIG), this is considered a finding for Windows OSs and should be remedied to be in compliance. 
+
+
+Alternatively, the Windows Management Instrumentation Command-Line (WMIC) utility can be used to check this system setting:
+PS C:\Windows\system32> wmic OS Get DataExecutionPrevention_SupportPolicy  
+
+![image](https://github.com/user-attachments/assets/46afd38b-f21b-40ad-8706-e5759fdf3e90)
+
+
+Recall that this value, 0, corresponds to the DEP setting AlwaysOff, so the output of these commands is consistent. Because these settings are neither advisable nor consistent with Windows defaults, it is important to know how to restore them to a safer state.
+
+
+3. Turn DEP back on by running the following command:
+PS C:\Windows\system32> BCDEDIT /set "{current}" nx OptOut
+
+
+
+NOTE: This sets the system to Level 3, OptOut, which enables DEP for all processes. A system reboot is required before the setting is noticed.
+
+
+![image](https://github.com/user-attachments/assets/83ba6273-6d7d-4f5e-a9ac-75afd9c7c6de)
+
+
+4. Restart the win-hunt VM to apply the updated DEP setting, either through the User Interface (UI) or with the following command:
+PS C:\Windows\system32> Restart-Computer
+
+
+
+5. Upon restart, run vulnerable.exe again.
+
+![image](https://github.com/user-attachments/assets/eaa5f003-9e0b-4816-afa2-53391e2baf64)
+
+6. Log in to the kali-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+7. Open a new Netcat listening process:
+(trainee@dmss-kali)-~ $ nc -lvnp 5555
+
+
+
+8. Attempt to run the exploit again from Kali:
+(trainee@dmss-kali)-~ $ ./attack.py
+
+![image](https://github.com/user-attachments/assets/05eb366c-8163-442e-b48f-51971c506270)
+
+9. Observe that the exploit now fails.
+
+![image](https://github.com/user-attachments/assets/4ff098a1-3662-4b48-9d76-c9415bb12ccb)
+
+Instead of allowing the program to return to an unknown address and execute code on the stack, the OS successfully recognized this behavior as unsafe and closed the process with an error.
+
+
+Check that this setting is present on remote computers in a domain. 
+
+
+10. Log in to the Domain Controller (DC) ch-dc1 using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+11. Open PowerShell as the administrator.
+
+
+12. Check the DEP setting on a domain machine (CH-EXCH2) from the DC:
+PS C:\Windows\system32> Invoke-Command -ComputerName ch-exch2 -ScriptBlock {$env:COMPUTERNAME;BCDEdit /enum "{current}"}
+
+![image](https://github.com/user-attachments/assets/01a3530d-1035-44fe-8099-509819dda73b)
+
+This demonstrates that from a domain machine with a domain account that has remote PowerShell privileges, domain machines may easily be inspected at scale for this essential security setting.
+
+------------------------------
+
+Workflow
+
+
+1. Log in to the win-hunt VM using the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+Although no out-of-the-box commands exist to check the ASLR status of a program, some utilities are available from security researchers, such as Get-PESecurity from the producers of PowerSploit. In order to run these custom cmdlets, prepare the PowerShell environment using an administrator PowerShell console.
+
+
+2. Set the PowerShell execution policy to bypass.
+PS C:Windows\system32> Set-ExecutionPolicy bypass -force
+
+
+
+This command allows commands to be run without the default execution policies. Generally, this is not wise, but to run the tool in this exercise, it is necessary because the module loaded below is unsigned, and the default policy prevents the loading of unsigned PowerShell modules.
+
+
+3. Import the custom PowerShell module and its functions.
+PS C:Windows\system32> Import-Module .\Get-PESecurity.psm1
+
+
+
+The Get-PESecurity module is a custom-built PowerShell library developed by some of the security researchers who also developed the PowerSploit tool. It has been pre-staged in the System32 folder but would normally need to be downloaded for an analyst to employ it while on a mission. 
+
+
+4. Check the status of the vulnerable program with the PowerSploit cmdlet:
+PS C:Windows\system32> Get-PESecurity -file 'C:\Users\trainee\desktop\vulnerable.exe'
+
+
+
+Finally, running one of the module's cmdlets on the vulnerable executable reveals that none of the memory protections discussed in this lesson were present in the compiled binary.
+
+![image](https://github.com/user-attachments/assets/59064728-b2f5-4caf-8f95-ca95d2b51bf3)
+
+As expected, this program is not protected by ASLR, which means that each of its memory addresses is at a predictable location.
+
+
+-------------------------------------------
+
+########### CDAH-M7L5 Stack Exploitation ############
 
 Hashing Scenario
 
