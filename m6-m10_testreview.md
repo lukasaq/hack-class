@@ -10,7 +10,7 @@ find phishing email
 
 sql injections in web logs cross eyed scripting m7 l3
 
-default domain policy for password policy m7 l6
+default domain policy for password policy search group policy management m7 l6
 
 launch script open up vms and find services from services gui m6 l4 m8 l2
 
