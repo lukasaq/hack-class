@@ -5370,16 +5370,106 @@ Below, Figure 10.3-28 displays that user account linwood.patterson was logged on
 
 ----------------------
 
+#### CDAH-M10L4-Physical and Rogue Device Exfiltration ####
+
+Identifying a Malicious Storage Device
+Identify the Malicious Storage Devices
+﻿
+
+User Karen Smith (ksmith) reports that her device appears to have been logged into and used while she was out on her lunch break. The response team asks her how she secured her login credentials, so she shows them the sticky note that she keeps hidden under her keyboard. On the sticky note is her username and password. The event logs from her system, ch-edu-1, are forwarded to the response team and saved on the VM win-hunt. Examine the logs from her device to determine what may have occurred in her absence. Then, use any information found to determine if a malicious threat has acted elsewhere in the mission partner network.
+
+﻿
+
+Use Windows Event Logs to Determine Exfiltration
+﻿
+
+Use the PowerShell cmdlets for Windows Event Log inspection to determine if exfiltration occurred on this system. A Windows Event Log file (.extx extension) is located on the desktop of the compromised system for review.
+
+﻿
+
+This lab uses the following cmdlets.
+
+Get-WinEvent -Path 'C:\Path\To\File.evtx' 
+
+Gets the entire event log from the file. As explained in CDA Basic, the cmdlet Get-WinEventLog may be used for a variety of analytics, including a summary of the types of events in a log.
+
+Group-Object -Property PropertyName 
+
+Groups the events by specified property name.
+
+Sort-Object -Property PropertyName 
+
+Sorts the results by the values of a specified property.
+
+Format-Table PropertyName1, PropertyName2
+
+Formats the results to display the specified properties of the resulting data objects.
+
+
+Workflow
+﻿
+
+1. Log into the VM win-hunt using the following credentials: 
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a PowerShell terminal as the Administrator.
+
+﻿
+
+3. Summarize each Sysmon Event type by ID in the log file C:\Users\trainee\Desktop\sysmon_archive.evtx with the following command:
+
+PS C:\Windows\system32> Get-WinEvent -Path 'C:\Users\trainee\Desktop\sysmon_archive.evtx' | Group-Object -Property ID -NoElement | Sort-Object -Property Count -Descending | Format-Table Name,Count
+﻿
+
+NOTE: This command takes about two minutes to complete.
+
+﻿
+
+Recall from earlier in this lesson that Sysmon records of FileCreate and RawAccessRead events are useful in detecting USB Removable Media exfiltration. Below, Figure 10.4-6 displays the output of completing the previous step. This output does not indicate any RawAccessRead events (Event ID 9). However, there are thousands of FileCreate events (Event ID 11).
+
+![image](https://github.com/user-attachments/assets/2a0813de-7be0-483b-90f7-10e1feb743ff)
+
+
+4. Determine whether any of the files were created or modified in a non-hard disk drive by executing the following command:
+PS C:\Windows\system32> Get-WinEvent -Path 'C:\Users\trainee\Desktop\sysmon_archive.evtx' | Where-Object -Property ID -EQ 11 | Where-Object -Property Message -Match 'E:\\' | Format-List *
 
 
 
+Figure 10.4-7 below displays the three files that were written to the E:\ drive, which is one of the USB drives on this system.
+
+![image](https://github.com/user-attachments/assets/512f2dbe-75c5-459b-a848-03bb7f4a5349)
+
+
+Complete the next series of steps to determine whether any other systems in the enterprise were compromised in the same way.
+
+
+5. Open Chrome.
+
+
+6. Open Kibana using the bookmark in Chrome. 
+
+
+7. Enter the following credentials in Kibana:
+
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
 
 
 
+8. Use the Kibana Query Language (KQL) skills introduced in the previous lessons to find the Sysmon logs that indicate USB exfiltration across the enterprise. 
+Use a time period that includes the host log entries analyzed in step 4.
+
+![image](https://github.com/user-attachments/assets/bf5fea53-ec94-4b77-b478-de300faab5c4)
+
+![image](https://github.com/user-attachments/assets/66088927-f4d7-4391-af40-4f1bf5bd1124)
 
 
 
-
+---------------------------------------
 
 
 
