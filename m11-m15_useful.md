@@ -43,3 +43,12 @@ Get-ADUser -filter * -properties DoesNotRequirePreAuth | where {$_.DoesNotRequir
 
 #### CDAH-M11L3-Cmdlet Use and Development ####
 
+
+#### CDAH-M11L5-PowerShell System Administration ####
+
+In PowerShell, list all running services by entering the following command:
+Get-Service | Where-Object {$_.Status -eq "Running"}
+
+
+
+
