@@ -1,3 +1,6 @@
+#### CDAH-M11L1-PowerShell Fundamentals Review ####
+
+
 To list all possible cmdlets in a system, the cmdlet Get-Command is extremely helpful. 
 Get-Command -Type Cmdlet
 
@@ -26,4 +29,17 @@ Get-Process | Where-Object -Property Name -match "explorer" | Format-Table Name,
 Get-ScheduledTask | Where-Object {
     ($_ | Get-ScheduledTaskInfo).NextRunTime -like "7:00:00 AM"
 }
+
+
+#### CDAH-M11L2-Querying Active Directory with PowerShell ####
+
+To effectively prevent this vulnerability, analysts may write a query that filters for accounts configured with the flag DONT_EXPIRE_PASSWORD set. In the AD user object, this flag is designated by the field passwordNeverExpires. The following query fulfills these requirements:
+Get-ADUser -filter { passwordNeverExpires -eq $true -and enabled -eq $true } | Select Name, DistinguishedName
+
+
+Invoke-Command -Session $session -ScriptBlock {Get-ADUser -filter * -properties DoesNotRequirePreAuth | where {$_.DoesNotRequirePreAuth -eq "TRUE"} | select samaccountname}
+
+Get-ADUser -filter * -properties DoesNotRequirePreAuth | where {$_.DoesNotRequirePreAuth -eq "TRUE"} | select samaccountname
+
+#### CDAH-M11L3-Cmdlet Use and Development ####
 
