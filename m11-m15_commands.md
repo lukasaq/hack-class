@@ -389,3 +389,136 @@ Get-Item "HKLM:\Software\Microsoft\Windows\CurrentVersion\RunOnce\Setup"
 ---
 
 ### **If you want a deeper example or a breakdown of a specific command, let me know!**
+
+
+Here is a list of every PowerShell command found in the file m11-m15.md:
+
+1. **Custom Object Creation**
+   - `[PSCustomObject]@{ ... }`
+
+2. **Hash Table Creation and Manipulation**
+   - `@{ key1 = $value1; key2 = "value2"; key3 = 3 }`
+   - `$hashTable = @{}`
+   - `$hashTable.Foo = 'Bar'`
+   - `$hashTable['Foo'] = 'Bar'`
+   - `$hashTable.Add('Foo','Bar')`
+
+3. **Function Definition**
+   - `function Custom-Function { Write-Output "Hello World" }`
+
+4. **Function Parameter Block**
+   - `[CmdletBinding()] param([Parameter()] [string]$Variable)`
+   - `Custom-Function -Variable "DATA"`
+   - `[CmdletBinding()] param([Parameter(Mandatory, ValueFromPipeline)] [string]$Variable)`
+   - `@("DATA1", "DATA2", "DATA3") | Custom-Function`
+
+5. **Dynamic Parameter Block**
+   - `dynamicparam { If (condition) { Code } }`
+
+6. **Begin/Process/End Blocks**
+   - `begin { ... }`
+   - `process { ... }`
+   - `end { ... }`
+
+7. **Cmdlet Listing**
+   - `Get-Command -Type Cmdlet`
+
+8. **Module Import**
+   - `Import-Module <Module-Name>`
+
+9. **Object Member Listing**
+   - `Get-Member`
+   - `Get-Item ".\Documents\" | Get-Member`
+
+10. **Alias Listing**
+    - `Get-Alias`
+    - `gal`
+
+11. **Pipeline**
+    - `|` (used to chain commands)
+
+12. **Item Retrieval (Files, Registry, etc.)**
+    - `Get-Item`
+    - `Get-Item HKLM:\Software\Microsoft\Powershell\1\Shellids\Microsoft.Powershell\`
+    - `Get-Item -Path "C:\*"`
+
+13. **Registry Property Retrieval**
+    - `Get-ItemProperty HKLM:\SOFTWARE\Microsoft\Windows\CurrentVersion\Run\`
+
+14. **Directory Listing**
+    - `Get-ChildItem -Path "C:\"`
+    - `Get-ChildItem -Recurse -Include *.exe`
+    - `Get-ChildItem -Path C:\Users\*\Downloads`
+    - `Get-ChildItem -Path C:\Users\AppData\Local\Temp`
+    - `Get-ChildItem -Path C:\ProgramFiles`
+
+15. **File Content Retrieval**
+    - `Get-Content -Path "C:\path\to\file"`
+    - `Get-Content -Path "C:\path\to\file" -Stream MaliciousStreamName`
+
+16. **Process Listing**
+    - `Get-Process`
+    - `Get-Process -ProcessName "explorer" | Format-List *`
+    - `Get-Process | Where-Object Name -eq explorer | Select-Object -ExpandProperty Modules`
+    - `Get-Process | Select-Object Name, ID, Description`
+    - `Get-Process | Sort-Object -Property WS -Descending`
+    - `Get-Process | Where-Object {($_.ProcessName -like "*host*") -and ($_.CPU -lt 5) -and ($_.CPU -gt 0.01)}`
+    - `Get-Process | Where-Object -Property Name -match "explorer" | Format-List Name, Description, Path, ID`
+    - `Get-Process | Where-Object -Property Name -match "explorer" | Format-Table Name, Description, Path, ID`
+
+17. **CIM/WMI Object Retrieval**
+    - `Get-CimInstance -ClassName <Win32_Class>`
+    - `Get-CimInstance -Query "<>"`
+
+18. **Service Listing**
+    - `Get-Service`
+    - `Get-Service -DisplayName "DNS Client" | Format-List *`
+
+19. **TCP Connection Listing**
+    - `Get-NetTCPConnection`
+    - `Get-NetTCPConnection -LocalPort 139 | Format-List *`
+
+20. **Scheduled Task Listing**
+    - `Get-ScheduledTask`
+    - `Get-ScheduledTask -TaskName Proxy | Format-List *`
+
+21. **Object Selection and Filtering**
+    - `Select-Object`
+    - `Select-Object -ExpandProperty`
+    - `Where-Object`
+    - `Sort-Object`
+    - `ForEach-Object`
+    - `Foreach ($object in $collection) { ... }`
+
+22. **String Searching**
+    - `Select-String -Path "C:\path\to\file" -Pattern "pattern"`
+    - `<Data-Object> | Select-String -Pattern "pattern"`
+    - `<Data-Object> | Select-String -InputObject ($_.Property) -Pattern "pattern"`
+
+23. **Formatting Output**
+    - `Format-List`
+    - `Format-Table`
+
+24. **Output/IO**
+    - `Write-Output "The time and date is $(Get-Date)"`
+    - `<Data> | Out-File -Path "C:\path\to\out\file" -Append`
+
+25. **Remote Command Execution**
+    - `Invoke-Command -ComputerName TEST001 -Credential Domain\User -ScriptBlock {Command1; Command2}`
+    - `Invoke-Command -Session $sessionName -ScriptBlock {Command1; Command2}`
+
+26. **Common Cmdlet Parameters**
+    - `-ErrorAction`
+    - `-Force`
+
+27. **Active Directory Cmdlets**
+    - `Get-ADDomain`
+    - `Get-ADForest`
+    - `Get-ADOrganizationalUnit -Filter *`
+    - `Get-ADGroup -Filter *`
+    - `Get-ADGroup -Identity Administrators -Properties *`
+    - `Get-ADGroupMember -Identity Administrators`
+
+---
+
+If you want syntax examples, parameters, or explanations for any specific command(s), let me know!
