@@ -594,4 +594,324 @@ Here are all the PowerShell and Linux commands found in m11-m15_dump.md, along w
 
 ---
 
+Here’s a summary of all the commands found in the file m11-m15_dump .md from lukasaq/hack-class, including descriptions, syntax examples, and the relevant switches/parameters:
+
+---
+
+## 1. Invoke-RestMethod (PowerShell)
+
+**Description:**  
+A PowerShell cmdlet used to send HTTP and REST API requests (GET, POST, etc.) from scripts or the command line, and receive the responses. Supports headers, body data, authentication, proxies, and more.
+
+**Syntax Example (GET):**
+```powershell
+$response = Invoke-RestMethod  http://site.com/people/1
+```
+
+**Syntax Example (GET with Headers):**
+```powershell
+$headers = New-Object "System.Collections.Generic.Dictionary[String,String]"
+$headers.Add("X-DATE", '9/29/2014')
+$headers.Add("X-SIGNATURE", '234j123l4kl23j41l23k4j')
+$headers.Add("X-API-KEY", 'testuser')
+$response = Invoke-RestMethod 'http://site.com/people/1' -Headers $headers
+```
+
+**Syntax Example (POST with JSON Body):**
+```powershell
+$person = @{
+   name='steve'
+}
+$json = $person | ConvertTo-Json
+$response = Invoke-RestMethod 'http://site.com/people/1' -Method Post -Body $json -ContentType 'application/json'
+```
+
+**Common Parameters & Switches:**
+
+- -Uri (or first unnamed parameter): Target URL
+- -Method: GET (default), POST, PUT, DELETE, etc.
+- -Headers: Dictionary/hashtable of HTTP headers
+- -Body: Content to send (e.g., JSON, XML)
+- -ContentType: MIME type (e.g., application/json)
+- -Proxy, -Credential, -TimeoutSec, etc.
+
+---
+
+## 2. schtasks (Windows Command-Line)
+
+**Description:**  
+Schedules and manages tasks to run programs or scripts periodically or in response to specific events in Windows.
+
+**General Syntax:**
+```cmd
+schtasks /create [options]
+```
+
+**Examples:**
+
+- Run at every system start after a certain date:
+  ```cmd
+  schtasks /create /tn My App /tr c:\apps\myapp.exe /sc onstart /sd 03/15/2020
+  ```
+- Run with system permissions on the 15th of each month:
+  ```cmd
+  schtasks /create /tn My App /tr c:\apps\myapp.exe /sc monthly /d 15 /ru System
+  ```
+- Create remote task to run every 10 days:
+  ```cmd
+  schtasks /create /s SRV01 /tn My App /tr c:\apps\myapp.exe /sc daily /mo 10
+  ```
+- Run on specific event (Event ID 4647 - user logs off):
+  ```cmd
+  SCHTASKS /Create /TN test2 /RU system /TR c:\apps\myapp.exe /SC ONEVENT /EC Security /MO "*[System[Provider[@Name='Microsoft Windows security auditing.'] and EventID=4647]]"
+  ```
+
+**Key Switches & Parameters:**
+
+- /create           : Create a new scheduled task
+- /tn <name>        : Task name
+- /tr <path>        : Task to run (full path)
+- /sc <schedule>    : Schedule type (MINUTE, HOURLY, DAILY, WEEKLY, MONTHLY, ONCE, ONSTART, ONLOGON, ONIDLE, ONEVENT)
+- /sd <date>        : Start date
+- /d <day>          : Day (for monthly)
+- /ru <user>        : Run as user (System, etc.)
+- /s <computer>     : Target computer (for remote)
+- /mo <modifier>    : Modifier (interval, or event filter)
+- /ec <log>         : Event log (e.g., Security)
+- /?                : Show help
+
+---
+
+## 3. PowerShell JSON Utilities
+
+**Description:**  
+Convert PowerShell objects to and from JSON, often used with REST APIs.
+
+**Syntax Example:**
+```powershell
+ConvertTo-Json
+# Usage:
+$json = $person | ConvertTo-Json
+```
+- Converts a PowerShell object to JSON format.
+
+**To save query results to a JSON file:**
+```powershell
+$results | ConvertTo-Json -Compress | Set-Content <File Path\FileName.json>
+```
+
+- -Compress: Minifies the JSON output.
+
+---
+
+## 4. Example ElasticSearch Query (not a direct command, but REST API usage)
+
+**Description:**  
+The file shows how to compose queries for ElasticSearch using RESTful syntax, which can be run via Dev Tools (in Elastic UI), cURL, or PowerShell (with Invoke-RestMethod).
+
+**Example Query:**
+```json
+GET _search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {"match":{"winlog.event_id.keyword":"8"}},
+        {"match":{"agent.name":"eng-wkstn-3"}},
+        {"range":{
+          "@timestamp":{
+            "gte":"2022-04-19T00:30:00.000Z",
+            "lte":"2022-04-19T23:30:00.000Z"
+          }
+        }}
+      ]
+    }
+  }
+}
+```
+This is typically sent as the body in a REST API request.
+
+---
+
+## Summary Table
+
+| Command                | Description                                                                 | Syntax Example (see above)                | Key Switches/Parameters (see above)      |
+|------------------------|-----------------------------------------------------------------------------|-------------------------------------------|------------------------------------------|
+| Invoke-RestMethod      | PowerShell cmdlet for HTTP/REST requests                                    | GET/POST with -Headers/-Body/-ContentType | -Uri, -Method, -Headers, -Body, etc.     |
+| schtasks               | Windows command-line task scheduler                                         | /create /tn /tr /sc /sd /ru /mo           | See full list above                      |
+| ConvertTo-Json         | PowerShell utility to convert objects to JSON                               | -Compress                                 | -Compress                                |
+| Set-Content            | PowerShell cmdlet to write output to a file                                 |                                           | File path                                |
+
+---
+
+Do you want detailed tables of parameters for schtasks or Invoke-RestMethod? If so, specify which command or both.
+---
+
 Let me know if you want detailed examples for any specific command or further breakdowns!
+
+### CDAH-M12L2-Exploiting PowerShell Autoruns ###
+
+Here are the PowerShell commands mentioned in the file, along with example syntax and a breakdown of switches and parameters used:
+
+---
+
+### 1. Set-ExecutionPolicy
+
+**Example Syntax:**
+```powershell
+Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
+```
+- `Bypass`: The execution policy to set (can also be Restricted, RemoteSigned, Unrestricted, etc.).
+- `-Scope CurrentUser`: Applies the policy change to the current user only.
+- `-Force`: Suppresses user prompts, forces the command to execute.
+
+---
+
+### 2. New-Item
+
+**Example Syntax:**
+```powershell
+New-Item -Path $PROFILE -Type File -Force
+```
+- `-Path $PROFILE`: Specifies the path to create the new item (here, the user's PowerShell profile).
+- `-Type File`: Specifies the type of item to create (in this case, a file).
+- `-Force`: Overwrites the file if it already exists.
+
+---
+
+### 3. start (Start-Process/Start command)
+
+**Example Syntax:**
+```powershell
+start C:\Users\trainee\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+```
+- Launches the specified file (here, opens the profile file in the default editor).
+
+---
+
+### 4. Get-Service | Get-Member
+
+**Example Syntax:**
+```powershell
+Get-Service | Get-Member
+```
+- `Get-Service`: Retrieves the status of services on a local or remote machine.
+- `|`: Pipes the output to another command.
+- `Get-Member`: Lists the properties and methods of the objects output from `Get-Service`.
+
+---
+
+### 5. Copy-Item
+
+**Example Syntax:**
+```powershell
+Copy-Item C:\Users\trainee\Documents\Microsoft.PowerShell_profile.ps1 C:\Users\trainee\Documents\WindowsPowerShell\ -Force
+```
+- `Copy-Item <Source> <Destination>`: Copies an item from one location to another.
+- `-Force`: Overwrites the destination file if it already exists.
+
+---
+
+### 6. Clear-Content
+
+**Example Syntax:**
+```powershell
+Clear-Content C:\Users\trainee\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+```
+- Removes all content from the specified file but leaves the file itself intact.
+
+---
+
+### 7. Import-Module
+
+**Example Syntax:**
+```powershell
+Import-Module C:\Users\trainee\Documents\acCOMplice\COMHijackToolkit.ps1
+```
+- Loads a PowerShell module from the specified path.
+
+---
+
+### 8. Find-MissingLibraries
+
+**Example Syntax:**
+```powershell
+Find-MissingLibraries
+```
+- This appears to be a custom function or command provided by the imported module. No parameters are shown in the example.
+
+---
+
+If you want a detailed explanation or help with any specific command, let me know!
+
+---
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
