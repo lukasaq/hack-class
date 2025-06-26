@@ -49,6 +49,27 @@ Get-ADUser -filter * -properties DoesNotRequirePreAuth | where {$_.DoesNotRequir
 In PowerShell, list all running services by entering the following command:
 Get-Service | Where-Object {$_.Status -eq "Running"}
 
+### CDAH 25-080 M12L2Exploiting PowerShell Autoruns ###
 
+It looks like you're asking about the `Find-MissingLibraries` command, but just to clarify—there isn’t a widely known or standard command by that exact name in common operating systems like Windows, Linux, or macOS. However, if you're referring to a script or tool (possibly PowerShell or a Linux utility) designed to detect missing shared libraries or dependencies, I can definitely help you explore that.
 
+If you're working in **Linux**, the typical way to find missing libraries for executables is using tools like:
 
+- `ldd <executable>` — lists shared object dependencies
+- `ldd <executable> | grep "not found"` — shows missing ones
+- `strace` — traces system calls and can help identify missing files
+- `ldconfig` — updates the shared library cache
+
+If you're in **PowerShell**, and `Find-MissingLibraries` is a custom or community module, the syntax might look like:
+
+```powershell
+Find-MissingLibraries -Path "C:\Path\To\Executable" -Verbose
+```
+
+Common switches might include:
+- `-Path` — specifies the file or directory to scan
+- `-Recurse` — scans subdirectories
+- `-Verbose` — outputs detailed information
+- `-LogFile` — saves results to a file
+
+If you can tell me the environment you're working in (Linux, Windows, macOS) or the specific tool or script you're referring to, I can tailor the examples and options more precisely. Want to dig into a specific use case?
