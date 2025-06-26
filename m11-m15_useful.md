@@ -73,3 +73,83 @@ Common switches might include:
 - `-LogFile` — saves results to a file
 
 If you can tell me the environment you're working in (Linux, Windows, macOS) or the specific tool or script you're referring to, I can tailor the examples and options more precisely. Want to dig into a specific use case?
+
+### CDAH 25-080 M12L3 Build a PowerShell Launcher 
+
+Manipulating Base64 Strings
+
+
+The following PowerShell code demonstrates the process for taking a string and converting it to the base64 equivalent, followed by the function to decode the base64 back into a plaintext string.
+#Convert to a base64 string
+$Text = 'get-process'
+$Bytes = [System.Text.Encoding]::Unicode.GetBytes($Text)
+$EncodedText =[Convert]::ToBase64String($Bytes)
+
+#$Encoded Text is: ZwBlAHQALQBwAHIAbwBjAGUAcwBzAA==
+
+#Decode
+$DecodedText = [System.Text.Encoding]::Unicode.GetString([System.Convert]::FromBase64String($EncodedText))
+
+---
+
+### CDAH-M12L4-Using PowerShell to Grab WMI Objects 
+
+PS C:\>Get-WmiObject -List
+
+![image](https://github.com/user-attachments/assets/aa62713d-0624-49c5-97bd-a6530ff4460f)
+
+get-win32_service
+
+
+The following command finds and lists all services that start at the time the computer boots. It uses the class Win32_Service, as well as the option -Filter and the cmdlet Select-Object:
+PS C:\>Get-CimInstance Win32_service -Filter "StartMode = 'Auto'"|Select-Object Name, StartMode, PathName
+
+ common task such as retrieving running processes on a remote server, can be accomplished by running the following command:
+PS C:\> Get-CimInstance -ClassName Win32_Process -ComputerName Server64
+
+Close the Running Process notepad.exe
+Get-WmiObject -Query "select * from win32_process where name='notepad.exe'" 
+| Remove-WmiObject
+
+
+
+Delete the Folder Test
+Get-WMIObject -Query "Select * From Win32_Directory Where Name ='C:\\Test'" 
+| Remove-WMIObject
+
+![image](https://github.com/user-attachments/assets/8150bf1b-0a80-4366-98b4-8a68afc143dc)
+
+![image](https://github.com/user-attachments/assets/95d29717-0a8f-48d3-900f-f41c80707d67)
+
+
+----------------
+ ### CDAH-M13L1-Python Data Types and Program Flow ###
+
+
+
+
+
+------------------------
+
+### CDAH-M13L2-Python Data Structures ###
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
