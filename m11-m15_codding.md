@@ -1,3 +1,5 @@
+### CDAH-M13L1-Python Data Types and Program Flow
+
 Here is a breakdown of all the Python code snippets found in the file [m11-m15_dump .md](https://github.com/lukasaq/hack-class/blob/main/m11-m15_dump%20.md), along with explanations of how each executes:
 
 ---
@@ -427,3 +429,335 @@ user47 mailserver
 ---
 
 If you want more details on any snippet or how to run them, let me know!
+
+### CDAH-M13L2-Python Data Structures
+
+Here is all the code extracted from the file m11-m15_dump .md, followed by detailed explanations for each code snippet:
+
+---
+
+### 1. Defining and Modifying a List
+
+```python
+numbers = [1, 2, 3, 4, 5]
+numbers = [1, 2, 4, 5]
+```
+- Creates a list called numbers with values 1 through 5.
+- The second line redefines the numbers list, effectively removing the number 3.
+
+---
+
+### 2. Looping Over a List with a For Loop
+
+```python
+numbers = [1, 2, 3, 4, 5]
+
+for number in numbers:
+    print(number)
+
+#Output
+1
+2
+3
+4
+5
+```
+- Iterates over each element in numbers and prints it to the console.
+
+---
+
+### 3. Looping Over a List with a While Loop
+
+```python
+numbers = [1, 2, 3, 4, 5]
+
+# Get length of list using len() function
+length = len(list)
+i = 0
+
+while i < length:
+    print(list[i])
+    i += 1
+
+#Output
+1
+2
+3
+4
+5
+```
+- Defines a list numbers.
+- Gets the length of a list (but mistakenly uses list instead of numbers).
+- Uses a while loop to print each item by index.
+
+**Note:** This code has a bug: length = len(list) and print(list[i]) should be length = len(numbers) and print(numbers[i]).
+
+---
+
+### 4. List Comprehension for Iteration
+
+```python
+numbers = [1, 2, 3, 4, 5]
+[print(number) for number in numbers] 
+
+#Output
+1
+2
+3
+4
+5
+[None, None, None, None, None]
+```
+- Uses a list comprehension to print each number.
+- The list comprehension returns a list of Nones because print() returns None.
+
+---
+
+### 5. Creating and Unpacking Tuples
+
+```python
+tuple_1 = ("blue", "green", "yellow", 10)
+
+info = ("Kathy Simpson", "Marketing", "Senior")
+(name, department, level) = info
+
+print(name)
+print(department)
+print(level)
+
+#Output
+Kathy Simpson
+Marketing
+Senior 
+```
+- tuple_1 is a tuple with mixed data types.
+- info is unpacked into three variables: name, department, and level, which are then printed.
+
+---
+
+### 6. Dictionary Creation and Iteration
+
+```python
+dictionary = {
+    key: value,
+    key: value,
+    key: value
+}
+
+dict = {'name': 'Jeff', 'age': '25', 'address': 'New York'}
+items = dict.items()
+print(items)
+dict_items([('name', 'Jeff'), ('age', '25'), ('address', 'New York')])
+
+#Output
+dict_items([('name', 'Jeff'), ('age', '25'), ('address', 'New York')])
+```
+- Shows dictionary creation (the first block is pseudocode).
+- The second block creates a real dictionary and prints its items.
+
+---
+
+### 7. Iterating Over Dictionary Keys and Values
+
+```python
+dict = {'name': 'Jeff', 'age': '25', 'address': 'New York'}
+items1 = dict.keys()
+print(items1)
+#Output
+dict_keys(['name', 'age', 'address'])
+
+#Using dictionary.values
+items2 = dict.values()
+print(items2)
+#Output
+dict_values(['Jeff', '25', 'New York']) 
+```
+- Extracts and prints only the keys or only the values from a dictionary.
+
+---
+
+### 8. Set Creation
+
+```python
+set_a = {"item 1", "item 2", "item 3",}
+```
+- Creates a set of unique items.
+
+---
+
+### 9. Creating Multidimensional Lists (Arrays)
+
+```python
+List = [[1, 2], [3, 4], [5, 6]]
+array = [[1, 2, 3, 4], [5, 6, 7, 8]]
+
+#Output
+print(array)
+[[1, 2, 3, 4], [5, 6, 7, 8]]
+print(type(array))
+<class 'list'>
+```
+- List and array are lists of lists (2D arrays).
+- Printing array shows its structure; type(array) returns <class 'list'>.
+
+---
+
+### 10. Building Arrays from Rows
+
+```python
+row1 = [0, 0, 0, 0, 0]
+row2 = [0, 0, 0, 0, 0]
+row3 = [0, 0, 0, 0, 0]
+
+array = [row1, row2, row3]
+
+for row in array:
+    print (row)
+```
+- Defines each row as a list, then groups them into a 2D array.
+- Loops over each row and prints it.
+
+---
+
+### 11. Creating an Empty Array
+
+```python
+array = []
+print(array)
+```
+- Creates and prints an empty list.
+
+---
+
+### 12. Creating Lists and Grouping into an Array
+
+```python
+List = [1, 2, 3, 4]
+List1 = [5, 6, 7, 8]
+List2 = [9, 10, 11, 12]
+
+array = [List, List1, List2]
+
+for list in array:
+    print(list)
+
+for list in array:
+    print(List2)
+```
+- Creates three lists and groups them into a list of lists.
+- First for-loop prints each list.
+- Second for-loop prints List2 for each iteration (so three times).
+
+---
+
+### 13. Creating Rows and a New Array
+
+```python
+row1 = [0, 0, 0, 0]
+row2 = [0, 0, 0, 0]
+row3 = [0, 0, 0, 0]
+
+array1 = [row1, row2, row3]
+
+for row in array1:
+    print (row)
+```
+- Similar to earlier: defines rows, groups into array1, and prints each row.
+
+---
+
+### 14. Creating and Printing an Empty Dictionary
+
+```python
+new_dictionary = {}
+print(new_dictionary)
+print(type(new_dictionary))
+```
+- Creates an empty dictionary.
+- Prints the dictionary and its type.
+
+---
+
+### 15. Creating and Iterating Over a Dictionary
+
+```python
+test_results = {"Frank":"Passed", "Corey":"Passed", "Daniel":"Failed"}
+
+for results in test_results.values():
+    print(results)
+```
+- Creates a dictionary of test results.
+- Prints only the values ("Passed", "Passed", "Failed").
+
+---
+
+### 16. Adding an Item to a Dictionary and Printing
+
+```python
+test_results["Alexandra"] = "Failed" 
+print(test_results)
+```
+- Adds a new key:value pair to the dictionary and prints the updated dictionary.
+
+---
+
+### 17. Creating and Printing Lists
+
+```python
+groceries = ["apples", "milk", "chicken", "bread"]
+prices = ["2.99", "3.60", "10.99", "3.10"]
+
+print(groceries)
+print(prices)
+```
+- Defines two lists and prints them.
+
+---
+
+### 18. Appending to a List and Iterating
+
+```python
+groceries.append("oranges")
+
+for number in groceries:
+    print(number)
+```
+- Adds "oranges" to the groceries list.
+- Prints each item in groceries.
+
+---
+
+### 19. Combining Dictionaries and Lists
+
+```python
+employees = {}
+
+employees["Name"] = ["Chuck", "Emily", "Max", "Laura"]
+employees["Age"] = ["35", "25", "42", "55"]
+
+print(employees)
+
+new_employees = ['Sam', 'Frank', 'Amy']
+
+employees["Name"].append(new_employees)
+
+print(employees)
+```
+- Creates a dictionary employees with two keys, each holding a list.
+- Adds a new list new_employees as a sublist to employees["Name"].
+- Prints the dictionary before and after appending.
+
+---
+
+## Execution Explanations
+
+- All code snippets are for basic Python data structures: lists, tuples, dictionaries, and sets.
+- The code demonstrates creation, iteration, modification, and nested data structures.
+- Most code can be run as-is in a Python interpreter to see the results.
+- Errors: The while loop in section 3 has a variable name bug; change list to numbers.
+- The multidimensional lists demonstrate how to group lists into a list of lists (like a 2D array).
+- The dictionary/list combination in the last section shows that dictionaries can have lists as values, and you can append new lists to those values.
+
+If you need code for a specific section explained in more depth or want to see the output of any snippet, let me know!
+
+
