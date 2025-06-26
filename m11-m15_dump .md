@@ -1,151 +1,231 @@
-Here’s a summary of all the commands found in the file m11-m15_dump .md from lukasaq/hack-class, including descriptions, syntax examples, and the relevant switches/parameters:
+What Are PowerShell Profiles?
 
----
 
-## 1. Invoke-RestMethod (PowerShell)
+PowerShell profiles are scripts that load regularly-used elements in a Windows PowerShell ISE session. PowerShell has two "modes": the console and the ISE. The PowerShell console is the standard shell that many systems administrators use to perform simple tasks such as user management, system updates, and any other one-off PowerShell commands that need to be run. The ISE is used for scripting more complex tasks such as applying all the configuration changes necessary to make a fresh install of Windows compliant with specific government standards. Any changes required in the configuration script are implemented in the ISE. Users add any necessary environmental elements to their profiles. An example of a profile element is an array of registry keys that a user may need to change.
 
-**Description:**  
-A PowerShell cmdlet used to send HTTP and REST API requests (GET, POST, etc.) from scripts or the command line, and receive the responses. Supports headers, body data, authentication, proxies, and more.
 
-**Syntax Example (GET):**
-```powershell
-$response = Invoke-RestMethod  http://site.com/people/1
-```
+For defense purposes, profiles provide one of the most powerful system tools for threat hunting. In an example scenario, cybersecurity researchers may maintain a list of Advanced Persistent Threat (APT) actors and regularly update a publicly available website with new Indicators of Compromise (IoC). In this case, a defender could create a PowerShell script that downloads the relevant data from the IoC site and adds it to an array in the current session. That script could then be added to the PowerShell profile. This way, every time that the defender loads a new PowerShell session, the script downloads the most recent APT-related data to use.
 
-**Syntax Example (GET with Headers):**
-```powershell
-$headers = New-Object "System.Collections.Generic.Dictionary[String,String]"
-$headers.Add("X-DATE", '9/29/2014')
-$headers.Add("X-SIGNATURE", '234j123l4kl23j41l23k4j')
-$headers.Add("X-API-KEY", 'testuser')
-$response = Invoke-RestMethod 'http://site.com/people/1' -Headers $headers
-```
 
-**Syntax Example (POST with JSON Body):**
-```powershell
-$person = @{
-   name='steve'
-}
-$json = $person | ConvertTo-Json
-$response = Invoke-RestMethod 'http://site.com/people/1' -Method Post -Body $json -ContentType 'application/json'
-```
 
-**Common Parameters & Switches:**
 
-- -Uri (or first unnamed parameter): Target URL
-- -Method: GET (default), POST, PUT, DELETE, etc.
-- -Headers: Dictionary/hashtable of HTTP headers
-- -Body: Content to send (e.g., JSON, XML)
-- -ContentType: MIME type (e.g., application/json)
-- -Proxy, -Credential, -TimeoutSec, etc.
+PowerShell Object Persistence
+PowerShell objects are similar to objects in object-oriented programming. In the context of security defense, objects act as containers that store different kinds of information about other elements in the operating system. For example, the object ServiceController manages any given service on a host. This object has cmdlets such as Start-Service, Stop-Service, Set-Service, and get-Service. The PowerShell commands related to this object manage various application and system services on a host.
 
----
+﻿
 
-## 2. schtasks (Windows Command-Line)
+Defenders commonly gather information from a specific object for examination during a hunt, also known as baselining. In an example scenario, an exploit might alter a system service in a way that is not logged by normal logging methods. An analyst might then need to export the status of the service under specific conditions to verify potential compromise. The analyst would then baseline by creating a persistent snapshot of the service object to use for later analysis. The third-party PowerShell modules like "DeepBlueCLI" export a saved snapshot of the object in several different formats for analysis. The other method of creating a baseline with a persistent object is to create a script that grabs the object information at startup in the PowerShell profile. For example, analysts could create a script that always checks system resource usage when a PowerShell profile is loaded to verify that their current host is behaving as intended. This script would act as the baseline for the defenders.﻿
 
-**Description:**  
-Schedules and manages tasks to run programs or scripts periodically or in response to specific events in Windows.
+﻿
 
-**General Syntax:**
-```cmd
-schtasks /create [options]
-```
+Persistent Object Exploitation
+﻿
 
-**Examples:**
+Adversaries often attempt to hijack an administrator's session to gain persistence within the administrator's PowerShell profile. One example of a session hijack exploit is an attack that was used in tandem with the Common Vulnerabilities and Exposures (CVE) CVE-2021-40444, wherein a malicious Dynamic-Link Library (DLL) file is deposited into the directory /tmp/. A path traversal vulnerability was exploited to add malicious code into the PowerShell profiles that the current active user has access to. The attack utilizes MITRE ATT&CK code T1546.013, Event Triggered Execution: PowerShell Profile, which illustrates this as an event triggered execution technique.
 
-- Run at every system start after a certain date:
-  ```cmd
-  schtasks /create /tn My App /tr c:\apps\myapp.exe /sc onstart /sd 03/15/2020
-  ```
-- Run with system permissions on the 15th of each month:
-  ```cmd
-  schtasks /create /tn My App /tr c:\apps\myapp.exe /sc monthly /d 15 /ru System
-  ```
-- Create remote task to run every 10 days:
-  ```cmd
-  schtasks /create /s SRV01 /tn My App /tr c:\apps\myapp.exe /sc daily /mo 10
-  ```
-- Run on specific event (Event ID 4647 - user logs off):
-  ```cmd
-  SCHTASKS /Create /TN test2 /RU system /TR c:\apps\myapp.exe /SC ONEVENT /EC Security /MO "*[System[Provider[@Name='Microsoft Windows security auditing.'] and EventID=4647]]"
-  ```
+﻿
 
-**Key Switches & Parameters:**
+Many PowerShell profile exploits require another type of compromise, such as phishing, to attack PowerShell directly. However, profile compromise is one example as to why defenders should encourage their organization to focus on local vulnerabilities that adversaries will seek to exploit post-compromise.
 
-- /create           : Create a new scheduled task
-- /tn <name>        : Task name
-- /tr <path>        : Task to run (full path)
-- /sc <schedule>    : Schedule type (MINUTE, HOURLY, DAILY, WEEKLY, MONTHLY, ONCE, ONSTART, ONLOGON, ONIDLE, ONEVENT)
-- /sd <date>        : Start date
-- /d <day>          : Day (for monthly)
-- /ru <user>        : Run as user (System, etc.)
-- /s <computer>     : Target computer (for remote)
-- /mo <modifier>    : Modifier (interval, or event filter)
-- /ec <log>         : Event log (e.g., Security)
-- /?                : Show help
+﻿
 
----
+PowerShell objects are another vector for potential compromise that defenders must be vigilant about. Exploiting objects is one example of a fileless malware attack, since objects are not explicit files. Rather, objects are containers for other system functions. Adversaries use exploits, such as a compromised website, to open a silent PowerShell session, inject encrypted scripts, and stealthily “live off of the land” without putting an actual file on the compromised target. An adversary could use this fileless malware technique to inject their malicious code into the object, so that when the object is called and logged, it appears as normal administrative tasks. This would be the attack T1546.015, Event Triggered Execution: Component Object Model Hijacking.
 
-## 3. PowerShell JSON Utilities
+﻿
 
-**Description:**  
-Convert PowerShell objects to and from JSON, often used with REST APIs.
+Examining PowerShell objects requires hybrid analysis, which is an advanced technique that will be covered in a later module.
 
-**Syntax Example:**
-```powershell
-ConvertTo-Json
-# Usage:
-$json = $person | ConvertTo-Json
-```
-- Converts a PowerShell object to JSON format.
 
-**To save query results to a JSON file:**
-```powershell
-$results | ConvertTo-Json -Compress | Set-Content <File Path\FileName.json>
-```
+Compromise a PowerShell Profile
 
-- -Compress: Minifies the JSON output.
 
----
+Use PowerShell to add a compromised script to a profile to hijack a session each time it is launched.
 
-## 4. Example ElasticSearch Query (not a direct command, but REST API usage)
 
-**Description:**  
-The file shows how to compose queries for ElasticSearch using RESTful syntax, which can be run via Dev Tools (in Elastic UI), cURL, or PowerShell (with Invoke-RestMethod).
+Workflow
 
-**Example Query:**
-```json
-GET _search
-{
-  "query": {
-    "bool": {
-      "must": [
-        {"match":{"winlog.event_id.keyword":"8"}},
-        {"match":{"agent.name":"eng-wkstn-3"}},
-        {"range":{
-          "@timestamp":{
-            "gte":"2022-04-19T00:30:00.000Z",
-            "lte":"2022-04-19T23:30:00.000Z"
-          }
-        }}
-      ]
-    }
-  }
-}
-```
-This is typically sent as the body in a REST API request.
 
----
+1. Log into the Virtual Machine (VM) win-hunt with the following credentials:
+Username: trainee
+Password: CyberTraining1!
 
-## Summary Table
 
-| Command                | Description                                                                 | Syntax Example (see above)                | Key Switches/Parameters (see above)      |
-|------------------------|-----------------------------------------------------------------------------|-------------------------------------------|------------------------------------------|
-| Invoke-RestMethod      | PowerShell cmdlet for HTTP/REST requests                                    | GET/POST with -Headers/-Body/-ContentType | -Uri, -Method, -Headers, -Body, etc.     |
-| schtasks               | Windows command-line task scheduler                                         | /create /tn /tr /sc /sd /ru /mo           | See full list above                      |
-| ConvertTo-Json         | PowerShell utility to convert objects to JSON                               | -Compress                                 | -Compress                                |
-| Set-Content            | PowerShell cmdlet to write output to a file                                 |                                           | File path                                |
 
----
+2. Launch PowerShell as an administrator.
 
-Do you want detailed tables of parameters for schtasks or Invoke-RestMethod? If so, specify which command or both.
+
+3. Enable the use of scripts within PowerShell by entering the following command:
+PS C:\Windows\system32> Set-ExecutionPolicy Bypass -Scope CurrentUser -Force
+
+
+
+4. Create a fresh PowerShell profile with the following command since a powershell does not have one configured by default:
+PS C:\Windows\system32> New-Item -Path $PROFILE -type File -force
+
+
+
+This command creates a new Current User, Current Host profile with default settings in the user's documents folder, as displayed in Figure 12.2-1, below:
+
+
+
+
+
+Figure 12.2-1
+
+
+5. Open the profile as a text file to edit it by entering the following command:
+PS C:\Windows\system32> start C:\Users\trainee\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+
+
+
+6. Add the following text in the new profile window to launch a simple function each time the profile is loaded:
+Get-Service | Get-Member
+
+
+
+The function Get-Member lists the properties and methods of the cmdlet Get-Service.
+ 
+7. Save and exit the profile file.
+
+
+8. Reopen PowerShell. 
+
+
+The list of options for the Get-Service object is now displayed as part of the profile file, as indicated in Figure 12.2-2, below:
+
+
+
+
+
+Figure 12.2-2
+
+
+9. To conduct an attack, overwrite the current profile with a premade compromised profile by entering the following command:
+PS C:\Windows\system32> Copy-Item C:\Users\trainee\Documents\Microsoft.PowerShell_profile.ps1 C:\Users\trainee\Documents\WindowsPowerShell\ -Force
+
+
+
+This overwrites the default user profile with a malicious profile from the specified file location.
+
+
+10. Exit PowerShell and reopen it to view the compromised profile. 
+
+
+A document pops up as an example of an object being loaded that the user did not configure.
+
+
+11. Exit the document window that the compromised profile opened.
+
+
+12. Reset the profile to clear the compromised command with the following command:
+PS C:\Windows\system32> Clear-Content C:\Users\trainee\Documents\WindowsPowerShell\Microsoft.PowerShell_profile.ps1
+
+
+
+13. Exit and reopen PowerShell to verify that the profile has been cleared.
+
+
+Workflow
+
+
+1. Log into the VM win-hunt with the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. Open PowerShell as an administrator.
+
+
+3. Import the module acCOMplice into this session with the following command:
+PS C:\Windows\system32> Import-Module C:\Users\trainee\Documents\acCOMplice\COMHijackToolkit.ps1
+
+
+
+4. Find all registry keys that have symbolic links to files that do not exist by entering the following command:
+PS C:\Windows\system32> Find-MissingLibraries
+
+
+
+
+
+Figure 12.2-3, below, displays the expected output from step 4:
+
+
+
+
+
+Figure 12.2-3
+
+
+If an adversary was able to enumerate these keys, they could create malicious files with the found DLL names. The relevant registry keys would execute those malicious DLLs after running the relevant application's code. An adversary could then hide within an installed application using a file that is expected to exist. 
+
+
+Use the information from this workflow to answer the next question.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
