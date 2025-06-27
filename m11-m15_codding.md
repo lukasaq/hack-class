@@ -760,4 +760,274 @@ print(employees)
 
 If you need code for a specific section explained in more depth or want to see the output of any snippet, let me know!
 
+### CDAH-M13L3-Python Functions and Classes
+
+Certainly! Below, I’ve extracted all the Python code examples from the provided markdown and explained how each one executes, step by step. Each code block is followed by a clear explanation.
+
+---
+
+### 1. Basic Function Definition and Execution
+
+```python
+def print_text():
+  print("Hello World!")
+
+print_text()
+```
+**How it executes:**
+- Defines a function called print_text that prints "Hello World!".
+- The function is then called with print_text(), so "Hello World!" is displayed when the script runs.
+
+---
+
+### 2. Function with a Parameter
+
+```python
+def print_text(msg):
+  print(msg)
+```
+**How it executes:**
+- Defines print_text with a parameter msg.
+- When called, it will print whatever argument is passed as msg.
+- If you call print_text("Hi!"), it will print "Hi!".
+
+---
+
+### 3. Function Call Without Required Argument (Error Example)
+
+```python
+def print_text(msg):
+  print(msg)
+
+print_text()
+```
+**How it executes:**
+- Attempts to call print_text without the required msg argument.
+- Results in a TypeError: print_text() missing 1 required positional argument: 'msg'.
+
+---
+
+### 4. Passing a Variable as an Argument
+
+```python
+myMsg = "Hello World!"
+print_text(myMsg)
+```
+**How it executes:**
+- Sets myMsg to "Hello World!".
+- Calls print_text(myMsg), which prints "Hello World!".
+
+---
+
+### 5. Function with Multiple Parameters
+
+```python
+def new_print_text(string1, string2):
+  print(string1, string2)
+
+myMsg1 = "Hello "
+myMsg2 = "World!"
+
+new_print_text(myMsg1, myMsg2)
+```
+**How it executes:**
+- Defines new_print_text to accept two parameters.
+- Sets myMsg1 and myMsg2, then calls the function.
+- Prints "Hello  World!" (including the space after Hello).
+
+---
+
+### 6. Keyword Arguments
+
+```python
+myMsg1 = "Hello "
+myMsg2 = "World!"
+
+new_print_text(string2=myMsg2, string1=myMsg1)
+```
+**How it executes:**
+- Calls new_print_text with arguments explicitly named.
+- Order doesn’t matter due to the use of keywords.
+- Prints "Hello  World!".
+
+---
+
+### 7. Function with a Default Parameter
+
+```python
+def new_print_text(string2, string1="This Is My"):
+  print(string1, string2)
+```
+**How it executes:**
+- If string1 isn’t provided when calling, it defaults to "This Is My".
+- Calling new_print_text("World!") prints "This Is My World!".
+
+---
+
+### 8. Variable Number of Arguments (*args)
+
+```python
+def variable_print_text(*args):
+  for i in args:
+    print(i)
+
+variable_print_text("Hello","World!","We","are","coding!")
+```
+**How it executes:**
+- *args allows passing any number of arguments.
+- Each argument is printed on a new line:
+  ```
+  Hello
+  World!
+  We
+  are
+  coding!
+  ```
+
+---
+
+### 9. Returning Values & Reversing Input
+
+```python
+def reverse_text(*args):
+  reverse = [None] * len(args)
+  counter = len(args) - 1
+  for i in args:
+    reverse[counter] = i
+    counter -= 1
+
+  output = ''
+  for i in reverse:
+    output += ' ' + i
+
+  return output
+
+phrase = reverse_text("Hello","World!","We","are","coding!")
+print(phrase)
+```
+**How it executes:**
+- reverse_text reverses the order of the input arguments and concatenates them into a string.
+- The result is: " coding! are We World! Hello" (note leading space).
+- The string is printed.
+
+---
+
+### 10. Calculator Function & Script Execution
+
+```python
+def calc(op, num1, num2):
+  if op == '+':
+    return num1 + num2
+  elif op == '-':
+    return num1 - num2
+  elif op == '*':
+    return num1 * num2
+  else:
+    return "ERROR: Cannot compute."
+
+def main():
+  print("4 + 5 = ", str(calc('+', 4, 5)))
+  print("4 - 5 = ", str(calc('-', 4, 5)))
+  print("4 * 5 = ", str(calc('*', 4, 5)))
+  print("4 / 5 = ", str(calc('/', 4, 5)))
+
+if __name__ == "__main__":
+  main()
+else:
+  print("You called a function from lab1.py")
+```
+**How it executes:**
+- calc performs basic arithmetic based on the op argument.
+- main demonstrates usage with sample operations.
+- If the script is run directly, the results of each operation are printed.
+- If imported, "You called a function from lab1.py" is printed instead.
+
+---
+
+### 11. Importing and Using Functions Across Files
+
+```python
+from lab1 import calc
+
+def main():
+  # ...other code...
+  print("9 * 42 = ", str(calc('*', 9, 42)))
+```
+**How it executes:**
+- Imports the calc function from lab1.py.
+- main uses calc to compute 9 * 42 and prints the result.
+
+---
+
+### 12. Python Class Example
+
+```python
+class Malware:
+
+  # Constructor
+  def __init__(self, name, mtype, tlevel):
+    self.name = name
+    self.mtype = mtype
+    self.tlevel = tlevel
+
+  # Class attributes
+  attr1 = "has a malware signature"
+  attr2 = "has been analyzed"
+
+  # Class method
+  def define(self):
+    print(self.name, self.attr1)
+    print(self.name, self.attr2)
+    print("Refer to documentation for", self.name)
+
+malware1 = Malware("Cryptolocker", "trojan", "high")
+malware1.define()
+```
+**How it executes:**
+- Defines a class Malware with attributes and a method.
+- Instantiates malware1 with specific values.
+- Calls define(), which prints information about malware1.
+
+---
+
+### 13. Editing and Using Class Attributes
+
+```python
+aptY.attr3 = "is known to employ"
+aptY.malname = "Phishing attacks"
+aptY.malAttkID = "T1566"
+aptY.define()
+print("")
+aptX.define()
+```
+**How it executes:**
+- Sets or modifies attributes on aptY object.
+- Calls its define() method, prints information (depends on how define() is implemented).
+- Prints a blank line.
+- Calls define() on another instance, aptX.
+
+---
+
+## Summary Table
+
+| Code Block # | Concept                      | Main Action                                                     |
+|--------------|------------------------------|-----------------------------------------------------------------|
+| 1            | Basic Function               | Prints "Hello World!"                                           |
+| 2            | Function Parameter           | Prints whatever argument is passed                              |
+| 3            | Error Example                | Shows error when parameter is missing                           |
+| 4            | Argument Passing             | Prints variable value                                           |
+| 5            | Multiple Parameters          | Prints two strings                                              |
+| 6            | Keyword Arguments            | Arguments assigned by name                                      |
+| 7            | Default Parameter            | Uses a default value if not provided                            |
+| 8            | *args                        | Prints variable number of arguments                             |
+| 9            | Return Value                 | Reverses and concatenates input, prints result                  |
+| 10           | Calculator Function          | Performs and prints results of arithmetic operations            |
+| 11           | Importing Functions          | Uses functions from another file                                |
+| 12           | Class Example                | Defines class, instantiates object, prints info                 |
+| 13           | Class Attribute Modification | Modifies and prints updated class attributes                    |
+
+---
+
+If you would like further breakdown or want to see any code block in action, let me know!
+
 
