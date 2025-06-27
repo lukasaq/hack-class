@@ -1030,4 +1030,273 @@ aptX.define()
 
 If you would like further breakdown or want to see any code block in action, let me know!
 
+----
 
+### CDAH-M13L4-Python for CPT Functionality
+Certainly! Below, I’ve broken out and explained each code block found in the m11-m15_dump.md file from the repository lukasaq/hack-class. Each code example is separated, described, and the purpose of each line is explained.
+
+---
+
+## 1. Define and Print a Function in Jupyter
+
+```python
+def make_sandwich(meat,cheese,veg1,veg2):
+    order = [meat,cheese,veg1,veg2]
+    print(order)
+make_sandwich("ham","cheddar","lettuce","tomato")
+```
+
+**Explanation:**
+- `def make_sandwich(meat,cheese,veg1,veg2):`  
+  Defines a new function named make_sandwich with four parameters (meat, cheese, veg1, veg2).
+- `order = [meat,cheese,veg1,veg2]`  
+  Creates a list called order containing the arguments provided.
+- `print(order)`  
+  Prints the list to the output.
+- `make_sandwich("ham","cheddar","lettuce","tomato")`  
+  Calls the function with sample arguments, so the output will be:  
+  `['ham', 'cheddar', 'lettuce', 'tomato']`
+
+---
+
+## 2. Call the Function Again with Different Arguments
+
+```python
+make_sandwich("turkey","swiss","pickle","onion")
+```
+
+**Explanation:**
+- Calls the make_sandwich function with new ingredients.
+- Output will be:  
+  `['turkey','swiss','pickle','onion']`
+
+---
+
+## 3. Import a Function from a Module
+
+```python
+from Lab1 import make_sandwich
+```
+
+**Explanation:**
+- Imports only the make_sandwich function from a Python module named Lab1 (Lab1.py must exist in the working directory).
+
+---
+
+## 4. Call the Imported Function
+
+```python
+make_sandwich("roast beef","provolone","mushroom","bell pepper")
+```
+
+**Explanation:**
+- Uses the imported function with new arguments.
+- Output will be:  
+  `['roast beef','provolone','mushroom','bell pepper']`
+
+---
+
+## 5. Import an Entire Module
+
+```python
+import Lab1
+```
+
+**Explanation:**
+- Imports the entire Lab1 module.  
+- To call the function, you would use:  
+  `Lab1.make_sandwich(...)`
+
+---
+
+## 6. List Module Attributes
+
+```python
+dir(Lab1)
+```
+
+**Explanation:**
+- Lists all attributes (functions, variables, etc.) in the Lab1 module.
+
+---
+
+## 7. Import a Function from Python Standard Library
+
+```python
+from math import sqrt
+```
+
+**Explanation:**
+- Imports only the sqrt (square root) function from Python’s built-in math module.
+
+---
+
+## 8. Locate a Module File
+
+```python
+import inspect
+inspect.getfile(Lab1)
+```
+
+**Explanation:**
+- Uses the inspect module to find the file path of the Lab1 module.
+
+---
+
+## 9. Elasticsearch and Data Analysis Workflow in Jupyter
+
+```python
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
+```
+- Imports the Elasticsearch client and the Search class for building queries.
+
+```python
+import pandas as pd
+```
+- Imports pandas, a data manipulation library, as pd (common alias).
+
+```python
+es = Elasticsearch(['https://199.63.64.92:9200'],
+ca_certs=False,verify_certs=False, http_auth=('jupyter','CyberTraining1!'))
+searchContext = Search(using=es, index='*:so-*', doc_type='doc')
+```
+- Connects to an Elasticsearch server with the given URL and credentials.
+- Creates a Search object to query indices matching '*:so-*' and document type 'doc'.
+
+```python
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+```
+- Imports urllib3, a library for HTTP requests.
+- Disables warnings about insecure HTTPS requests (since certificates are not validated).
+
+```python
+s = searchContext.query('query_string', query='event.module:sysmon AND event.dataset:process_access')
+```
+- Adds a query to the search context, filtering for documents where event.module is sysmon and event.dataset is process_access.
+
+```python
+response = s.execute()
+if response.success():
+  df = pd.DataFrame((d.to_dict() for d in s.scan()))
+df
+```
+- Executes the search.
+- If successful, scans all results and converts them into a pandas DataFrame (df).
+- Displays the DataFrame df.
+
+---
+
+## 10. Parsing and Filtering Data
+
+### Extracting FQDNs from an 'observer' column
+
+```python
+df['observer'] = df['observer'].astype(str)
+df['systems'] = df['observer'].str.rsplit("'",3).str[2].str.strip()
+df
+```
+- Converts the 'observer' column to a string type.
+- Splits each string from the right at each single quote (up to 3 splits), takes the third item, and strips whitespace.
+- Saves the result in a new column 'systems'.
+
+```python
+print(df['systems'])
+print(df['systems'].unique())
+print(sorted(df['systems'].unique()))
+```
+- Prints all values from the 'systems' column.
+- Prints only unique values.
+- Prints unique values, sorted alphabetically.
+
+---
+
+## 11. Using Regular Expressions for Parsing
+
+```python
+import re
+search_list = ["BP-WKSTN-10.energy.lan","eng-wkstn-3.energy.lan","zeroday.energy.lan"]
+
+for i in df['systems'].unique():
+    for j in search_list:
+        if re.search(j,i):
+            print("Found a match for " + j)
+```
+- Imports the re module for regular expressions.
+- Creates a search list of FQDNs.
+- For each unique system, checks if any of the FQDNs in search_list are present (as substrings).
+- Prints a message if a match is found.
+
+```python
+for i in df['systems'].unique():
+    wkstn_hunt = re.search("wkstn", i)
+    if wkstn_hunt:
+        print("Discovered " + i)
+```
+- Searches for the substring "wkstn" in each unique system.
+- Prints FQDNs that contain "wkstn".
+
+```python
+for i in df['systems'].unique():
+    wkstn_hunt = re.search("wkstn", i, re.IGNORECASE)
+    if wkstn_hunt:
+        print("Discovered " + i)
+```
+- Same as above, but ignores case sensitivity.
+
+---
+
+## 12. Expanding DataFrame Output and Parsing Message Data
+
+```python
+pd.options.display.max_rows
+pd.set_option('display.max_colwidth', None)
+
+df['message'].head(1)
+```
+- Checks the current setting for maximum rows to display.
+- Sets the option to display the full width of columns (so strings aren't truncated).
+- Displays the first row of the 'message' column.
+
+```python
+import re
+df['message'] = df['message'].astype(str)
+
+for i in df['message'].head(1):
+    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
+    if attkID:
+        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
+        print(attkID[0], attkName[0])
+```
+- Converts the 'message' column to string type.
+- For the first message, finds all substrings matching `technique_id=... ,` and `technique_name=... \n` using regular expressions.
+- Prints the extracted technique ID and name.
+
+---
+
+## 13. Parsing Multiple Columns in a DataFrame
+
+```python
+import re
+df['message'] = df['message'].astype(str)
+df['observer'] = df['observer'].astype(str)
+
+index = 0
+for i in df['message'].head():
+    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
+    if attkID:
+        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
+        system = re.findall(r'\'(.+?)\'', df['observer'][index])
+        print(attkID[0], attkName[0], "discovered on system", system[1])
+    index += 1
+```
+- Again, ensures both 'message' and 'observer' columns are string type.
+- Loops over the first 5 messages. For each:
+  - Extracts technique ID and name using regular expressions.
+  - Extracts the system name from the observer column.
+  - Prints the technique ID, technique name, and which system it was discovered on.
+
+---
+
+If you have any particular code block you want a deeper explanation for (or want the code rewritten, improved, or summarized differently), let me know!
