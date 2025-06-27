@@ -1306,6 +1306,8 @@ Here's a breakdown of all the code snippets from your markdown file, with each p
 
 ---
 
+### CDAH-M14L1-Weaponizing Python
+
 ### 1. check_pwd.py – WinRM Authentication Checker
 
 #### Code
