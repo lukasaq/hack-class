@@ -137,7 +137,48 @@ Get-WMIObject -Query "Select * From Win32_Directory Where Name ='C:\\Test'"
 
 
 
+## CDAH-M13L3-Python Functions and Classes
 
+Class Layout and Characteristics
+The previous Python code examples in this lesson used variables and methods to manipulate data and program output. Another valuable tool is the Python class, which can be thought of as a mold for creating objects. Just as a mold shapes various types of materials, a single Python class can create various objects that share common attributes. 
+
+﻿
+
+The following lines of code illustrate the usefulness of Python classes. The first line defines the class without using the keyword def. This is followed by an object constructor __init__, which initializes a newly created object state. Since this Python class is concerned with malware, assume that each object of this class is a certain kind of malware (virus, trojan, worm, etc.) and the instance variables help define the object in relation to the class.
+
+﻿
+
+class Malware:
+
+  # Constructor
+  def __init__(self,name,mtype,tlevel)
+
+    # Instance variables
+    self.name = name
+    self.mtype = mtype
+    self.tlevel = tlevel
+
+  # Class attributes
+  attr1 = "has a malware signature"
+  attr2 = "has been analyzed"
+
+  # Class method
+  def define(self):
+    print(self.name, self.attr1)
+    print(self.name, self.attr2)
+    print("Refer to documentation for", self.name)
+﻿
+
+The instance variables are name, mtype (malware type), and tlevel (threat level). These instance variables have values provided as attributes to the constructor when a class object is instantiated, such as with the following line of code:
+
+malware1 = Malware("Cryptolocker","trojan","high")
+﻿
+
+Instantiating an object in Python is similar to calling a method. The difference is that a class creates an object and assigns attributes to that object, while a method simply performs some action. In addition to instance variables that are specific to certain objects, there are also class attributes that are shared by each object of a class. In the example above, each object that is a member of the class Malware shares two attributes, regardless of the values of the instance variables.
+
+﻿
+
+Finally, classes may also contain their own methods. Defining a method within a class benefits from the parameter self, which is a reference to a particular object instance. For example, malwa re1 in th e code above is a variab le which  holds a Malware class object with the name Cryptolocker . The me thod define within the class Malware only needs to take in the parameter self, rather than a specific name value. This is because the name Cryptolocker is passed as an instance variable specific to the object malware1 and is referenceable as self.name when used in the class  method.
 
 
 
