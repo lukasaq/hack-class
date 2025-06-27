@@ -1,770 +1,767 @@
 
-Test a Python Function
-One trait Python shares with other high-level programming languages is that it has a defined syntax for constructing commands. Commands are constructed with components known as functions, similar to how a cooking recipe is made of different ingredients.  The functions allow Python to execute programs and reuse code. 
+Set Up a Jupyter Notebook Using Python
+Jupyter Notebook is a browser-based, open-source application that supports program development in a large number of programming languages. The development environment is known as a “notebook.” A Jupyter notebook provides an interactive programming session similar to a Command-Line Interface (CLI). Each notebook of code can be saved, then imported into and exported out of other existing notebooks or Python scripts. Jupyter's seamless integration allows for ease of use, code reusability, and code sharing.
 
 ﻿
 
-Python Function Overview
-﻿
-
-A Python function is a block of code that performs a certain action. The following is an example of the Python function print_text, which prints a statement that passes the string Hello World! to standard output:
-
-def print_text():
-  print("Hello World!")
-﻿
-
-In the function print_text, the keyword def is placed before the function name. Keywords are necessary for defining the function in Python.
+Jupyter Notebook is useful for collaboration within a coding project as multiple users can use the same notebook to share code. However, Jupyter does not generate code nor does it translate code from one programming language to another. Jupyter cannot help with converting Java or C++ code into Python. This lesson focuses on using only the Python coding language within Jupyter Notebook.
 
 ﻿
 
-Test a Python Function
+The following lab walks through the process of creating a new Jupyter Notebook for the controlled execution of Python code. The lab highlights how portions of Python code can be separated into individual sections. This is similar to code breakpoints that allow debugging and analysis before executing an entire program.
+
 ﻿
 
-Test the performance of a Python function within a script.
+Set Up a Jupyter Notebook
+﻿
+
+Create a new Jupyter Notebook. Then, test the notebook by entering Python code, executing commands, and examining the output of running sections of code.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the Virtual Machine (VM) lin-hunt-cent using the following credentials:
+1. Log in to the VM lin-hunt-cent with the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Terminal.
+2. Open Jupyter Notebook by selecting the Jupyter icon in the dock, as highlighted below in Figure 13.4-1:
 
 ﻿
 
-3. Open an empty text editor within Terminal by entering the following command:
-
-[trainee@lin-hunt-cent ~]$ vim hello.py
 ﻿
 
-4. Set the text editor to Insert mode by entering the letter i﻿
+Figure 13.4-1
 
 ﻿
 
-5. Enter the following function into the text editor:
-
-def print_text():
-  print("Hello World!")
-
-print_text()
-﻿
-
-The function in step 5 is similar to the example from the previous section, but with one difference. Step five adds the command print_text() to the last line of the code to call the defined function during script execution.
+Another option is to enter Jupyter into the system search bar. In either case, the application opens in a new browser window. 
 
 ﻿
 
-6. Exit the text editor’s Insert mode by entering the ESC key.
+3. Open a new notebook by selecting New under the tab Files, then Python 3 in the menu, as displayed in Figure 13.4-2, below:
 
 ﻿
 
-7. Exit the text editor while saving changes to the script hello.py by entering the following command:
-
-:wq
 ﻿
 
-8. Run the Python script by executing the following command:
+Figure 13.4-2
 
-[trainee@lin-hunt-cent ~]$ python hello.py
+﻿
+
+This opens a new browser tab with a blank Jupyter Notebook. 
+
+﻿
+
+4. Define and print the function make_sandwich by entering the following code into the first cell:
+
+def make_sandwich(meat,cheese,veg1,veg2):
+	order = [meat,cheese,veg1,veg2]
+	print(order)
+make_sandwich("ham","cheddar","lettuce","tomato")
+﻿
+
+5. Select Run from the toolbar at the top of the page and observe the results.
+
+﻿
+
+The function make_sandwich accepts several string arguments, adds these arguments to a list, and prints the contents of the list. The following is the output after running the function:
+
+['ham', 'cheddar', 'lettuce', 'tomato']
+﻿
+
+6. Enter the following code into the next empty cell:
+
+make_sandwich("turkey","swiss","pickle","onion")
+﻿
+
+7. Run the new code to view its output.
+
 ﻿
 
 The output is as follows:
 
-Hello World!
+["turkey","swiss","pickle","onion"]
+﻿
+
+8. Save this notebook with the new name Lab1.
 
 ﻿
 
-This output indicates that the function print_text() correctly executed and printed the statically-defined text string to the screen. This is basic function performance. Upcoming labs in this lesson explore more complex functions that print different types of strings.
+9. Close the current tab for Lab1 to return to the original Jupyter tab and ensure the newly created notebook Lab1 is listed in the files directory.
 
 ﻿
 
-The next series of tasks in this lesson introduce the following additional components of Python functions:
-
-Parameters
-Arguments
-Multiple Arguments and Parameters
-Returning Values
-﻿
-Parameters and Arguments
-Parameters
-﻿
-
-The function in the previous lab is efficient for printing only the specific text string, Hello World!. This code has limited reusability because the text string printed by this function cannot be modified. This limits its use to only those occasions where printing Hello World! is valuable. One way to improve the reusability of this code is to have a variable define the string to be printed, rather than having the string hard-coded and contained within the function itself. The approach allows different string variables to be passed to the function and make the action of printing more dynamic. Such variables are known as parameters and they are included in the function definition.
+10. Select Quit at the top right to exit the Jupyter interface, as highlighted in Figure 13.4-3, below:
 
 ﻿
 
-The following revision to the function print_text replaces the string Hello World! with the parameter msg:
-
-def print_text(msg):
-  print(msg)
 ﻿
 
-This revision makes the code more reusable since the string to print is no longer hard-coded into the function. Instead, the string is accepted as a parameter when the function print_text is called.
+Figure 13.4-3
 
 ﻿
 
-Since the value of the parameter msg is not defined in the function print_text, a value must be passed from elsewhere in the Python program or else this function results in an error. 
+11. Shut down the server.
 
 ﻿
 
-View a Parameter Error
+Use the skills from this lab to answer the next question.
+
+Click "Finish" to exit the event.
+Auto-Advance on Correct
+
+Use Python Modules in Jupyter
+Programming code in blocks allows for easier reuse and implementation in Python. Script files protect these code blocks from the volatility of the Python interpreter CLI. Script files can also be modified to contain function and variable definitions for other Python scripts to use. These types of script files are referred to as "modules". 
+
 ﻿
 
-Observe the error that results when the value of a parameter is missing.
+In general, a module is not meant to execute as a stand-alone script. Instead, the standard practice is to use modules in other scripts through an import process. A module can be imported into other modules or scripts for execution without needing to redefine pre-existing functions. 
+
+﻿
+
+Modify a Python Module
+﻿
+
+Modify a Python script in Jupyter Notebook to use as a Python module. Use Jupyter to move the module to a different file path for easier access in the next lab. 
 
 ﻿
 
 Workflow
 ﻿
 
-1. Enter the VM lin-hunt-cent. If necessary, enter the following credentials:
+1. Log in to the VM lin-hunt-cent with the credentials below:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Terminal.
+2. Open Jupyter Notebook.
 
 ﻿
 
-3. Open the Python script hello.py in the text editor by entering the following command:
-
-[trainee@lin-hunt-cent ~]$ vim hello.py
-﻿
-
-4. Set the text editor to Insert mode by entering the letter i﻿
+3. Select the file Lab1.ipynb to open Lab1 in a new tab.
 
 ﻿
 
-5. Modify the function print_text() by replacing the string Hello World! with the parameter msg, as follows:
+4. Remove the function call make_sandwich from the first cell by removing the following last line of the cell:
 
-def print_text(msg):
-  print(msg)
-
-print_text()
+make_sandwich("ham","cheddar","lettuce","tomato")
 ﻿
 
-6. Exit the text editor’s Insert mode by entering the ESC key.
+5. Select the second cell containing the following code:
 
+make_sandwich("turkey","swiss","pickle","onion")
 ﻿
 
-7. Exit the text editor while saving changes to the script hello.py by entering the following command:
-
-:wq
-﻿
-
-8. Run the Python script by executing the following command:
-
-[trainee@lin-hunt-cent ~]$ python hello.py
-﻿
-
-Executing this Python script outputs the following error:
-
-TypeError: print_text() missing 1 positional argument: 'msg'
-﻿
-
-The modified function print_text has a new definition which includes the parameter msg. This is why the error from executing this script reports that the function call print_text() is missing one positional argument. In order to satisfy the required msg parameter in the function definition, an argument must be passed within the function call print_text.
+6. Cut the second cell by selecting the scissors from the toolbar, as highlighted in Figure 13.4-4, below:
 
 ﻿
 
-Arguments
 ﻿
 
-Passing an argument into a function occurs when a previously defined variable name is included within a previously defined function call. In the following script, the first line defines the variable myMsg as Hello World!. The second line is a function call that consists of the name of the previously defined function print_text along with the newly defined variable myMsg.
-
-myMsg = "Hello World!"
-print_text(myMsg)
-﻿
-
-In this instance, the result of the above function call is Hello World!﻿
+Figure 13.4-4
 
 ﻿
 
-After providing the variable definition and argument in the function call, executing the function no longer produces an error. 
+Removing the function calls from the file Lab1.py leaves only the definition for the function make_sandwich. The rest of this lab refers to this edited version of the file Lab1.py as a module.
 
 ﻿
 
-Pass an Argument into a Function
-﻿
-
-Continue working in Terminal, in the VM lin-hunt-cent, to modify the script hello.py so that it successfully executes a function that includes an argument.
+7. Save the notebook as a Python script by selecting File, Download as, then Python (.py) from the menu toolbar.
 
 ﻿
 
-Workflow
-﻿
-
-1. In Terminal, open the Python script hello.py in the text editor by entering the following command:
-
-[trainee@lin-hunt-cent ~]$ vim hello.py
-﻿
-
-2. Set the text editor to Insert mode by entering the letter i﻿
+8. Save the file by selecting Save File > OK in the resulting pop-up window.
 
 ﻿
 
-3. Modify the function print_text() by defining the variable myMsg and adding an argument so that the function is written as follows:
-
-def print_text(msg):
-    print(msg)
-
-myMsg = "Hello World!"
-print_text(myMsg)
-﻿
-
-4. Exit the text editor’s Insert mode by entering the ESC key.
+Step 8 saves the file in the folder Downloads. For ease of use, follow the next set of steps to use Jupyter Notebook to move the file to the home folder of the trainee account. 
 
 ﻿
 
-5. Exit the text editor while saving changes to the script hello.py by entering the following command:
-
-:wq
-﻿
-
-6. Run the Python script by executing the following command:
-
-[trainee@lin-hunt-cent ~]$ python hello.py
-﻿
-
-Executing this Python script outputs the following:
-
-Hello World!
-﻿
-
-After the argument myMsg is passed along with the function call print_text, the script  execute s without the error seen in the previous lab. This function is also now more reusable since it will print any text string passed to it a s an arg ument. The value of the variable myMsg can be changed to any text string and passed to print_text for printing to the sc reen.
-
-
-Multiple Arguments and Parameters
-A function call can include multiple parameters that make the function more dynamic. In the following example, the function new_print_text calls two parameters, string1 and string2, to be used with a print command:
-
-def new_print_text(string1,string2):
-  print(string1,string2)
-﻿
-
-The function new_print_text can be used with a couple of variable definitions followed by a function call, as follows:
-
-myMsg1 = "Hello "
-myMsg2 = "World!"
-
-new_print_text(myMsg1,myMsg2)
-﻿
-
-Executing this function call prints the combined string Hello World!, just as in the previous examples in this lesson. However, changing the sequence of these two arguments so that the variable myMsg2 is listed first provides a different output. Instead of Hello World!, the resulting combined string prints World!Hello. This is an example of positional arguments, where arguments and parameters are linked according to the order in which they are provided.
+9. In Jupyter Notebook, select the tab Home, then select the directory Downloads from the tab Files, as highlighted in Figure 13.4-5, below:
 
 ﻿
 
-In contrast to positional arguments, keyword arguments explicitly define the argument value that corresponds to a function parameter. The following function call prints the string Hello World! because the function parameters are used as keywords that are assigned specific values:
-
-myMsg1 = "Hello "
-myMsg2 = "World!"
-
-new_print_text(string2=myMsg2, string1=myMsg1)
 ﻿
 
-When using keyword arguments, a variable name can be used as shown or a specific value can be given, such as (string2="World!", string1="Hello").
+Figure 13.4-5
 
 ﻿
 
-Similar to keyword arguments, function parameters explicitly define default values when a given argument is not provided. The following function call produces an error because the function new_print_text expects two arguments, while the example below only lists one:
-
-new_print_text(string2=myMsg2)
-﻿
-
-A solution to resolve this error is to use a default value. In the following example, the parameter string1 has been set to a default value of This Is My. When the previous function call is made with only string2 defined, this setting prints This Is My World! instead of resulting in an error. 
-
-def new_print_text(string2, string1="This Is My"):
-  print(string1,string2)
-﻿
-
-Defining a default value for a parameter is useful for correctly executing a function that requires a non-empty value. All default arguments must follow non-default arguments, as in the previous example, otherwise an error results.
+10. After opening Downloads, select the box next to Lab1.py, then select Move from the toolbar under the tab Files.
 
 ﻿
 
-The previously defined functions work well for printing one or two string values. However, code reusability can be improved by adding the ability to print a variable number of string values. For instance, if the string Hello World! We are coding! were to be printed using the function above, it would have to be passed as one string or broken into two strings. Yet, if there was a need to collect multiple single-word strings and combine them into a single string output, there would need to be a function definition that allows up to five parameters. Twenty or one thousand single-word strings would be more complex.
+Selecting Move displays the pop-up window Move an Item. The window requests a destination to move the selected file to. Jupyter defaults to the /home/trainee file path and then provides a text box to enter a more specific path within this directory.
 
 ﻿
 
-To allow for a more feasible function definition, a single parameter can be defined with *args. This allows for a variable number of arguments to be passed to the function when called. In the following example of a new function definition, *args is set as the only function parameter which accepts a variable-length argument:
-
-def variable_print_text(*args):
-  for i in args:
-    print(i)
-
-variable_print_text("Hello","World!","We","are","coding!")
-﻿
-
-When the last line of code in this function is called, the function recognizes an argument length of five and iterates through each to print to the screen the phrase Hello World! We are coding!﻿
+11. Move the file to the trainee home directory by deleting any text in the file path text box, then selecting Move.
 
 ﻿
 
-Pass Multiple Arguments into a Function
+12. Return to the Jupyter Notebook home page by selecting either the blue folder under the tab Files or the browser's back arrow.
+
 ﻿
 
-Modify the script hello.py so that it successfully executes a function that accepts a variable number of arguments. Continue working in Terminal, in the VM lin-hunt-cent.
+Import a Python Module
+﻿
+
+Use Jupyter Notebook to import a Python module into a new Python script or notebook. Continue working in Jupyter Notebook, in the VM lin-hunt-cent.
 
 ﻿
 
 Workflow
 ﻿
 
-1. In Terminal, open the script hello.py in the text editor by entering the following command:
-
-[trainee@lin-hunt-cent ~]$ vim hello.py
-﻿
-
-2. Set the text editor to Insert mode by entering the letter i﻿
+1. From the Jupyter Notebook home page, open a new browser tab with a blank notebook by using the options under the tab Files.
 
 ﻿
 
-3. Edit hello.py to include the following code:
+2. Import the function make_sandwich by entering the following code in the first cell:
 
-def variable_print_text(*args):
-  for i in args:
-    print(i)
-
-variable_print_text("Hello","World!","We","are","coding!")
+from Lab1 import make_sandwich
 ﻿
 
-4. Exit the text editor’s Insert mode by entering the ESC key.
+This line of code imports the function make_sandwich into the current Python script (or notebook, in this case) from the existing Python module Lab1. 
 
 ﻿
 
-5. Exit the text editor while saving changes to the script hello.py by entering the following command:
-
-:wq
-﻿
-
-6. Run the Python script by executing the following command:
-
-[trainee@lin-hunt-cent ~]$ python hello.py
-﻿
-
-Executing the script prints the following:
-
-Hello
-World!
-We
-are
-coding!
-﻿
-
-The script output shows that each of the arguments passed to the function variable_print_text was successfully printed to the screen, in the order by which it was passed. This indica tes that  the use of *args as a function parameter was successful at accepting multiple argumen ts witho ut the need to explicitly define a separate parameter for each possible ar gument.
-
-
-Returning Values
-Each of the previous functions performed a print without any further interaction with the rest of the Python program. A function can also pass its output to another function or code in a program so that the output can be reused. 
+3. Execute the code to check for any errors associated with importing by selecting the line of code, then selecting Run from the toolbar at the top. 
 
 ﻿
 
-The following new function is similar to the previous function variable_print_text because it allows a variable number of arguments to pass to the parameter *args. However, this function performs a more complex task than hello.py, which simply prints the provided arguments. The following function prints its arguments in reverse order:
-
-def reverse_text(*args):
-  reverse = [None] * len(args)
-  counter = len(args) - 1
-  for i in args:
-    reverse[counter] = i
-    counter -= 1
-
-  output = ''
-  for i in reverse:
-    output += ' ' + i
-
-  return output
-
-
-phrase = reverse_text("Hello","World!","We","are","coding!")
-print(phrase)
-﻿
-
-This new function implements the following steps:
-
-A list named reverse is created with as many elements as there are arguments, and filled with dummy data. 
-A counter variable is created, which is one less than the number of arguments. Since this counter is used with an index starting from 0, the last value must be one less than the total number of arguments.
-The function iterates over the number of arguments and assigns the value of each argument to the reverse list in reverse order.
-An empty variable named output is created to store the contents of the reverse list as a single string.
-The final line in the function, return output, returns the variable named output back to the line of code that is called the reverse_text function.
-﻿
-
-In the code example above, the line which performs the function call is as follows: 
-
-phrase = reverse_text("Hello","World!","We","are","coding!")
-﻿
-
-Since calling the function results in returning data, a variable named phrase is set to equal the output of the function. When the print statement in the last line is performed, the result printed to the screen is coding! are We World! Hello, which is the reverse of the input into the function.
-
-
-Create a Python Function
-The previous examples of Python functions in this lesson were written as blocks of code within the context of a Python script, rather than through an interactive Python session. Scripts have several advantages, such as storing Python code to reuse and reference in other Python scripts in the future. To create a Python script file, save the Python code as a file with an extension of .py to identify it as a Python file. In the earlier labs in this lesson, the script hello.py was saved in this same way.
+There are no errors in this line of code. Jupyter indicates this by creating an empty new cell without any other output. The import line does not have any errors because the file Lab1.py exists in the same directory as the current notebook.
 
 ﻿
 
-The next lab uses two Python script files, test1.py and test2.py, which are located in ~/python_scripts in the VM lin-hunt-cent. This is displayed below, in Figure 13.3-1:
+4. Enter the following line of code into the empty cell:
+
+make_sandwich("roast beef","provolone","mushroom","bell pepper")
+﻿
+
+5. Execute the code by selecting Run and observe the imported function make_sandwich successfully execute the arguments provided in the current notebook, as displayed in Figure 13.4-6, below:
 
 ﻿
 
 ﻿
 
-Figure 13.3-1﻿
+Figure 13.4-6
 
 ﻿
 
-The script test1.py includes the functions reverse_text and main to output the following text when executed:
+6. Quit the Jupyter Notebook server.
 
-coding! are We World! Hello.
+Click "Finish" to exit the event.
+Auto-Advance
+
+
+
+Python Library Modules
+Python provides a number of pre-built modules for common tasks to aid in program efficiency. These modules are part of the Python standard library. Locating modules and their source code provides more information on the functionality of the different modules available. This information helps identify and select specific functions to import. This section reviews the following topics to enable analysts to leverage Python modules:
+
+Python standard library
+Identifying module functions
+Locating a Python module
+Python Standard Library
 ﻿
 
-The script test2.py imports the function reverse_text from test1.py and supplies a different phrase to its own main function. This ability to import functions from other Python scripts allows code reuse from one script so that another script does not need to define a new function to produce the desired results. Executing test2.py outputs the following text:
+Although creating and importing custom modules are powerful for code reuse, it is not efficient to create a large number of modules to complete simple tasks such as the following:
 
-phrase. different a is This 
-﻿
-
-Both of the scripts test1.py and test2.py contain a check for the value of a special variable formatted as __name__. The value of this variable changes according to how the script is executed. When a script is directly executed, the value of __name__ is __main__. If the script is executed as an import module, as displayed in test2.py, the value of this variable is the name of the imported module. This is why these two files output the following:
-
-﻿
-
-test1.py output﻿
-
-coding! are We World! Hello
-﻿
-
-test2.py output﻿
-
-You called a function from test1.py
-You called a function from test2.py
-phrase. different a is This
-﻿
-
-Referencing the variable __name__ allows the programmer to control Python script execution based on how the code is called. The print statements used in test1.py and test2.py are simple examples. The variable __name__ dynamically modifies code execution within a Python script, as highlighted in the following lab.
+Calculating math 
+Enumerating filesystem paths
+Determining the current date and time
+The better option is to use the Python standard library. The library uses Python installers to provide built-in modules that provide standardized functions. For example, one common function from the standard library is math. When imported into a Python script, this function provides several methods of performing arithmetic such as trigonometric functions.
 
 ﻿
 
-Create a Python Script
+Another function from the standard library is print. This function prints objects to either a file or standard output (terminal). Unlike math, it is unnecessary to use an import statement to call print since it is a built-in function. Built-in functions are members of the standard library provided to all Python programs by default.
+
 ﻿
 
-Create and call a function from within a Python script.
+In addition to modules, the standard library also provides data types such as int, float, str, and list. This provides a great deal of core functionality for Python scripts and handles the logic necessary to ensure that these data types work as expected.
+
+﻿
+
+Identifying Module Functions
+﻿
+
+The previous lab used the following line of code to import a function:
+
+from Lab1 import make_sandwich
+﻿
+
+This explicitly imports only the function make_sandwich from the module Lab1. Alternatively, the entire module can be imported so that the import includes all additional modules and their functions. This task uses the following syntax, replacing Lab1 with the specific module name:
+
+import Lab1
+﻿
+
+Importing a module and all its functions requires Python to place each imported function into memory during execution. This may cause a Python script to use more resources than necessary. This is why the best practice is to import only those functions that are necessary to properly execute a specific Python script.
+
+﻿
+
+ Using dir()
+﻿
+
+The function dir() is a handy tool that returns a list of object attributes. It is a member of the standard library, so it does not need to be imported. Using dir() with a module returns the names of the module attributes and functions. Figure 13.4-7, below, displays how the function make_sandwich is listed at the end of all the attributes for the module Lab1.
+
+﻿
+
+﻿
+
+Figure 13.4-7
+
+﻿
+
+The output for dir() depends on the nature of the module being analyzed. The module Lab1 contains only a single function, so its output is sparse. The standard library module math contains a number of functions associated with mathematics, so it outputs significantly more attributes, as displayed in Figure 13.4-8, below:
+
+﻿
+
+﻿
+
+Figure 13.4-8
+
+﻿
+
+Outputting all available attributes is helpful when trying to recall the names of specific functions to import, so that the entire module does not need to be imported. As an example, a script may require computing the square root of a number. Performing the command dir(math) provides the function sqrt as an option. After identifying this function name, the following code can be used to import only the necessary function:
+
+from math import sqrt
+﻿
+
+This minimizes the footprint of the script. 
+
+﻿
+
+Locating a Python Module
+﻿
+
+Locating Python modules and their source codes is helpful for editing a module's functionality and debugging. An example of a debugging case is if a custom Python program is designed to request the value of pi to 20 decimal places, but this always results in an error. The function pi belongs to the module math. Locating and analyzing the source code for math provides more information as to why this error always occurs. In Python, the function pi within the module math returns the value of pi to 15 decimal places (3.141592653589793) by default. Therefore, requesting a greater number of decimal places outputs an error. Reviewing the source code for different modules, such as math, helps understand their applications and limitations.
+
+﻿
+
+Using inspect
+﻿
+
+The location of a module depends on the organizational structure of a given Python project and whether a certain module is a member of the standard library. One way to locate a Python module is with the module inspect. Although inspect is a built-in module, it is not a member of the standard library. This module provides the method getfile(), which returns the path of the object being inspected. Figure 13.4-9, below, provides an example of importing inspect and printing the getfile() search for the function make_sandwich:
+
+﻿
+
+﻿
+
+Figure 13.4-9
+
+﻿
+
+The method getfile() can also be used to identify the locations of modules. In the following example in Figure 13.4-10, the module inspect is calling upon itself to identify its own directory:
+
+﻿
+
+﻿
+
+Figure 13.4-10
+
+﻿
+
+Use the information from this lab to answer the following questions.
+
+Query Data from Elasticsearch
+The following lab provides a real-world example of using Jupyter Notebook and Python for data analysis.
+
+﻿
+
+Query Data from Elasticsearch
+﻿
+
+Create a Jupyter Notebook that imports Python modules to query data from Elasticsearch.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log into the VM lin-hunt-cent with the credentials below:
+1. Log in to the VM lin-hunt-cent with the credentials below:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Terminal.
+2. Open a new notebook in Jupyter Notebook.
 
 ﻿
 
-3. Change the directory to the folder ~/python_scripts by entering the following command:
+3. Import the functions Elasticsearch and Search from their respective modules by entering the following code in the first cell of the new notebook:
 
-[trainee@lin-hunt-cent ~]$ cd python_scripts/
+from elasticsearch import Elasticsearch
+from elasticsearch_dsl import Search
 ﻿
 
-4. Open a new file named lab1.py in the text editor by entering the following command:
-
-[trainee@lin-hunt-cent python_scripts]$ vim lab1.py
-﻿
-
-5. Set the text editor to Insert mode by entering the letter i﻿
+These statements use the importing syntax from earlier in this lesson. Elasticsearch is a search engine that integrates with other software. Elasticseach_DSL is a high-level library that aids in performing searches with Elasticsearch.
 
 ﻿
 
-6. Enter the following code to create a simple calculator function within the script:
+4. Import the data manipulation tool pandas by entering the following command on the next line of the first cell:
 
-def calc(op,num1,num2):
-  if op == '+':
-    return num1 + num2
-  elif op == '-':
-    return num1 - num2
-  elif op == '*':
-    return num1 * num2
-  else:
-    return "ERROR: Cannot compute."
-
-def main():
-  print("4 + 5 = ",str(calc('+',4,5)))
-  print("4 - 5 = ",str(calc('-',4,5)))
-  print("4 * 5 = ",str(calc('*',4,5)))
-  print("4 / 5 = ",str(calc('/',4,5)))
-
-if __name__ == "__main__":
-  main()
-else:
-  print("You called a function from lab1.py")
+import pandas as pd
 ﻿
 
-NOTE: If copy-pasting the code in step 6 into the range, ensure that extra characters or additional tabbing are not passed into the text editor to avoid errors when executing the script in Step 9. Additionally, the underscores in the last section of the code (if __name__) are actually double underscores.
-﻿
+This syntax includes an alias. Pandas is a popular Python tool for manipulating data and is commonly imported as pd. Aliases are useful shorthand, but not necessary.
 
 ﻿
 
-7. Exit the text editor's Insert mode by entering ESC.
+5. Execute this line by selecting Run from the toolbar at the top and view any errors that may occur as a result of this code. 
 
 ﻿
 
-8. Save the contents of the file lab1.py and exit the text editor by entering the following command:
+6. Establish the identity of the Elasticsearch server with which this script communicates and define how communication occurs by entering the following code into the new blank cell:
 
-:wq
+es = Elasticsearch(['https://199.63.64.92:9200'],
+ca_certs=False,verify_certs=False, http_auth=('jupyter','CyberTraining1!'))
+searchContext = Search(using=es, index='*:so-*', doc_type='doc')
 ﻿
 
-9. Execute the Python script by entering the following command:
-
-python lab1.py
-﻿
-
-10. Examine the results and analyze how different arguments in the function calls affected the script output. Notice how the division argument returns ERROR: Cannot compute. as this was not added to the function. 
+7. Execute this code by selecting Run and read the warning.
 
 ﻿
 
-11. Open the file test1.py within the text editor and add the following line of code to the very beginning:
-
-from lab1 import calc
-﻿
-
-12. Add the following line of code to the function main(), within the same file:
-
-print("9 * 42 = ",str(calc('*',9,42)))
-﻿
-
-This line of code includes a call to the function calc(), as found in lab1.py. The import statement above allows this function to be called, even though it is defined in a separate file.
+The notebook displays the warning because the connection with the Elasticsearch server is not fully secure. The next step disables this warning for the purposes of this lab.
 
 ﻿
 
-13. Execute the modified test1.py and examine the results. 
+8. Import a module that disables warnings from the previous block of code by entering and executing the following lines in the new blank cell:
+
+import urllib3
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+﻿
+
+9. Assign an object a search query with arguments defining what to search for by entering and executing the code below in the new blank cell:
+
+s = searchContext.query('query_string', query='event.module:sysmon AND event.dataset:process_access')
+﻿
+
+10. Perform the search and check whether it is successful by entering and executing the following final block of code in the new blank cell:
+
+response = s.execute()
+if response.success():
+  df = pd.DataFrame((d.to_dict() for d in s.scan()))
+df
+﻿
+
+NOTE: Avoid errors from copy-pasting code by verifying the code indentation is correct.
 
 ﻿
 
-The function calc from lab1.py performs the calculation as expected when  imported  and  called b y test1.py. The manner of execution is observed by lab1.py, which results in an additional print statement. Use the information from thi s lab to  answ er the n ext s eries of  questions.
-
-
-
-Class Layout and Characteristics
-The previous Python code examples in this lesson used variables and methods to manipulate data and program output. Another valuable tool is the Python class, which can be thought of as a mold for creating objects. Just as a mold shapes various types of materials, a single Python class can create various objects that share common attributes. 
+A successful search outputs the search results to a two-dimensional data frame. A data frame is a table containing the results of the Elasticsearch query. This output can either be manipulated directly with additional code in subsequent blocks or saved to a new file for analysis at a later date.
 
 ﻿
 
-The following lines of code illustrate the usefulness of Python classes. The first line defines the class without using the keyword def. This is followed by an object constructor __init__, which initializes a newly created object state. Since this Python class is concerned with malware, assume that each object of this class is a certain kind of malware (virus, trojan, worm, etc.) and the instance variables help define the object in relation to the class.
+11. Save this notebook with the new name Lab2.
 
 ﻿
 
-class Malware:
-
-  # Constructor
-  def __init__(self,name,mtype,tlevel)
-
-    # Instance variables
-    self.name = name
-    self.mtype = mtype
-    self.tlevel = tlevel
-
-  # Class attributes
-  attr1 = "has a malware signature"
-  attr2 = "has been analyzed"
-
-  # Class method
-  def define(self):
-    print(self.name, self.attr1)
-    print(self.name, self.attr2)
-    print("Refer to documentation for", self.name)
-﻿
-
-The instance variables are name, mtype (malware type), and tlevel (threat level). These instance variables have values provided as attributes to the constructor when a class object is instantiated, such as with the following line of code:
-
-malware1 = Malware("Cryptolocker","trojan","high")
-﻿
-
-Instantiating an object in Python is similar to calling a method. The difference is that a class creates an object and assigns attributes to that object, while a method simply performs some action. In addition to instance variables that are specific to certain objects, there are also class attributes that are shared by each object of a class. In the example above, each object that is a member of the class Malware shares two attributes, regardless of the values of the instance variables.
+12. Create a copy of this notebook by selecting File > Make a Copy. 
 
 ﻿
 
-Finally, classes may also contain their own methods. Defining a method within a class benefits from the parameter self, which is a reference to a particular object instance. For example, malwa re1 in th e code above is a variab le which  holds a Malware class object with the name Cryptolocker . The me thod define within the class Malware only needs to take in the parameter self, rather than a specific name value. This is because the name Cryptolocker is passed as an instance variable specific to the object malware1 and is referenceable as self.name when used in the class  method. ﻿
+This opens a new browser tab with a new notebook named Lab2-Copy1. 
 
-Create a Python Class
-Create a class from within a Python script. Then, modify the script to alter class attributes.
+﻿
+
+13. Save the notebook Lab2-Copy1 as Lab 3 for later use.
+
+﻿
+
+Use the information from this lab to answer the following question.
+
+Click "Finish" to exit the event.
+Auto-Advance on Correct
+
+Data Parsing and Filtering with Python Modules and Functions
+The Elasticsearch query from the previous lab outputs many columns of data. This includes the column observer, as highlighted in Figure 13.4-11, below. This column provides Fully Qualified Domain Names (FQDN) as part of strings formatted as {'name': 'FQDN'}. It's possible to parse a list of system FQDNs from these query results after filtering the FQDN from the rest of the characters in the column values.
+
+﻿
+
+﻿
+
+Figure 13.4-11
+
+﻿
+
+Parse and Filter Data
+﻿
+
+Parse and filter data from the Elasticsearch query results in the Lab2 Jupyter Notebook. 
 
 ﻿
 
 Workflow
 ﻿
 
-1. Open Terminal in the VM lin-hunt-cent.
+1. Log in to the VM lin-hunt-cent with the credentials below:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the notebook Lab2 in Jupyter Notebook.
 
 ﻿
 
-2. Change directory into the folder ~/python_scripts by entering the following command:
+3. Perform text manipulation to extract the FQDNs from the column observer and create a new column systems by entering and executing the following code to the empty cell at the bottom of the Lab2 notebook:
 
-[trainee@lin-hunt-cent ~]$ cd python_scripts/
+df['observer'] = df['observer'].astype(str)
+df['systems'] = df['observer'].str.rsplit("'",3).str[2].str.strip()
+df
 ﻿
 
-3. Open the file lab2.py in the text editor by entering the following command:
-
-[trainee@lin-hunt-cent python_scripts]$ vim lab2.py
-﻿
-
-4. Examine the Python code in this script. 
+The Pandas data frame method astype(str) casts the contents of the column observer as a string. Running this command creates the column systems and populates its values through string manipulation of the values in the column observer. The column observer formats its values as {'name': 'FQDN'}, which are two substrings in single quotes that are separated by a colon. This substring arrangement allows the function str.rsplit to use the single quote delimiter to split the string. 
 
 ﻿
 
-A class named APT is defined with a constructor which assigns several parameters to instance variables which will be unique for every APT class object. Next, several class variables are created with string values to be used in the class method define(). This method calls print statements which vary, depending on the instance variables and whether or not the argument malname is an empty string. The last several lines of code instantiate two objects of the class APT and call the method define() for each.
+The function str.rsplit("'",3) splits the string {'name': 'FQDN'} at each single quote before FQDN, which creates three substrings. Substrings are counted from zero, so the FQDN is included in substring number two. This is noted with .str[2]. The method str.strip() removes any leading or trailing whitespace characters.
 
 ﻿
 
-5. Exit the text editor by entering :q﻿
+Choosing different substring values changes the results. For example, the output would be different if str[2] was changed to str[0], as displayed in Figure 13.4-12, below. As str.rsplit("'",3) splits the entire string in each entry of the column observer into three substrings, str[0] selects the first substring. The first substring is always {'name.
 
 ﻿
 
-6. Execute the Python script by entering the following command:
-
-python lab2.py
 ﻿
 
-7. Examine the results, which are also provided below:
-
-Lazarus has a MITRE ATT&CK ID of G0032
-Lazarus is known to use the following malware: Wannacry
-Wannacry has a MITRE ATT&CK ID of S0366
-Lazarus affects the following operating system(s): Windows
-Lazarus has a threat level of High
-
-Wet Koala has a MITRE ATT&CK ID of WKRP
-Wet Koala affects the following operating system(s): OSX
-Wet Koala has a threat level of Low
-﻿
-
-An empty string value "" for malname is provided for aptY. This value altered the number of lines printed for the class object.
+Figure 13.4-12
 
 ﻿
 
-8. Open the text editor by entering the following command into the terminal:
+4. Print the column systems of the Elasticsearch query results by entering and executing the following code into a new empty block in the notebook:
 
-vim lab2.py
+print(df['systems'])
 ﻿
 
-9. Set the text editor to Insert mode by entering the letter i﻿
-
-﻿
-
-10. Edit the script lab2.py by adding the following after the last line of code:
-
-aptY.attr3 = "is known to employ"
-aptY.malname = "Phishing attacks"
-aptY.malAttkID = "T1566"
-aptY.define()
-print("")
-aptX.define()
-﻿
-
-11. Exit the text editor's Insert mode by entering ESC.
+The results present duplicate values. 
 
 ﻿
 
-12. Save the contents of the file lab2.py and exit the text editor by entering the following command:
+5. Filter by unique values by invoking the pandas function unique(), as follows:
 
-:wq
+print(df['systems'].unique())
 ﻿
 
-13. Execute the modified script lab2.py and examine the results.
-
-﻿
-
-Use the information from this lab to answer the next series of questions.
+Filtering reduces the number of FQDN values from 1240 to just 14 unique values. 
 
 ﻿
 
+6. Sort the list of unique FQDNs by combining the function sorted() with the function unique(), as follows:
 
+print(sorted(df['systems'].unique()))
+﻿
+Parsing and Filtering with Regular Expressions
+The previous lab presented a method of parsing and filtering data that uses string manipulation with the functions rsplit() and strip(). Data can also be parsed and filtered using regular expressions, which act as a powerful shorthand for complex pattern matching. 
 
+﻿
 
+Regular expressions can be used with the Elasticsearch query results from Lab2. In this example, the column observer contains strings that include FQDNs with extraneous characters and information. Figure 13.4-13, below displays how head() is used to limit the number of lines that are printed from the data frame:
 
+﻿
 
+﻿
 
+Figure 13.4-13
 
+﻿
 
+Each entry in this column follows the pattern {'name': '[FQDN]'}. To extract specific data from each row in the column, a regular expression can be used to parse the FQDN from the substring housed within the second set of single quotes as shown in the code block in Figure 13.4-14, below:
 
+﻿
 
+﻿
 
+Figure 13.4-14
 
+﻿
 
+In this code block, the module for regular expressions (re) is imported, and the data within the column observer is cast into strings. Then, the data in each row of observer is inspected using the function re.findall(). This function is useful in this case since there are multiple pattern matches for each row. The following regular expression is used with this function:
 
+r'\'(.+?)\''
+﻿
 
+This regular expression includes the following components:
 
+r - Treats the pattern as a raw string that allows escape characters.
+' - Opens the pattern (only the first single quote).
+\' - Indicates that a single quote is part of the pattern and not a closing single quote ending the pattern.
+(.+?) - Accepts any characters that follow the previous single quote in a non-greedy fashion. Without the question mark, the entire original string would be returned.
+\' - Closes the second single quote pattern, which results in a pattern that searches for any characters contained by single quotes.
+' - Closes the first single quote pattern and defines what the regular expression should search for.
+The function re.findall() returns a list containing all pattern matches within a string. This is useful because each string has two regular expression pattern matches. For example, the first string results in ['name', 'dmz-smtp.energy.com]. Since it is clear that the second substring contains the FQDN, only fqdn[1] is printed in the code block from Figure 13.4-14, above.
 
+﻿
 
+The following additional regular expression parsing functions are also available:
 
+re.match() - Searches for a regular expression pattern in a string and returns the first occurrence in the first line. Also ignores any additional patterns that exist in a multi-line string.
+re.search() - Finds the first pattern match for every line in a string.
+Parsing and filtering data allows analysts to reduce the size of a dataset and format it for further analysis. A common analysis task is to search data to match known strings or substrings. The systems data from the notebook Lab2 is an example of data that is ready for closer analysis since it was parsed and filtered in the last lab. This data provides strings and substrings to match against. 
 
+﻿
 
+Search Data with Regular Expressions
+Continue working in the VM lin-hunt-cent. Identify indicators of compromise by using the regular expression module to search the Elasticsearch query results for the following systems:
 
+BP-WKSTN-10.energy.lan
+eng-wkstn-3.energy.lan
+zeroday.energy.lan
+Workflow
+﻿
+1. Open the notebook Lab2 in Jupyter Notebook, if it is not already open.
 
+﻿
 
+2. Search the Elasticsearch query results by entering and executing the following code in the free block at the end of the notebook:
 
+import re
+search_list = ["BP-WKSTN-10.energy.lan","eng-wkstn-3.energy.lan","zeroday.energy.lan"]
 
+for i in df['systems'].unique():
+    for j in search_list:
+        if re.search(j,i):
+            print("Found a match for " + j)
+﻿
 
+This output identifies two systems in the search_list that are present in the Elasticsearch query results, so they are worth investigating. This search calls the function unique() before engaging the column systems to provide refined results. Performing this search without unique() affects the number of results returned and includes the duplicate values that exist in the column systems.
 
+﻿
 
+The method above is useful when there is a list of known strings to search for, such as FQDNs. However, often there is only a substring available, such as wkstn. 
 
+﻿
 
+3. Display all systems containing the substring wkstn in their FQDN by entering and executing the following:
 
+for i in df['systems'].unique():
+    wkstn_hunt = re.search("wkstn", i)
+    if wkstn_hunt:
+        print("Discovered " + i)
+﻿
 
+The search result prints only the FQDNs that meet the criteria in the code. These results indicate that the search is case-sensitive. 
 
+﻿
 
+4. Ignore casing in the search results by adding re.IGNORECASE to the argument and executing the search, again, as follows:
 
+for i in df['systems'].unique():
+    wkstn_hunt = re.search("wkstn", i, re.IGNORECASE)
+    if wkstn_hunt:
+        print("Discovered " + i)
+﻿
 
+This results in the regular expression search and filtering provide the most accurate results, according to the search criteria.
 
 
+Using Python Data Parsing Functions
+Python Data Parsing
+﻿
 
+Parse and filter data from Elasticsearch query results.
 
+﻿
 
+Workflow
+﻿
 
+1. Log in to the VM lin-hunt-cent with the credentials below:
 
+Username: trainee
+Password: CyberTraining1!
+﻿
 
+2. Open the notebook Lab3 in Jupyter Notebook.
 
+﻿
 
+3. Ensure the notebook displays the correct Elasticsearch query results by running each block of code independently, starting from the top, and comparing them to the target output in Figure 13.4-15, below:
 
+﻿
 
+﻿
 
+Figure 13.4-15
 
+﻿
 
+The column message in the Elasticsearch results displays less information than the data displayed in the output. This is because the data string is truncated to easily fit in the window at the expense of visibility.
 
+﻿
 
+4. Expand the truncated data string by entering and executing the following lines of code in the empty cell below the Elasticsearch query results:
 
+pd.options.display.max_rows
+pd.set_option('display.max_colwidth', None)
 
+df['message'].head(1)
+﻿
 
+Figure 13.4-16, below, displays the data in this expanded string. The string starts with information such as a MITRE Adversarial Tactics, Techniques, and Common Knowledge (ATT&CK®) technique Identifier (ID) and name. This may be valuable information for analysts to refer back to and output as an alert.
 
+﻿
 
+﻿
 
+Figure 13.4-16
 
+﻿
 
+5. Parse the information from the first entry in message by entering and executing the following lines of code:
 
+import re
+df['message'] = df['message'].astype(str)
 
+for i in df['message'].head(1):
+    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
+    if attkID:
+        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
+        print(attkID[0], attkName[0])
+﻿
 
+This outputs the following string:
 
+T1055.001 Dynamic-link Library Injection.
+﻿
 
+These results are useful for displaying information about the detected technique. However, the full string in the message column does not reveal a system name.
 
+﻿
 
+6. Include data from the column observer by editing and executing the following code block:
 
+import re
+df['message'] = df['message'].astype(str)
+df['observer'] = df['observer'].astype(str)
 
+index = 0
+for i in df['message'].head():
+    attkID = re.findall(r'technique\_id\=(.*?)\,', i)
+    if attkID:
+        attkName = re.findall(r'technique\_name\=(.*?)\n', i)
+        system = re.findall(r'\'(.+?)\'', df['observer'][index])
+        print(attkID[0], attkName[0], "discovered on system", system[1])
+    index += 1
+﻿
 
+This code block uses two different indexes. In the for loop, the index variable i contains a value from a string in the column message. This makes it safe to perform the regular expression logic against the value i. However, when the column observer is referenced, the value i cannot be used as an index because it is a string and not a reference to the row. Instead, this block of code uses a separate variable, index, which increases by one through each iteration of i. This allows the print statement to reference the correct system name. Figure 13.4-17, below, displays the output:
 
+﻿
 
+﻿
 
+Figure 13.4-17
 
-
-
-
-
-
-
-
-
-
-
-
+Click "Finish" to exit the event.
+Auto-Advance on Correct
 
 
 
