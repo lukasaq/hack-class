@@ -180,10 +180,33 @@ Instantiating an object in Python is similar to calling a method. The difference
 
 Finally, classes may also contain their own methods. Defining a method within a class benefits from the parameter self, which is a reference to a particular object instance. For example, malwa re1 in th e code above is a variab le which  holds a Malware class object with the name Cryptolocker . The me thod define within the class Malware only needs to take in the parameter self, rather than a specific name value. This is because the name Cryptolocker is passed as an instance variable specific to the object malware1 and is referenceable as self.name when used in the class  method.
 
+### CDAH-M15L1-Scripting with Bash
+
+13,1 be comfotable with/ python interactice
+12.3 base 64 decoding
+11.2 AD stuff aduser adgroup adgroupmember _identity_
+****
+
+8. On the top line of the window, enter the following command, with spaces between each asterisk (*):
+
+5 * * * * ~/log_script_2
 
 
 
+The command schedules the log_script_2 to execute every 5 minutes. 
 
+
+NOTE: Each asterisk (*) represents a different time category, in the following order:
+
+
+1. Minute (from 0 to 59)
+2. Hour (from 0 to 23)
+3. Day of month (from 1 to 31)
+4. Month (from 1 to 12)
+5. Day of week (from 0 to 6, where 0 = Sunday)
+
+
+9. Select esc, and enter :wq! to exit and save the crontab. 
 
 
 
