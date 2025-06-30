@@ -208,12 +208,16 @@ NOTE: Each asterisk (*) represents a different time category, in the following o
 
 9. Select esc, and enter :wq! to exit and save the crontab. 
 
+### CDAH-M15L2-Perl and Perl Regular Expressions 
+
+m// - Match
+$string =~ m/is/;
 
 
 
 
 
-
+![image](https://github.com/user-attachments/assets/82514fda-10a5-46f7-9a7c-2cb4a9647137)
 
 
 
