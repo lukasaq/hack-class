@@ -220,4 +220,13 @@ $string =~ m/is/;
 ![image](https://github.com/user-attachments/assets/82514fda-10a5-46f7-9a7c-2cb4a9647137)
 
 
+------------
+
+
+Get-ADUser -Filter * -Properties whenCreated | Sort-Object -Property whenCreated | FT Name, SamAccountName, whenCreated -AutoSize
+
+
+AS-REP roast attack by executing the following query:
+Get-ADUser -filter * -properties DoesNotRequirePreAuth | where {$_.DoesNotRequirePreAuth -eq "TRUE"} | select samaccountname
+
 
