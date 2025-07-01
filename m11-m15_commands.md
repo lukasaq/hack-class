@@ -74,7 +74,7 @@ Get-Service -Name Netlogon | Format-List *
 - `-RequiredServices`: Lists required services.
 - Other parameters: `-DependentServices`, `-ComputerName`, etc.
 
----
+---{$_.name -eq "DNS"}
 
 ### 4. Get-HotFix
 
