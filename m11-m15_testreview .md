@@ -45,4 +45,48 @@
 23 sql and logging into sql server tells data base and table to use and dont foprget ; on the end 15.3
 
 
+---------------------
+
+1 question seach with file explorer for what it is asking for in the log files choose correct one
+
+
+
+
+
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
