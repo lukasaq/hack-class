@@ -198,3 +198,5 @@ Get-ChildItem -Recurse | % { Get-Item $_.FullName -Stream * } | Where Stream -ne
 ![image](https://github.com/user-attachments/assets/03cba1bd-8d84-498b-8d3f-6d740352af56)
 
 
+Get-ChildItem -Recurse <file pah> | % { Get-Item $_.FullName -Stream * } | Where Stream -ne ':$Data'
+
