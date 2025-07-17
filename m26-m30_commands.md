@@ -1,4 +1,4 @@
-
+###################################################################### MOD 26
 
 ---
 
@@ -178,5 +178,963 @@
   - **event.category: network** – Shows all network-related events.
 
 ---------------------------
+
+################################################################################# MOD 27
+
+Here’s a comprehensive breakdown from the file dumpdump.md, focusing on all workflow steps (“Workflow” sections and numbered steps) and explanations for any commands or filters mentioned.
+
+---
+
+## 1. Host Isolation: PowerShell Isolation Tool Workflow
+
+**Workflow Steps:**
+
+1. Log in to VM dc01 (Username: trainee, Password: CyberTraining1!)
+2. Open PowerShell ISE.
+3. Define user-supplied parameters:
+   ```powershell
+   param(
+       [Parameter()]
+       [String]$ComputerName,
+       [String]$RouterIP,
+       [String]$UserName,
+       [String]$Password
+   )
+   ```
+4. Import Active Directory module:
+   ```powershell
+   Import-Module ActiveDirectory
+   ```
+5. Obtain IP of isolated computer:
+   ```powershell
+   $ComputerIP = $(Resolve-DnsName $ComputerName).IPAddress
+   ```
+6. Turn off network adapter in five minutes:
+   ```powershell
+   Invoke-Command -ComputerName $ComputerName -ScriptBlock {Register-ScheduledTask -TaskName 'Isolate' -InputObject ((New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument '-Enable-NetAdapter -Name "Ethernet1" -Confirm:$false') -Trigger (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(5)) -Settings (New-ScheduledTaskSettingsSet)))}
+   ```
+7. Remove host from domain:
+   ```powershell
+   Remove-Computer -ComputerName "$ComputerName" -UnjoinDomainCredential energy\trainee -WorkgroupName "Isolated" -Force
+   ```
+8. SSH into the router:
+   ```powershell
+   plink -ssh vyatta@$RouterIP -i $env:UserProfile\id.ppk -batch
+   ```
+9. Begin router configuration:
+   ```
+   /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin;
+   ```
+10. Create firewall address group:
+    ```
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED address $ComputerIP;
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED description 'Isolated IP Addresses';
+    ```
+11. Create firewall rule:
+    ```
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule default-action 'accept';
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule description 'ISOLATED';
+    ```
+12. Add drop rule for isolated host:
+    ```
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 action 'drop';
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 description 'Isolate IP address';
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 source group address-group ISOLATED;
+    ```
+13. Apply rule to interfaces:
+    ```
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth1 firewall local name Isolation-Rule;
+    (repeat for eth2-eth7)
+    ```
+14. Commit/save changes:
+    ```
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit;
+    /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save;"
+    ```
+15. Ensure script is correct (see above for final script).
+16. Save as IsolateHost.ps1.
+
+**Explanation of Commands:**
+- `param(...)`: Sets up script parameters.
+- `Import-Module ActiveDirectory`: Allows manipulation of AD objects.
+- `Resolve-DnsName ...`: Gets IP address for a hostname.
+- `Invoke-Command ... Register-ScheduledTask ...`: Schedules disabling of network adapter remotely.
+- `Remove-Computer ...`: Removes host from AD domain.
+- `plink ...`: SSH command-line client for automating router configuration.
+- `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper ...`: Vyatta firewall/router config commands.
+- `commit; save;`: Commits and saves router configuration.
+
+---
+
+## 2. Restoration Tool Workflow
+
+**Workflow Steps:**
+
+1. Log in to VM dc01 (Username: trainee, Password: CyberTraining1!)
+2. Open PowerShell ISE.
+3. Define user-supplied parameters:
+   ```powershell
+   param(
+       [Parameter()]
+       [String]$ComputerName,
+       [String]$RouterIP
+   )
+   ```
+4. Import AD module:
+   ```powershell
+   Import-Module ActiveDirectory
+   ```
+5. Restore network access on router:
+   ```bash
+   plink -ssh vyatta@$RouterIP -i $env:UserProfile\id.ppk -batch "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin; /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete firewall group address-group ISOLATED; /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete firewall name Isolation-Rule; ... (repeat for eth1-eth7); /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit; /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save;"
+   ```
+6. Add host back to domain:
+   ```powershell
+   Add-Computer -ComputerName $ComputerName -LocalCredential $ComputerName\Administrator -DomainName energy.lan -Credential energy\trainee -Restart -Force
+   ```
+7. Save as RestoreIsolatedHost.ps1.
+8-9. Log in to VM eng-wkstn-1 (Username: trainee, Password: CyberTraining1!), open PowerShell.
+10. Enable network adapter:
+    ```powershell
+    Enable-NetAdapter -Name "Ethernet1" -Confirm:$false
+    ```
+11-13. Run RestoreIsolatedHost.ps1 from dc01.
+
+**Explanation:**
+- `Add-Computer ...`: Rejoins computer to the domain.
+- `Enable-NetAdapter ...`: Re-enables host’s network adapter.
+
+---
+
+## 3. Identify a Compromised Host (Security Onion & Kibana)
+
+**Workflow Steps:**
+
+1. Open win-hunt VM (Username: trainee, Password: CyberTraining1!)
+2. Open Chrome.
+3. Open “1 - DashBoard - Security Onion” bookmark.
+4. Log in to Security Onion Console.
+5. Adjust time frame (Oct 4, 2022 @ 05:00:00 → Oct 4, 2022 @ 17:00:00), document log counts.
+6. Select Network under Event Category.
+7. Confirm time frame and select source IPs.
+8. Observe IPs in destination ports data.
+9. Go to Kibana Discover - Elastic.
+10. Set columns: source.ip, source.port, agent.type, destination.ip, destination.port.
+11. Add filter to show only data with destination port:
+    ```
+    destination.port exists
+    ```
+12. Search for main engineer subnet traffic:
+    ```
+    destination.port : <port> and event.dataset.keyword :* exe
+    event.provider : Microsoft-Windows-Sysmon
+    ```
+    - Filters for traffic to destination port, involving executable files and Sysmon logs.
+
+**Explanation:**
+- `destination.port exists`: Only shows logs with a destination port value.
+- `event.dataset.keyword :* exe`: Finds log events related to executable files.
+- `event.provider : Microsoft-Windows-Sysmon`: Filters for events provided by Sysmon.
+
+---
+
+## 4. Forensic Artifact Acquisition (Redline)
+
+**Workflow Steps:**
+
+1. Open eng-wkstn-1 VM (Username: trainee, Password: CyberTraining1!)
+2. Create folder “Memory Analysis 2.”
+3. Open Redline > Create Standard Collector.
+4. In Redline, check “Acquire Memory Image,” set destination folder.
+5. Follow “Open Directory Containing Portable Package” link.
+6. Close open dialogs in Redline.
+7. Right-click RunRedlineAudit, Run as administrator.
+8. Wait for Redline CLI to complete.
+9. In Redline dashboard, open AnalysisSession1.mans.
+10. In Analysis Data pane, select Processes, review for malicious ones.
+11. Filter Username column for “trainee.”
+12. In Analysis Data, select Ports to analyze process network connections.
+
+**Explanation:**
+- Redline is an incident response tool for memory/process analysis.
+- Filters in Redline help isolate suspicious processes by user or port.
+
+---
+
+## 5. Log Analysis and Preservation (Kibana, PowerShell)
+
+**Kibana Workflow Steps:**
+
+1. Open win-hunt VM.
+2. Open Chrome.
+3. Select Discover - Elastic bookmark.
+4. Log in to Security Onion Console.
+5. Set search time frame (Sep 21, 2022 @ 00:00:00 → Sep 21, 2022 @ 23:30:00).
+6. Filter by type, set Hide Missing Fields off.
+7. Add columns: agent.name, agent.type, event.code, event.action, event.dataset, event.module, log.level.
+8. Query:
+    ```
+    event.code: 1102 or event.code: 104 or event.code: 517
+    ```
+    - These codes indicate log clear events.
+
+**PowerShell Workflow Steps:**
+
+1. Open bp-wkstn-1 VM (Username: trainee, Password: CyberTraining1!)
+2. Run:
+    ```powershell
+    get-eventlog -list; get-service "ev*" | sort-object status
+    ```
+3. Open bp-wkstn-3 VM (Username: administrator, Password: CyberTraining1!)
+4. Run above PowerShell commands.
+5. Start any stopped event log services:
+    ```powershell
+    start-service -name "ServiceName"
+    ```
+6. Open services.msc to check Windows Event Log service startup type.
+
+**Explanation:**
+- `get-eventlog -list`: Shows all available event logs.
+- `get-service "ev*"`: Lists all services starting with “ev” (e.g., event log services).
+- `start-service -name ...`: Restarts a stopped service.
+- `services.msc`: GUI for managing Windows services.
+- Event codes:
+    - 1102: Windows Event Log was cleared.
+    - 104: Event log was cleared.
+    - 517: Windows Event Log was cleared.
+
+---
+
+## 6. Confirm Modification of Logs
+
+**Workflow Steps:**
+
+1. Open win-hunt VM.
+2. Open Chrome.
+3. Select Discover-Elastic.
+4. Log in to SOC.
+5. Set time frame.
+6. Filter by type, Hide missing fields off.
+7. Ensure columns are added.
+8. Add filter for agent.name = bp-wkstn-3.
+9. In Edit Filter, enter agent.name, select "is", value bp-wkstn-3.
+10. Apply.
+11. Search for:
+    - `event.code: 6006`
+    - `event.action: Log cleared`
+
+**Explanation:**
+- `event.code: 6006`: Windows event log service stopped.
+- `event.action: Log cleared`: Looks for log-clearing events.
+
+---
+
+## 7. Find Malware Attack Paths
+
+**Workflow Steps:**
+
+1. Open bp-wkstn-3 VM.
+2. Run MMC.
+3. Add Computer Management snap-in for Local Computer.
+4. Enable Windows Event Log service (set Startup Type to Automatic, Start it).
+5. Open Sysmon Operational event log.
+6. Filter current log:
+    - Date range: 9/21/2022 12:00:00 AM to 9/22/2022 11:30:00 PM
+    - Event IDs: 1,11,13
+7. Use Find in log: search for "clear-eventlog"
+8. In Kibana, set time frame as above, add columns, filter for agent.name = bp-wkstn-3.
+9. Query:
+    ```
+    event.action: "Process Create (rule: processCreate)" and process.command_line: "powershell"
+    ```
+    - Finds processes created via PowerShell.
+
+**Explanation:**
+- Sysmon Event IDs:
+    - 1: Process creation.
+    - 11: File creation.
+    - 13: Registry object creation.
+- Kibana query finds PowerShell-created processes, which are often part of attacker TTPs.
+
+---
+
+## 8. Malware Analysis (Static & Dynamic)
+
+**Workflow Steps:**
+
+1. Open VM sandbox (Username: trainee, Password: CyberTraining1!)
+2. Run C:\Users\trainee\Desktop\Malware\msg.exe.
+3. Analyze file statically/dynamically (use tools like ProcMon, Process Explorer, Autoruns).
+
+---
+
+## 9. Command-and-Control Mechanism, Timeline, and Analysis
+
+**Workflow:**  
+These sections are more descriptive, but involve using forensic tools/processes to:
+- Examine C2 indicators (network connections, registry entries, processes).
+- Build timelines using file and event timestamps.
+
+---
+
+# Summary Table of Key Commands/Filters
+
+| Command/Filter                                                                            | Explanation                                                                             |
+|-------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------|
+| `param(...)`                                                                              | PowerShell script parameters                                                            |
+| `Import-Module ActiveDirectory`                                                           | Loads AD cmdlets                                                                        |
+| `Resolve-DnsName $ComputerName`                                                           | Resolves computer name to IP                                                            |
+| `Invoke-Command ... Register-ScheduledTask ...`                                           | Schedules network disable task on remote host                                           |
+| `Remove-Computer ... -UnjoinDomainCredential ... -WorkgroupName ... -Force`               | Removes host from AD domain                                                             |
+| `plink -ssh ...`                                                                          | SSH tool for router config                                                              |
+| `/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper ...`                                             | Vyatta router/firewall config                                                           |
+| `Add-Computer ... -DomainName ... -Credential ... -Restart -Force`                        | Adds host to domain, restarts                                                           |
+| `Enable-NetAdapter ...`                                                                   | Enables network adapter                                                                 |
+| `get-eventlog -list; get-service "ev*" | sort-object status`                                | Lists event logs and event-related services                                             |
+| `start-service -name "ServiceName"`                                                       | Starts a stopped service                                                                |
+| `services.msc`                                                                            | Opens Services management GUI                                                           |
+| `event.code: 1102 or event.code: 104 or event.code: 517` (Kibana/Elastic)                | Finds log-clear events                                                                  |
+| `destination.port exists`                                                                 | Filters logs to those with a destination port                                           |
+| `event.dataset.keyword :* exe`                                                            | Finds logs related to executables                                                       |
+| `event.provider : Microsoft-Windows-Sysmon`                                               | Filters for Sysmon logs                                                                 |
+| `event.action: "Process Create (rule: processCreate)" and process.command_line: "powershell"` | Finds process creation events launched by PowerShell                                    |
+
+---
+
+If you need any section expanded or a specific filter/command explained in more depth, just let me know!
+
+
+
+####################################################################################################################################### MOD 28
+
+
+Here’s a comprehensive extraction of all workflow steps from dumpdump.md, followed by explanations for each command and filter mentioned in those workflows.
+
+---
+
+## Extracted Workflow Steps and Command/Filter Explanations
+
+### 1. Identify the Malware for Analysis (Volatility)
+
+#### Workflow Steps
+
+1. Open the Virtual Machine (VM) cuckoo.  
+   **Credentials:** Username: trainee, Password: CyberTraining1!
+2. Open the desktop folder Lab1, right-click and select Open in Terminal.
+3. Run the command:
+   ```
+   volatility imageinfo -f Lab1.vmem
+   ```
+   _Find the profile for the memory capture._
+4. Run:
+   ```
+   volatility pstree -f Lab1.vmem --profile=WinXPSP2x64
+   ```
+   _Analyze running processes._
+5. Run:
+   ```
+   volatility connscan -f Lab1.vmem --profile=WinXPSP2x64
+   ```
+   _View open network connections._
+
+#### Command Explanations
+
+- **volatility imageinfo -f Lab1.vmem**  
+  Identifies the correct profile needed to analyze the memory image (Lab1.vmem).
+- **volatility pstree -f Lab1.vmem --profile=WinXPSP2x64**  
+  Lists processes as a tree structure from the memory image using the specified profile.
+- **volatility connscan -f Lab1.vmem --profile=WinXPSP2x64**  
+  Scans for network connections that were active at the time of the memory capture.
+
+---
+
+### 2. Extract the Malware and Make It Available (Autopsy)
+
+#### Workflow Steps
+
+1. Open web browser, go to localhost:9999/autopsy.
+2. Select New Case.
+3. Enter "toteslegit" in Case Name, select New Case.
+4. Select Add Host.
+5. Select Add Host.
+6. Select Add Image.
+7. Select Add Image File.
+8. Enter `/home/trainee/Desktop/Lab1/Lab1.E01` in Location, leave Type as Disk, Import Method as Symlink.
+9. Select Next.
+10. Select Add.
+11. Select OK.
+12. Select the radio button next to C:/, select Analyze.
+13. Select File Analysis.
+14. Enter "toteslegit" in File Name search.
+15. Select the malicious executable to view contents.
+16. Select Export, then Save File to disk.
+
+---
+
+### 3. Analyze the Malware (Cuckoo Sandbox)
+
+#### Workflow Steps
+
+1. Open browser, go to localhost:8080.
+2. In Cuckoo interface, select Submit a file for analysis.
+3. In dialog, go to Downloads and select the malicious file.
+4. Click Analyze.
+5. Wait for status to change to Reported.
+6. Click file name to see analysis results.
+7. Review Signature findings and Behavioral Analysis tabs for details.
+
+---
+
+### 4. Find a Phishing Email Attack Entry Point
+
+#### Workflow Steps
+
+1. Open desktop folder Lab2, right-click, Open in Terminal.
+2. Run:
+   ```
+   volatility imageinfo -f Lab2.vmem
+   ```
+   _Find the profile._
+3. Run:
+   ```
+   volatility -f Lab2.vmem --profile=WinXPSP2x64 filescan | grep important
+   ```
+   _Locate email file in memory._
+4. Run:
+   ```
+   sudo volatility -f Lab2.vmem --profile=WinXPSP2x64 dumpfiles -Q 0x0000000002ea3720 -n -D /home/trainee/Desktop/Lab2
+   ```
+   _Extract the email from memory._
+5. Run:
+   ```
+   strings 'file.None.0xfffffadfe74e7cf0.important!.eml.dat'
+   ```
+   _View extracted email contents._
+
+#### Command Explanations
+
+- **filescan** — Scans for file objects in memory.
+- **grep important** — Filters files with "important" in the name.
+- **dumpfiles** — Extracts the file from memory using its offset (`-Q`).
+- **strings** — Displays printable strings from the extracted file.
+
+---
+
+### 5. Find a Drive-By Download Attack Entry Point
+
+#### Workflow Steps
+
+1. Open desktop folder Lab3, Open in Terminal.
+2. Run:
+   ```
+   volatility imageinfo -f Lab3.vmem
+   ```
+3. Run:
+   ```
+   volatility -f Lab3.vmem --profile=WinXPSP2x64 pslist
+   ```
+   _Check running processes._
+4. Run:
+   ```
+   volatility -f Lab3.vmem --profile=WinXPSP2x64 iehistory
+   ```
+   _Check Internet Explorer history._
+
+#### Command Explanations
+
+- **pslist** — Lists processes from the memory image.
+- **iehistory** — Extracts Internet Explorer browser history from memory.
+
+---
+
+### 6. Identify the Scope (Elastic/Kibana)
+
+#### Workflow Steps
+
+1. Log in to VM cuckoo-hunt (Username: trainee, Password: CyberTraining1!).
+2. Open Firefox, go to https://199.63.64.92/.
+3. Log in to Security Onion (Username: trainee@jdmss.lan, Password: CyberTraining1!).
+4. Select Kibana.
+5. Set Time Range to Feb 7 2023, 13:30–13:50.
+6. Enter filter:  
+   ```
+   user.name: tammy.wall
+   ```
+   _Find logs for user._
+7. Select Destination IP field to see top IPs.
+8. Add IP 104.53.222.103 as filter.
+9. Examine connection log details.
+10. Remove filter, apply:
+    ```
+    agent.type: winlogbeat AND 104.53.222.103
+    ```
+    _See all logs with this IP._
+11. Apply:
+    ```
+    agent.type: winlogbeat AND “stream-installer.exe”
+    ```
+    _See all logs with this executable._
+12. Expand logs, identify Destination and Host IPs.
+13. Identify IP for eng-wkstn-3.
+14. Use filter file.target and select Visualize.
+15. Back to Kibana discover page.
+16. Enter:
+    ```
+    agent.type: winlogbeat AND “stream-update.exe”
+    ```
+    _Search for more malware activity._
+17. Analyze search results, select destination.ip to view addresses.
+18. Select host.ip filter for connected devices.
+
+#### Filter Explanations
+
+- **user.name: tammy.wall** — Filter logs by this user.
+- **agent.type: winlogbeat AND 104.53.222.103** — Show logs from Winlogbeat agent involving this IP.
+- **agent.type: winlogbeat AND "stream-installer.exe"** — Logs for the specific executable.
+- **file.target** — Filter for specific file targets.
+- **destination.ip** and **host.ip** — Show top destination and host IPs for activity.
+
+---
+
+### 7. Gather Threat Intelligence (Volatility & Cuckoo)
+
+#### Workflow Steps
+
+1. Log in to cuckoo-hunt VM (Username: trainee, Password: CyberTraining1!).
+2. Right-click Evidence folder, Open in Terminal.
+3. Use `imageinfo` (output provided), profile is Win10x64_14393.
+4. Run:
+   ```
+   vol.py psscan -f memdump.mem --profile=Win10x64_14393
+   ```
+   _Find processes._
+5. Search output for stream-update and stream-install processes.
+6. Identify their PIDs.
+7. Run:
+   ```
+   vol.py cmdline -p <PID> -f memdump.mem --profile=Win10x64_14393
+   ```
+   _See command line for each process._
+9. Extract process:
+   ```
+   vol.py procdump -p 4328 -u -f memdump.mem --profile=Win10x64_14393 --dump-dir=Extracts/
+   ```
+10. In Terminal, run:
+    ```
+    cuckoo web
+    ```
+11. Open Firefox, go to localhost:8000.
+12. Submit extracted executable for analysis.
+13. Select Analyze.
+15. Review analysis summary and threat score.
+17. Repeat analysis for stream-update.exe.
+
+#### Command Explanations
+
+- **psscan** — Scans for process objects in memory.
+- **cmdline** — Displays command-line arguments for specified PID.
+- **procdump** — Dumps process executable from memory.
+- **cuckoo web** — Launches Cuckoo Sandbox web interface.
+
+---
+
+### 8. Analyze a Compromised Virtual Machine (win-admin-2)
+
+#### Workflow Steps
+
+1. Log in to VM win-admin-2 (Username: Trainee, Password: CyberTraining1!).
+2. Analyze VM and identify artifacts.  
+   _Artifacts include malicious files, hidden folders, and security settings._
+
+---
+
+### 9. Eradicate Threats
+
+#### Workflow Steps
+
+1. Log in to win-admin-2 VM.
+2. Delete dc.exe and DarkComet-RAT-5.3.1-master directory.
+3. Set Windows Defender SmartScreen "Check apps and files" to On.
+4. Set "Enable Remote Desktop" to Off.
+
+---
+
+### 10. Aid Recovery with Sysinternals
+
+#### Workflow Steps
+
+1. Log in to win-admin-2 VM.
+2. Access Sysinternals at C:\Users\trainee\Desktop\SysinternalsSuite.
+3. Open Autoruns64, let it scan for 3 minutes.
+4. Review Autoruns data for DarkComet and associated .exe files.
+
+---
+
+### 11. Return from Isolation (win-admin-3 and win-admin-4)
+
+#### Workflow Steps (win-admin-3)
+
+1. Log in to win-admin-3 VM.
+2. Review and validate security baseline for removal of adversarial presence.
+
+#### Workflow Steps (win-admin-4)
+
+1. Log in to win-admin-4 VM.
+2. Review and validate security baseline for removal of adversarial presence.
+
+---
+
+### 12. Post-Exploit Recovery Errors
+
+#### Error Discovery Steps
+
+- Use Process Explorer (procexp64) to filter for Lazr.exe.
+- Use Autoruns64 to check for scheduled task StartIT associated with Lazr.exe.
+
+---
+
+## Summary of Commands and Filters Used
+
+- **volatility imageinfo** — Profile identification for memory.
+- **volatility pstree/pslist/psscan** — Process analysis.
+- **volatility connscan** — Network connection extraction from memory.
+- **volatility filescan/dumpfiles** — Locating and extracting files from memory.
+- **volatility iehistory** — Browser history from memory.
+- **strings** — Extract readable text from files.
+- **Kibana filters** — user.name, agent.type, file.target, destination.ip, host.ip for log/event filtering.
+- **vol.py cmdline/procdump** — Command line and process memory extraction.
+- **cuckoo web** — Start Cuckoo Sandbox interface.
+- **Sysinternals Autoruns/Process Explorer** — Check for persistence and running malware.
+- **Windows Defender/Remote Desktop settings** — Security hardening steps.
+
+---
+
+If you want a more detailed explanation of any specific command, filter, or workflow, let me know!
+
+
+################################################################################################################## MOD 29
+
+
+Here are all the workflow steps from the dumpdump.md file, along with explanations for any commands and filters mentioned:
+
+---
+
+## 1. Scan ICS Networks (Zenmap/Nmap)
+
+**Workflow Steps:**
+
+1. Open a console session to the Virtual Machine (VM) hmi-1.
+2. Open the VM win-hunt. The login credentials are as follows:  
+   Username: trainee  
+   Password: CyberTraining1!
+3. Open Zenmap by selecting the Nmap - Zenmap GUI desktop shortcut.
+4. Select the drop-down arrow for the Target field, and select the pre-populated address ranges.
+5. Select Scan.
+6. Select the Topology tab for a high-level visualization of node distribution based on the traceroute feature of Nmap.
+7. Close the Zenmap console by selecting the X in the upper right corner and selecting Close anyway when prompted.
+8. Return to the VM hmi-1 console session.
+
+**Commands/Filters Explanation:**
+
+- **Zenmap/Nmap Scan:**  
+  The scan profile performs a full TCP connect scan against a subset of ports typical to ICS networks. The "Target" field in Zenmap selects which hosts or networks to scan, and the Command field (auto-updated) shows the exact Nmap command.
+- **Topology Tab:**  
+  This uses traceroute data from the scan to graphically represent network node relationships.
+
+---
+
+## 2. Passive Enumeration of ICS Networks (GRASSMARLIN)
+
+**Workflow Steps:**
+
+1. Open GRASSMARLIN by selecting the GrassMarlin shortcut on the desktop.
+2. Select File > Open Session.
+3. Select Documents > OT Network Map.gm3, and select Open.
+4. From the toolbar, select Packet Capture > Manage Networks.
+5. Remove the existing network definitions by selecting the Classless Inter-Domain Routing (CIDR) blocks and selecting the Delete key on the keyboard.
+6. In the Add CIDR field, enter the first CIDR block of 172.16.80.0/29, and select the Add CIDR button.
+7. Repeat the previous step to add the following CIDR blocks:  
+   - 172.16.80.8/29  
+   - 172.16.80.16/28  
+   - 172.16.79.32/29
+8. Select Finish to complete the process.
+9. In the left pane, select the drop-down arrow to the left of the 172.16.80.0/29 subnet. Right-click 172.16.80.2, and select View Details for 172.16.80.2.
+10. Resize the Node Details window that appears so that the device attributes are visible.
+11. Close the Node Details window.
+12. Select the drop-down arrow to the left of the 172.16.80.8/29 subnet. Right-click 172.16.80.10, and select View Details for 172.16.80.10.
+13. After resizing the window, view the device attributes. In this case, the device category has been properly identified as a PLC.
+
+**Commands/Filters Explanation:**
+
+- **CIDR Blocks:**  
+  CIDR (Classless Inter-Domain Routing) blocks define IP address ranges for network segmentation.
+- **View Details:**  
+  Allows detailed examination of detected ICS devices, including fingerprinting information.
+
+---
+
+## 3. Control a PLC with Modbus (ModbusPal/ctmodbus)
+
+**Workflow Steps:**
+
+1. Open the Virtual Machine (VM) win-hunt.  
+   Username: trainee  
+   Password: CyberTraining1!
+2. Select the ModbusPal desktop shortcut.
+3. Import the PLC simulation project file by selecting the Load button and opening the file PLC_Simulation.xmpp located in C:\users\trainee\Documents.
+4. Activate the simulation by selecting the Play button and select Run to start the Modbus server. Select the eye icon to the right of the PLC object to view the PLC settings.
+5. Select the Coils tab to view the configured coils.
+6. Select the run_ctmodbus.bat desktop icon to open the ctmodbus tool.
+7. In the ctmodbus terminal, run the help command.
+8. Run the following command to open a session with the Modbus simulator:  
+   `connect tcp 127.0.0.1:502`
+9. Once connected, press Enter to acknowledge the message.
+10. Run the following command to read the values for the first five holding registers on the PLC:  
+    `read holdingRegisters 0-4`
+11. Compare the output from the read holdingRegisters command to the holding registers displayed in the PLC.
+12. Run the following command to read the first two coil values on the PLC:  
+    `read coils 0-1`
+13. Run the following command to increase the MaxVoltage holding register value to 240 V:  
+    `write register 3 240`
+14. Run the following command to configure the PLC’s OutputVoltage to 220 V:  
+    `write register 1 220`
+15. Run the following command to turn on the safety override:  
+    `write coil 1 1`
+
+**Commands/Filters Explanation:**
+
+- **connect tcp 127.0.0.1:502**  
+  Connects ctmodbus to the Modbus server running locally on port 502 (the default Modbus TCP port).
+- **read holdingRegisters 0-4**  
+  Reads the values from holding registers 0 through 4.
+- **read coils 0-1**  
+  Reads the state (on/off) of coils 0 and 1.
+- **write register [address] [value]**  
+  Writes a specified value to a holding register at the given address.
+- **write coil [address] [value]**  
+  Writes a value (typically 0 or 1) to a coil at the given address.
+- **help**  
+  Lists available ctmodbus commands and their descriptions.
+
+---
+
+## 4. IR Practices and ICS Systems, Part 1 (GRASSMARLIN)
+
+**Workflow Steps:**
+
+1. Log in to the Virtual Machine (VM) win-hunt with the following credentials:  
+   Username: trainee  
+   Password: CyberTraining1!
+2. Select the GrassMarlin shortcut on the Desktop.
+3. Select File, and then select Open Session.
+4. Select baseline.gm3 from the Desktop/Case folder, and then select Open.
+5. Open the post_exploit.gm3 file by repeating Step 3 and Step 4. Select No when prompted to save the current file.
+6. Compare the baseline and post_exploit environments to answer the following questions.
+
+**Commands/Filters Explanation:**
+
+- **Open Session:**  
+  Loads previously captured network traffic for analysis and comparison.
+
+---
+
+## 5. IR Practices and ICS Systems, Part 2 (Sysmon/Event Viewer)
+
+**Workflow Steps:**
+
+1. Log in to the VM win-hunt with the following credentials:  
+   Username: trainee  
+   Password: CyberTraining1!
+2. If open, close GRASSMARLIN. Select Close, and then select No when prompted to save changes.
+3. Navigate to the Desktop/Case/Logs directory and open sysmon.evtx in Windows Event Viewer.
+4. Select the Date and Time column header to sort the events from oldest to newest. Navigate to the first event.
+5. Select the Find icon in the Action pane.
+6. Enter the following destination IP address:  
+   `172.16.4.20`
+7. Select Find Next.
+8. Click Close on the Find dialog box.
+
+**Commands/Filters Explanation:**
+
+- **sysmon.evtx:**  
+  Windows Event Viewer log file for Sysmon (System Monitor), which logs process creation, file creation, and network connections.
+- **Find (with destination IP):**  
+  Filters the logs to show only events involving network connections to the specified IP address.
+- **Sort by Date and Time:**  
+  Orders events chronologically for easier investigation.
+
+---
+
+If you need more detail about any specific workflow or command, let me know!
+
+
+################################################################################################# MOD 30
+
+
+Here are all the workflow steps pulled out from the file, organized by section. After each workflow, you'll find explanations for any commands or filters mentioned.
+
+---
+
+## 1. **Analyzing IR Script Functionality Workflow**
+### Steps:
+1. Open the Virtual Machine (VM) lin-hunt-cent. The login credentials are as follows:  
+   **Username:** trainee  
+   **Password:** CyberTraining1!
+2. Locate the Python scripts by navigating to `/home/trainee/Desktop/Scripts`.
+3. Analyze the scripts in the folder to assess their functionality. Examine the script code and run the scripts in a terminal window to make the assessment.
+4. Use this workflow to answer the following questions.
+
+**Explanation:**  
+- **Navigating:**  
+  - `cd /home/trainee/Desktop/Scripts` changes directory to where the scripts are stored.
+- **Running scripts:**  
+  - You run Python scripts in the terminal, e.g., `python scriptname.py` or `./scriptname.py` if executable.
+---
+
+## 2. **Modify a Python Script to Increase Automation Capability Workflow**
+### Steps:
+1. Open the VM lin-hunt-cent. Login as before.
+2. Launch a terminal, navigate to `/home/trainee/Desktop/Scripts`.
+3. To prepare for script modification, make a copy of the original `script3.py` file:  
+   `cp script3.py checkprocs.py`
+4. Open the new `checkprocs.py` script in an editor, and modify the script to remove user interaction and iterate over all processes. Comment out all code from line 22 to 31.
+5. Insert the following five lines of code, starting at line 32:
+   ```python
+   for subdir in os.listdir('/proc'):
+       if subdir.isdigit():
+           proc_id = int(subdir)
+       else:
+           continue
+   ```
+6. Save the script and test the modifications by executing:  
+   `sudo ./checkprocs.py`  
+   **Note:** Use the sudo password CyberTraining1!
+
+**Later Steps (Detect deleted executables):**
+1. From the terminal, make a copy of the sleep binary and execute it in the background:  
+   `cp /usr/bin/sleep /tmp/testsleep`  
+   `/tmp/testsleep 9999999 &`
+2. Run `script3.py`, enter the PID, observe output, delete the binary, and rerun:
+   ```bash
+   sudo ./script3.py
+   rm -f /tmp/testsleep
+   sudo ./script3.py
+   ```
+3. Modify fourth line from end:  
+   `if pid_info and pid_info["exe"].split()[-1] == "(deleted)":`
+4. Comment out the final two lines of code.
+5. Save and rerun:  
+   `sudo ./checkprocs.py`
+
+**Explanation:**  
+- **cp:** Copies files.  
+- **&:** Runs a process in the background.  
+- **rm -f:** Force-removes a file.  
+- **sudo:** Runs a command with superuser privileges.  
+- **os.listdir('/proc'):** Lists all entries in `/proc` (process IDs).  
+- **subdir.isdigit():** Checks if the directory name is a number (i.e., a process).
+---
+
+## 3. **Create an Incident Response Script in Python Workflow**
+### Steps:
+1. Open VM and login.
+2. Navigate to `/home/trainee/Desktop/Scripts`.
+3. Open `checkhashes.py` in a text editor.
+4. At location MOD1, add:
+   ```python
+   hash_list_file = sys.argv[1]
+   startpath = sys.argv[2]
+   ```
+5. At MOD2, add:
+   ```python
+   hash_list = []
+   with open(hash_list_file) as fd:
+       hash_list = fd.read().splitlines()
+   ```
+6. At MOD3, add:
+   ```python
+   for root, d_names, f_names in os.walk(startpath):
+       for f in f_names:
+           fname = os.path.join(root, f)
+           f_hash = md5(fname)
+           if f_hash in hash_list:
+               print(f_hash, fname)
+   ```
+7. Save all changes.
+8. In the Scripts directory, open a terminal.
+9. Execute:
+   ```
+   ./checkhashes.py ./hash_list.txt /usr/bin
+   ./checkhashes.py ./hash_list.txt /usr/sbin
+   ```
+
+**Explanation:**  
+- **sys.argv:** Command-line arguments in Python.
+- **os.walk:** Recursively walks through directories.
+- **md5(fname):** Returns the MD5 hash of a file.
+- **print(f_hash, fname):** Prints hashes that match known bad hashes.
+---
+
+## 4. **Evaluate Incident Response Tasks for Automation Workflow**
+### Steps:
+1. Launch a terminal window, run:
+   `sudo su -`
+2. Investigate reports of a bound TCP port 3600:
+   ```bash
+   netstat -natp
+   PID=$(netstat -natp | grep 3600 | awk '{ print $7 }' | cut -d'/' -f1)
+   ```
+3. View process details:
+   ```bash
+   ps -ef | grep $PID | grep -v grep
+   cd /proc/$PID
+   ls -l exe
+   ```
+4. Navigate to the hidden folder and view contents:
+   ```bash
+   cd /tmp/...
+   ls -l
+   ```
+5. Identify systemd startup config for the process:
+   `ps -o unit= $PID`
+6. Show systemd service info:
+   `systemctl status display-client`
+7. Examine account logon activity:
+   `last`
+
+**Explanation:**  
+- **sudo su -:** Become root user.
+- **netstat -natp:** List network connections; `-n` numeric, `-a` all, `-t` TCP, `-p` process info.
+- **grep 3600:** Filters for lines with port 3600.
+- **awk '{ print $7 }':** Extracts the 7th column (PID/Program name).
+- **cut -d'/' -f1:** Splits on `/`, takes the first part (PID).
+- **ps -ef:** Shows all processes.
+- **grep -v grep:** Excludes the `grep` process itself from the results.
+- **ls -l exe:** Shows the executable for the process.
+- **ps -o unit= $PID:** Prints the systemd unit name for a given PID.
+- **systemctl status [service]:** Shows status of a systemd service.
+- **last:** Lists user login history.
+---
+
+## Summary Table
+
+| Workflow Section                                        | Key Commands/Filters                                                                                                                                         |
+|---------------------------------------------------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| Analyzing IR Script Functionality                       | cd, running scripts (python or ./script.py)                                                                                                                  |
+| Modify Python Script (Automation, Detect Deleted Exe)   | cp, &, rm -f, sudo, os.listdir, isdigit(), checking for (deleted)                                                                                             |
+| Create IR Script (Hash Checker)                         | sys.argv, os.walk, md5(), print(), ./checkhashes.py [args]                                                                                                   |
+| Evaluate IR Tasks for Automation                        | sudo su -, netstat -natp, grep, awk, cut, ps -ef, cd /proc/$PID, ls -l exe, ps -o unit= $PID, systemctl status, last                                        |
+
+---
+
+Let me know if you want a deeper explanation of any command, filter, or step!
+
+
+
+
+
+
+
+
 
 
