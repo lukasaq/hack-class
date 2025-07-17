@@ -1290,3 +1290,40 @@ if proc_id > 0:
 
 
 ```
+
+```
+#!/usr/bin/python3
+
+import os
+import sys
+import hashlib
+
+def md5(f):
+    md5_hash = hashlib.md5()
+    try:
+        with open(f, "rb") as fd:
+            for chunk in iter(lambda: fd.read(4096), b""):
+                md5_hash.update(chunk)
+        return md5_hash.hexdigest()
+    except:
+        return False
+
+#MOD1: get command line arguments
+hash_list_file = sys.argv[1]
+startpath = sys.argv[2]
+
+#MOD2: store hashes from file in hash_list
+hash_list = []
+with open(hash_list_file) as fd:
+    hash_list = fd.read().splitlines()
+
+#MOD3: recursively search under startpath, print files matching the hashes
+for root, d_names, f_names in os.walk(startpath):
+    for f in f_names:
+        fname = os.path.join(root, f)
+        f_hash = md5(fname)
+        if f_hash in hash_list:
+            print(f_hash, fname)
+
+```
+
