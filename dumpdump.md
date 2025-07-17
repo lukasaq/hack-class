@@ -1,172 +1,479 @@
-### CDAH-M29L1-ICS Architecture ###
+### CDAH-M30L1-Modify IR Tools ###
 
-
-Operational Technology vs. Information Technology
-OT and ICS are devices and controllers that manage physical industrial equipment and operations. OT devices are hardware and software systems that interface directly with a piece of industrial hardware. OT/ICS controllers may be found on any physical equipment, such as equipment cranes, hospital patient health monitors, and refrigeration sensors. Any microcomputer attached to a physical device and designed specifically to make that device function is an OT device.
-
-﻿
-
-OT/ICS devices are divided into categories based on the kinds of data and equipment they control and how the equipment is controlled. The most common examples are as follows:
-
-Supervisory Control and Data Acquisition (SCADA): SCADA systems are comprehensive system solutions that allow operators to see an entire system’s process within an industrial context; a SCADA suite often includes direct system management tools. An example is a software suite that displays a power plant’s relevant operational data for all the machines that make the power plant function rather than for individual pieces of equipment.
-Distributed Control System (DCS): Similar to SCADA, DCSs create a hierarchical structure of management based on a worker’s role. DCS management levels range from level 0 to level 4, where 0 is a direct machine operation console and 4 might be a plant manager's station. Usually, however, DCS setups are entirely onsite, with no remote administration. For example, a steel mill might use a DCS-based setup to manage factory operations and even report its level 4 data to its parent company’s SCADA setup.
-Programmable Logic Controller (PLC): PLCs are the devices directly connected to the equipment being operated. PLCs usually have some kind of networking built in so that the device can be managed by DCS or SCADA systems. 
-Differences between IT and OT Asset Management and Security
-﻿
-
-IT and OT devices are managed, maintained, and secured differently due to the nature of the organizational needs they fulfill. IT devices like servers and user workstations are designed to fulfill a large number of functions. IT Operating Systems (OS) like Windows contain a multitude of tools so that a user’s needs may be met across a wide range of business disciplines. OT devices, on the other hand, often contain only the system code and function required to operate the specific task they are required to perform. OT devices often need nearly 100% uptime; a power plant’s generators, for example, cannot simply be disabled for updates and routine patches. OT equipment usually entails much greater safety concerns than IT devices. If a Dynamic Host Configuration Protocol (DHCP) server goes down, users may need to stop work briefly, but if a hospital heart monitor stops working, a patient’s physical health may be in jeopardy.
+Analyzing IR Script Functionality
+A Host Analyst on a CPT conducting malware triage often uses scripts to perform IR information gathering. Depending on the Operating System (OS), scripts may be written in different programming languages. PowerShell is typically used on a Windows system, whereas Python or Bash scripts are often used on Linux systems. A CPT may be unfamiliar with the full capabilities of a script and must be prepared to determine the script’s functionality and assess its viability for use in a particular situation, such as script automation. Some aspects of scripts are prohibitive to automation, such as mandatory user interaction during execution. When planning for automation, identification of scripts that require such interaction is necessary, and the CPT may need to determine a strategy to modify the script to allow for automation.
 
 ﻿
 
-Another difference between IT and OT devices is their relative lifecycles. Whereas new IT equipment is replaced, upgraded, and refreshed every few years, OT/ICS equipment is often in place for 1 or 2 decades before being removed due to equipment failure or to a forced equipment change for a new organizational requirement.
+Python scripts often import other modules from libraries to add functionality to the script. For example, the module argparse is often imported to give the script advanced capabilities for handling command-line arguments and parsing different options passed to the script. 
 
 ﻿
 
-OT security has several challenges that IT security lacks. OT devices are often not directly manageable with IT patching solutions and instead may require custom management software, if a fix is available at all. Direct administration is also not an option for most OT devices, as controllers do not contain full OSs and can be accessed only through a physical control panel or through proprietary management software provided by the manufacturer.
+During determination of a script’s functionality, the imported modules can provide clues for the capabilities that the script might have. Many modules are available for import, and online resources can be used to determine the functionality they provide. Table 30.1-1 provides a few examples of available modules
+
+
+<img width="2500" height="1024" alt="image" src="https://github.com/user-attachments/assets/7347d8d2-fd9c-46ed-89a3-95d5344613a1" />
 
 
 
------------------
+-------------------
 
-
-Industrial Control System Components
-OT/ICS equipment consists of several components that work together to create a fully operational environment:
-
-PLCs: PLCs are devices attached directly to physical equipment that governs the operation of that equipment.
-Remote Terminal Units (RTU): RTUs transmit device telemetry and control signals between equipment and SCADA systems.
-Digital Protective Relays, Numerical Relays, and Intelligent End Devices: Digital protective relays, numerical relays, and intelligent end devices are advanced power surge protectors and power regulators.
-Phasor Measurement Units (PMU): PMUs are voltage and amperage management devices, ensuring that the correct amount and kind of power needs are being given to a relevant device.
-Real-Time Operating Systems (RTOS): An RTOS is a device OS that is designed to not fluctuate during operation. IT OSs can vary significantly in performance of similar tasks, but OT RTOSs must be predictable and are therefore designed to perform the same function in exactly the same manner, and in exactly the same amount of time, every time.
-Sensor Networks: Sensor networks are usually monitor-only telemetry units that report back information to a DCS or SCADA system. A network of temperature sensors for refrigeration does not perform any control functions on the refrigeration system but does report back performance, temperature, and other telemetry data.
-Human-Machine Interfaces (HMI): An HMI is any device, or part of a device, designed to allow people to interact with a machine. An HMI may be a control panel composed of buttons and a simple screen, or it may be a piece of software that sends commands to equipment over a network.
-﻿Figure 29.1-1 provides an OT network example. The SCADA server, which allows control of the other devices, is managed through the HMI. The SCADA server manages the PLCs’ tasks on the industrial equipment inside the power plant, based on the readings received from the RTU, which receives data from the temperature sensor.
-
-<img width="1667" height="1770" alt="image" src="https://github.com/user-attachments/assets/93258b4a-fbf2-4d44-b01a-4118e0f3b9e5" />
-
-
-------------------
-
-
-Industrial Control System Roles
-Administration and security within an OT/ICS environment are often divided into roles to set responsibilities and tasks for the correct personnel.
+Determine Capabilities and Functionality of IR Scripts
+In the following lab, assess the functionality of Python scripts that are typical of those found in a toolkit used during IR information gathering, and discover characteristics prohibitive to automation.
 
 ﻿
 
-Network/System Administrators 
+Workflow
 ﻿
 
-System administrators manage the IT aspect of the ICS systems, interconnecting Transmission Control Protocol/Internet Protocol (TCP/IP) devices, configuring computer systems, and monitoring security. The main focus of IT administrators in an OT environment is to secure the IT equipment that can potentially affect OT operations. IT administrators also manage and secure all after-business critical systems just like any other IT environment.
+1. Open the Virtual Machine (VM) lin-hunt-cent. The login credentials are as follows:
 
+Username: trainee
+Password: CyberTraining1! 
 ﻿
 
-Administrators, analysts, and other IT personnel are tasked with managing the servers and workstations that other members of a given organization use daily. Some SCADA systems may be running on Windows or Linux machines that IT manages, but OT equipment rarely falls under general IT purview.
-
-﻿
-
-Operators/Engineers/Technicians 
-﻿
-
-Operators use the OT systems to manage, monitor, and program the physical processes. Operators include any personnel who require OT equipment to perform their relevant functions. A nurse using vital signs monitors and a factory worker cutting steel beams are both considered operators in an OT environment. Engineers and technicians vary across a wide range of disciplines, and OT software engineers may have some overlap with IT administration and security, but technicians and equipment engineers manage or repair only OT-related equipment.
+2. Locate the Python scripts by navigating to /home/trainee/Desktop/Scripts.
 
 ﻿
 
-Security personnel and analysts likely interact with SCADA- and DCS-related systems rather than controllers and device-level components. Every equipment vendor has different tools for managing updates and administration for devices, and security personnel are tasked with learning all the vendor-specific information needed to secure OT systems.
-
-
----------------
-
-Security Tool Use in Industrial Control System Environments
-OT/ICS Vulnerability Management
-﻿
-
-Most OT/ICS components and protocols are sensitive to unexpected or improperly formatted control messages. Use of traditional IT tools, such as vulnerability scanners or port mappers, can cause system instability or even permanent damage. Many OT/ICS devices have only their manufacturer management network port open for communication and are only designed to receive network traffic from their proprietary software. For the sake of availability and operational speed, many standard IT-related communication functions are removed from device controllers, and simple handshakes and remote session requests cause system failure. Because of this, most modern controllers reject all traffic from standard IT devices to maintain stability.
+3. Analyze the scripts in the folder to assess their functionality. Examine the script code and run the scripts in a terminal window to make the assessment.
 
 ﻿
 
-Some ICS functions, such as HMIs or data historians, can be hosted on traditional enterprise OSs like Microsoft Windows or Linux. Telemetry data–generating machines like an HMI do not send many instructions to device controllers and, instead, simply receive forwarded telemetry data, which is then sent upstream to a SCADA system, for example. Traditional IT monitoring and investigation tools, such as PowerShell, Sysinternals, or IR scripts, may not be supported on these devices, however. Such devices rely on passive information-gathering techniques rather than active tools in field networks.
+Use this workflow to answer the following questions
+
+
+
+----------------------
+
+
+Benefits of Automating IR
+Adding automation to IR scripts may be done in numerous ways, but the ultimate goals are to reduce analyst workload and add a level of assurance that nothing is missed. Scripts generally minimize the occurrence of errors when compared with manual examination of systems. Creating automated scripts allows the same checks and information-gathering tasks to be run across multiple systems simultaneously. Performing repetitive tasks becomes less cumbersome, and scripts can be remotely deployed to automatically gather and centralize key system information from many different systems. This reduces the time needed for remediation. 
+
+
+
+
+
+As an example use case, script automation can be used for gathering information about bound Transmission Control Protocol (TCP) ports and their associated processes. Implementing automation to deploy an information-gathering script to remote systems, gather the information, and report back from remote locations to a centralized location significantly decreases the time to identify Indicators of Compromise (IOC) related to ports used or process names. 
 
 ﻿
+
+Scripts already in the Host Analyst’s toolkit can be used as the starting point for the automated tasks. However, because specific details differ from one investigation to the next, the Host Analyst may need to make slight modifications or introduce new functionality to a script to collect the necessary information.
+
+
 
 -----------
 
-Scan ICS Networks
-The following exercises use a simulated Feed Water Treatment System (FWTS) OT network that is part of the vCity Power Plant. The system owner provided the attached network diagram. 
+PowerShell Enhancements for IR
+PowerShell provides many options and cmdlets that help support automation of IR tasks. This section reviews some of PowerShell’s scripting features and provides examples of making enhancements to PowerShell scripts, including the following:
+
+Remote system access
+
+Task repetition
+
+Output formatting
+
+Chaining efficiency
+
+Remote System Access
+﻿
+
+PowerShell cmdlets usually default to running on the local system, but some can accept the parameter -ComputerName to tell the cmdlet to run on a remote system and gather the same information. Many cmdlets support this parameter, and an analyst can use it to quickly gather information across an organization’s network from a single workstation. The following command provides an example of collecting hotfix information from a remote system:
+
+Get-HotFix -Description "Security Update" -ComputerName "hostname"
+﻿
+
+The Invoke-Command cmdlet can be used to run PowerShell code on a remote system and display the results locally. The following example runs the code between the curly braces to display established network connections on the remote system:
+
+Invoke-Command -ComputerName "server1" {Get-NetTCPConnection -State Established}
+﻿
+
+From an automation standpoint, one drawback to running commands on remote systems is that the user is prompted to enter credentials for accessing the remote computer. User interaction may not easily be incorporated into automated scripts, but PowerShell allows the creation of credential objects that can be created and preserved. For example, at the beginning of a script, code may prompt for credentials from the user that all subsequent code in the script requiring authentication can then use.
 
 ﻿
 
-Complete the steps in the following workflow to identify assets on the OT network and demonstrate potential negative impacts of active scanning in an OT network. 
+Running remote commands in a live mission will generate logs and network traffic. It is important to coordinate with the other analysts on the team and take detailed notes. Otherwise, another analyst might misconstrue the team's own actions for malicious cyber activity (MCA). Additionally, configuration changes on a compromised host may alert the adversary to the team's actions.
+
+﻿
+
+Task Repetition
+﻿
+
+Iterating over multiple objects in PowerShell can be accomplished using ForEach or ForEach-Object. In the following example, ForEach is used to iterate over a list of hostnames read from a text file check_hosts.txt and gather hotfix information from each. The list of hosts is stored in a variable, and ForEach is used to step through the entries one at a time. 
+
+$host_to_check = Get-Content -Path "C:\check_hosts.txt"
+ForEach ($host in $host_to_check) {
+    Get-HotFix -Description "Security Update" -ComputerName $host
+}
+﻿
+
+This code can be written more concisely by passing the list of hostnames directly to ForEach-Object and using the PowerShell variable $_ to refer to the individual hostname:
+
+Get-Content -Path "C:\check_hosts.txt" | ForEach-Object {
+    Get-HotFix -Description "Security Update" -ComputerName $_
+}
+﻿
+
+This type of object iteration is possible for many cmdlet outputs.
+
+﻿
+
+Output Formatting
+﻿
+
+Most PowerShell cmdlets output data to the console using a table format, just as if the output is piped to the Format-Table cmdlet.
+
+﻿<img width="837" height="427" alt="image" src="https://github.com/user-attachments/assets/530cf6fe-fd13-4451-b3a0-f69536a84554" />
+
+Figure 30.1-1 shows the default table outputs for the Get-Hotfix and Get-NetTCPConnection cmdlets. Some cmdlets, such as Get-Date, do not show a table by default. However, the output of Get-Date can be piped to Format-Table to force the output into a table, as shown in Figure 30.1-2
+
+
+<img width="837" height="262" alt="image" src="https://github.com/user-attachments/assets/27d908ae-1a49-4bf5-90b5-1bf54f25cbd6" />
+
+
+By piping output to Format-Table, data can be grouped by a particular column. Used in conjunction with the Sort-Object cmdlet, data can be organized in a more readable form. The following example code demonstrates this:
+Get-Hotfix | Sort-Object Description | Format-Table -GroupBy Description
+
+
+
+When it is necessary to send the output of cmdlets to a file, the two cmdlets Out-File and Export-CSV are useful, depending on the desired output format of the resulting file. For text output, Out-File is used, and for Comma-Separated Values (CSV) output, Export-CSV is used, as the following examples show:
+Get-Hotfix | Out-File "C:\folder\data.txt"
+
+Get-Hotfix | Export-CSV -Path "C:\folder\data.csv"
+
+
+
+Chaining Efficiency
+
+
+The output of a PowerShell cmdlet is typically an object that can be used to chain into other cmdlets and filter results. These chains can extend for multiple outputs. For example, consider the following command with each part of the chain shown in alternating normal and italicized text:
+(Get-ADComputer -Filter 'operatingsystem -like "*server*" ').Name | 
+Foreach-Object {Invoke-Command -ComputerName $_ {Get-NetTCPConnection -State Established -ErrorAction SilentlyContinue}
+ | Sort-Object PSComputerName | 
+Select-Object PSComputerName, LocalPort, RemotePort, RemoteAddress}
+ | Out-File C:\Temp\TCP_Conn.txt
+
+
+
+In the first chain, the command queries the domain for servers that have the string server in their OS name. Those objects are piped to the next chain, which iterates over the list and remotely gathers the established TCP connections on each. Use of the modifier -ErrorAction SilentlyContinue allows the rest of the iterations to continue, even if an error occurs during the collection of information. This can be important for automation to ensure that the script is not disrupted by periodic errors that are not critical in nature. The results are further piped into subsequent chains to be sorted, and specific fields are pulled out of the output and stored in a local file
+
+
+-------------
+
+
+Modify a Python Script to Increase Automation Capability
+Scenario: An analyst is investigating suspected infections of Linux systems. The malware is known to randomize the process name, but one characteristic of the malware is that the executable file that launches the malicious process is deleted from the file system after the process starts. The Python code in script3.py can be used as a starting point for creating an automated script that can be used for subsequent IR activities related to tracking down the malware.
+
+﻿
+
+The challenge is that the starting script is not yet suitable for automation. In its current state, the starting script requires user interaction during runtime, and it works on only a single process. To be effective, the modified script needs to examine all the processes on a system and identify which processes show indications that the process executable file has been deleted.
+
+﻿
+
+In the following lab, modify an existing Python script to improve its ability to be used in automated IR activities. Remove runtime user interaction requirements, and expand the scope of the script to examine all processes.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Open a console session to the Virtual Machine (VM) hmi-1.
-
-﻿
-
-The HMI, illustrated in Figure 29.1-2, is a critical device that allows plant operators to monitor and control processes associated with an FWTS:
-
-﻿
-<img width="816" height="614" alt="image" src="https://github.com/user-attachments/assets/31583cd2-e3f5-4f04-8ad0-09f986251680" />
-
-
-2. Open the VM win-hunt. The login credentials are as follows:
+1. Open the VM lin-hunt-cent. The login credentials are as follows:
 
 Username: trainee
-Password: CyberTraining1!
+Password: CyberTraining1! 
+﻿
 
-
-
-3. Open Zenmap by selecting the Nmap - Zenmap GUI desktop shortcut.
-
-
-4. Select the drop-down arrow for the Target field, and select the pre-populated address ranges. These address ranges were selected based on the network diagram provided by the system owner. 
-
-
-
-<img width="675" height="202" alt="image" src="https://github.com/user-attachments/assets/f8925620-70d7-435c-bc78-ebed12af1e21" />
-
-
-The Command field is automatically updated with the selected address ranges. This scan profile performs a full TCP connect scan against a small subset of ports that may be found in an ICS network. The command also performs a traceroute to help visualize the network path from the Zenmap scanning host to the target networks. A Cyber Defense Analyst (CDA) typically performs a more complete port scan, but the number of ports in this exercise is reduced to save time.
-
-
-<img width="677" height="222" alt="image" src="https://github.com/user-attachments/assets/cb53df13-4d76-436c-b6c2-5fb97b8b02f8" />
-
-5. Select Scan
-
-<img width="674" height="204" alt="image" src="https://github.com/user-attachments/assets/f71cbc51-d459-46e1-b7ea-ecdd94ea2b83" />
-
-Once the scan is complete, an Nmap done message appears at the bottom of the Nmap Output display
-
-<img width="671" height="711" alt="image" src="https://github.com/user-attachments/assets/013dd609-37ab-4c71-a450-631b78a371ce" />
-
-6. Select the Topology tab for a high-level visualization of node distribution based on the traceroute feature of Nmap
-
-<img width="674" height="714" alt="image" src="https://github.com/user-attachments/assets/babdfc2a-bf59-4c48-b714-efa74ed343e9" />
-
-The Nmap scan detected most of the hosts in the scanned networks. However, the scanning activity had a negative impact on some assets in the network. 
-
-
-7. Close the Zenmap console by selecting the X in the upper right corner and selecting Close anyway when prompted. 
-
-
-8. Return to the VM hmi-1 console session.
-
-
-The HMI display is no longer visible. The HMI software did not know how to interpret the received data associated with the scan, causing a failure condition. Thus, operators cannot use this terminal to monitor and control the FWTS until the failure is corrected. This is an example of potential impacts that active interactions with ICS components can have. 
-
-
-Keep the VMs hmi-1 and win-hunt open, as they are used in the next workflow
-
---------------
-
-Passive Enumeration of Industrial Control System Networks
-The following exercise demonstrates how the tool GRASSMARLIN can be used to identify assets in an ICS network through passive detection. GRASSMARLIN is an open-source project developed by the National Security Agency (NSA) that can passively map and visually display an ICS/SCADA network topology while safely conducting device discovery, accounting, and reporting on these critical systems. GRASSMARLIN is capable of extracting this data from live network capture, ingesting a packet capture, parsing Zeek logs, or consuming Cisco® router/switch configuration files and Address Resolution Protocol/Media Access Control (ARP/MAC) caches. The exercise uses a GRASSMARLIN session that was created using offline packet capture from the vCity Power Plant FWTS OT network. 
+2. Launch a terminal window, and navigate to /home/trainee/Desktop/Scripts.
 
 ﻿
 
-NOTE: The VM win-hunt should remain open from the prior workflow. If it has been closed, log in again using the following credentials:
+3. To prepare for script modification, make a copy of the original script3.py file:
+
+cp script3.py checkprocs.py
+﻿
+
+4. Open the new checkprocs.py script in an editor, and modify the script to remove user interaction and iterate over all processes rather than just one process. Comment out all code from line 22 to line 30.
+
+﻿
+
+5. Insert the following five lines of code, starting at line 32:
+
+for subdir in os.listdir('/proc'):
+    if subdir.isdigit():
+        proc_id = int(subdir)
+    else:
+        continue
+﻿
+
+Figure 30.1-3 shows the changes that should be made to the new script
+
+
+
+<img width="757" height="514" alt="image" src="https://github.com/user-attachments/assets/926d578e-ace0-4088-97e4-660afe74bb5d" />
+
+
+6. Save the script, and test the modifications by executing the new script from a terminal prompt:
+sudo ./checkprocs.py
+
+
+
+NOTE: When prompted, use the sudo password CyberTraining1!
+
+
+With these changes, the checkprocs.py script iterates over all processes and does not require the user to provide a Process Identifier (PID) number to examine. This is the first modification to making a script that is suitable for automation.
+
+
+The next modification to be made is to identify processes whose executable files have been deleted. Prior to making those modifications to the script, determine how a process with a deleted executable can be detected. A copy of the system executable sleep is made and used to launch a new process. The process information is examined first, and then the corresponding executable is deleted. The process is reexamined to note the differences and make a determination of how to detect those processes in the script.
+
+
+Workflow
+
+
+1. From the terminal prompt, make a copy of the sleep binary, and execute the copied binary in the background with a large time argument. Make a note of the PID value displayed after running the executable in the background:
+cp /usr/bin/sleep /tmp/testsleep
+
+/tmp/testsleep 9999999 &
+
+
+
+2. Run the script3.py script, and enter the PID of testsleep when prompted. Observe the output, delete the testsleep executable file, and re-run script3.py to check the difference in output:
+sudo ./script3.py
+
+rm -f /tmp/testsleep
+
+sudo ./script3.py
+
+
+<img width="723" height="201" alt="image" src="https://github.com/user-attachments/assets/1dcf7d33-da7e-4334-82eb-067ac8b3cdfd" />
+
+
+The output after the second execution of script3.py displays the EXE value with the string label (deleted) appended after the executable name. That string can be used to limit the output of the checkprocs.py script to only those processes with deleted executables.
+
+
+Continue modifications of the script checkprocs.py to identify only the processes that have had the executable deleted.
+
+
+3. Modify the fourth line from the end of the script as the following:
+    if pid_info and pid_info["exe"].split()[-1] == "(deleted)":
+
+
+
+4. Comment out the final two lines of code:
+
+
+
+<img width="764" height="139" alt="image" src="https://github.com/user-attachments/assets/24caf664-2fe5-4bbf-b240-ddb1552d5e09" />
+
+
+5. Save the file, and re-run the newly modified script:
+sudo ./checkprocs.py
+
+
+
+The output shows the test process created above that had the executable file deleted. With those modifications, the checkprocs.py script now examines all the processes on the system and displays only those that meet the criterion of having had the executable for a running process removed. This script is rea dy for aut omated use  and can b e  further tail ored as needed to  meet addition al automation requirements
+
+
+
+
+----------------------
+
+
+### CDAH-M30L2-Create an IR Tool ###
+
+
+Evaluating Incident Response Tasks for Automation
+During an IR, analysts perform activities to investigate an incident and identify the malicious artifacts on one or more systems. Some tasks may be more challenging than others because they require laborious actions across multiple systems.
+
+﻿
+
+IR often starts by gathering initial information and expanding on what is found to guide further research. This can complicate an automated response because each subsequent task may depend on the findings of a previous task. However, there might be an initial starting point to begin the investigation, such as a suspicious file, process name, or date/time. Automating the investigation using those pieces of information is easier to accomplish because search items are known and can be programmed into the automation script.
+
+﻿
+
+According to the Cybersecurity and Infrastructure Security Agency (CISA) Cybersecurity Incident & Vulnerability Response Playbooks, IR includes four steps:
+
+Preparation
+Detection and Analysis
+Containment, Eradication, and Recovery
+Post-Incident Activity
+
+Activities that make up the second and third steps — Detection and Analysis, and Containment, Eradication, and Recovery — provide opportunities for automation. Expanding IR activities to include multiple systems can complicate implementation of automation.
+
+﻿
+
+Detection and Analysis
+﻿
+
+Gathering Information
+﻿
+
+One of the first tasks in IR engagements is to gather information and gain situational awareness of the current state of the system. This may mean gathering specific information, such as acquiring a listing of the processes running on the system or performing a full system survey. In either case, information-gathering tasks are typically well suited to automation, especially if no decisions are being calculated based on the information gathered. However, if the goal is to gather information and take additional steps based on what is found, automation may be more difficult.
+
+﻿
+
+Traversing the File System
+﻿
+
+A common requirement for IR is to search a file system for files or directories based on specific characteristics, such as timestamps, owners, permissions, or hash values. This task is well suited to automation and can save significant time when compared to manual examination of the file system. However, performance considerations of the types of actions being done on a per-file basis can impact the time required to conduct the activity. For example, searching an entire file system for a specific filename is relatively quick compared with the laborious task of gathering an algorithmic hash value of each file based on the file’s contents.
+
+﻿
+
+Querying Databases
+﻿
+
+Analysts may need to access many types of databases during an investigation. On Windows, the Registry is an important source of information. Remote logging systems, such as Kibana or Splunk, may provide information about an event as well. Accessing these information sources can be automated but require the use of the Application Programming Interface (API) used by the remote database system.
+
+﻿
+
+Searching and Parsing Logs
+﻿
+
+System log files represent another key source of information. On Windows, that includes the Event Logs and other subsystem log files, such as the firewall logs. On Linux, many different log files exist, depending upon what has been configured on the system, most of which are plaintext log files. Performing searches of these logs can be automated. However, variance in log file formats may necessitate tailoring each automation script to the specific log being accessed. If the log is in binary format, it may not be easily automated without the use of parser utilities.
+
+﻿
+
+Containment, Eradication, and Recovery
+﻿
+
+Collecting Artifacts
+﻿
+
+The task of collecting, isolating, and hashing artifacts can often be automated. A difficult aspect of automating an artifact collection is making a determination of what should be collected. Once identified, automating actions taken on the artifact is relatively simple. An important consideration when automating the collection is ensuring that the system does not experience such resource issues as low memory or disk space. If the automated tasks blindly perform the activity without regard for resource availability, the target system might run out of resources.
+
+﻿
+
+Configuration Changes
+﻿
+
+Automating mitigation and removal of malicious activity is possible, but if the automation script must parse and make decisions on what to change, it may cause undesirable modifications to occur. When it comes to automation, tasks that are highly specific, such as going to a known file and modifying a set value within or removing a particular file, are more easily automated.
+
+
+--------------------
+
+
+Create an Incident Response Script in Python
+In the following lab, read the scenario. Then complete the workflow steps to create a Python script that reads a text file of hashes and searches specific folders for matches. The script should report any matching hash with its associated filename and path.
+
+﻿
+
+Scenario
+﻿
+
+Indications of a user-level rootkit have been detected in various systems across an organization. The rootkit replaces different binaries on Linux systems, and a list of MD5 hashes for known malicious binaries has been collected. Host Analysts conducting IR are instructed to use the list to search systems and determine if any of the binaries are present. The list of file hashes is provided in a text file, with a single hash on each line.
+
+﻿
+
+Workflow
+﻿
+
+1. Open the Virtual Machine (VM) lin-hunt-cent. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1! 
+﻿
+
+2. Navigate to the folder /home/trainee/Desktop/Scripts.
+
+﻿
+
+3. Open the file checkhashes.py in a text editor.
+
+﻿
+
+The script already has modules imported and a function defined called md5(). The function accepts a string parameter containing the full path and name of a file and returns the MD5 hash for the file as a string.
+
+﻿
+
+In the following steps, locations for additional modifications to the script are identified in the script with labels (for example, MOD1, MOD2).
+
+﻿
+
+4. At location MOD1, add the following code to the script to store the command-line arguments: 
+
+hash_list_file = sys.argv[1]
+startpath = sys.argv[2]
+﻿
+
+The above code uses the imported sys module to quickly access the command-line arguments. The first argument is the filename containing the hashes for the search. The second argument is the path of the starting folder to begin the recursive search. By providing support for command-line options, the script is made more flexible for use in circumstances beyond the task at hand.
+
+﻿
+
+5. At location MOD2, add the following code to read the hash list from the file and store the hashes from it as a list in a variable to be used in subsequent code for hash comparisons:
+
+hash_list = []
+with open(hash_list_file) as fd:
+    hash_list = fd.read().splitlines()
+﻿
+
+The above code creates an empty list variable and opens the hash file provided on the command line. It reads the entire file contents, splitting the contents along individual lines so that each hash from the file is stored as a value in the list.
+
+﻿
+
+The script needs to calculate the MD5 hash of each file examined. This can require significant time, depending on the total number of files. The analyst must consider the performance implications of iterating over many files and reading each one completely to calculate the hash. When deciding between iterating over the list of hashes and comparing those with each file or iterating over the files and comparing with the hashes, the latter option is the most efficient, as each file hash is generated only once.
+
+﻿
+
+6. At location MOD3, add the code to iterate over the files recursively, starting at the top-level folder provided on the command line:
+
+for root, d_names, f_names in os.walk(startpath):
+    for f in f_names:
+        fname = os.path.join(root, f)
+        f_hash = md5(fname)
+        if f_hash in hash_list:
+            print(f_hash, fname)
+﻿
+
+The imported os module provides a function to walk recursively through a directory and its subdirectories. A list of folders and files is retrieved each time through the loop, and the list of files in the directory is used in a loop to iterate through each file, generating its MD5 hash. The code checks whether the hash appears somewhere in the hash_list generated in the previous step. If a match is found, the hash and the filename are printed to the console.
+
+﻿
+
+7. Save all changes to the file.
+
+﻿
+
+A list of hashes to search for is provided in the file /home/trainee/Desktop/Scripts/hash_list.txt.
+
+﻿
+
+8﻿. Right-click in the Scripts directory and click Open in Terminal.
+
+﻿
+
+
+9. Execute the following scripts:
+
+./checkhashes.py ./hash_list.txt /usr/bin
+./checkhashes.py ./hash_list.txt /usr/sbin
+﻿
+
+Using the above script, the hash_list.txt file is provided as the first command-line argument, and the folders /usr/bin and /usr/sbin are provided sequentially as the second argument to be used as the starting folder. The top-level / folder could be used a starting point, but the execution time would be long.
+
+﻿
+
+The outputs should show any files in the two folders that have an MD5 hash matching anything listed in the hash_list.txt file. This script now allows a Host Analyst to quickly identify potential malicious files matching the provided list. The added support for command-line arguments can also be used to easily check other folders or use different lists of hashes.
+
+﻿
+
+Using this workflow, respond to the following questions.
+
+﻿
+
+Keep the VM lin-hunt-cent open, as it is used in the next lab
+
+
+------------------------
+
+
+Evaluate Incident Response Tasks for Automation
+Some IR tasks leverage specialized tools or software, such as imaging of system memory or drives. Other tasks are aimed at gathering and analyzing information from different system resources, such as processes or log files. Similarly, some are better suited for script automation than others.
+
+﻿
+
+In the following lab, consider a scenario in which an analyst is conducting an investigation on a system for which they have had no previous access. Decide which IR tasks should be done manually, without automated assistance, and which are more suitable for automation.
+
+﻿
+
+The VM lin-hunt-cent should still be open from the previous workflow. If it is not open, log in to the VM using the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
@@ -175,684 +482,86 @@ Password: CyberTraining1!
 Workflow
 ﻿
 
-1. Open GRASSMARLIN by selecting the GrassMarlin shortcut on the desktop.
+
+1. Launch a terminal window, and run the following command to elevate the privileges to root:
+
+sudo su -
+﻿
+
+Using the root shell, the first activity is to investigate reports of an unusual bound Transmission Control Protocol (TCP) port 3600 on the system.
 
 ﻿
 
-2. Select File  > Open Session:
+2. Run the following commands to launch a root-owned shell and find the process that has bound the port:
 
-<img width="318" height="288" alt="image" src="https://github.com/user-attachments/assets/f6525dc3-99d4-45db-9f7e-4b083465fba2" />
+netstat -natp
+PID=$(netstat -natp | grep 3600 | awk '{ print $7 }' | cut -d'/' -f1)
+﻿
 
-3. Select Documents > OT Network Map.gm3, and select Open:
+The identification (ID) number for the process in question is now stored in the environment variable $PID.
 
+﻿
 
-<img width="845" height="483" alt="image" src="https://github.com/user-attachments/assets/689bee27-39b0-49be-8e7f-43f0877a1dca" />
+3. View the process details in the process list, navigate to the /proc folder for the process, and discover the exe value to locate the process executable:
 
-The saved session may require up to 2 minutes to load. The session data was created by ingesting approximately 1.3 gigabytes (GB) of network traffic that was captured by the Network Analyst team monitoring the OT network. Parsing the 1.3 GB of packet capture by GRASSMARLIN required about 15 minutes, which is why the session data was preloaded for the exercise. 
+ps -ef | grep $PID | grep -v grep
+cd /proc/$PID
+ls -l exe
+﻿
 
+The executable is located in the /tmp/... folder, which is an unusually named hidden folder.
 
-GRASSMARLIN can analyze the captured network traffic to identify network assets as well as define communication flows between these assets. GRASSMARLIN also ships with profiles that can be used to fingerprint the observed device types and protocols.
+﻿
 
+4. Run the following commands to navigate to the hidden folder and view the folder contents:
 
-Once the session loads, the Logical Graph tab is populated with the identified devices, as depicted in Figure 29.1-10. GRASSMARLIN was able to use device fingerprinting to observe Modbus traffic and properly label ICS devices with a power line icon. By default, the detected assets are separated into subnets based on /24 subnet masks, which does not accurately match the network layout. GRASSMARLIN provides the ability to specify custom subnets to enhance the visualization.
+cd /tmp/...
+ls -l
+﻿
 
-<img width="645" height="730" alt="image" src="https://github.com/user-attachments/assets/b98fb22d-71cc-4e8f-9a8e-c9d7d68f35ed" />
+The file of interest is an executable named s1eep. (Note the use of the numeral 1 rather than the letter l in the filename.)
+﻿
 
-4. From the toolbar, select Packet Capture > Manage Networks
+﻿
 
-<img width="430" height="247" alt="image" src="https://github.com/user-attachments/assets/64b0bba9-291f-4a0b-84ba-d131fd1366d8" />
+5. Using the Process Identifier (PID), run the following command to identify any systemd startup configuration files for the process. (The space between the = and $ characters is required.)
 
-5. Remove the existing network definitions by selecting the Classless Inter-Domain Routing (CIDR) blocks and selecting the Delete key on the keyboard:
+ps -o unit= $PID
+﻿
 
-<img width="450" height="134" alt="image" src="https://github.com/user-attachments/assets/07037c13-5854-45c4-969c-7d486f86c51d" />
+The output shows that a systemd service file named display-client.service is associated with the suspicious process.
 
-6. In the Add CIDR field, enter the first CIDR block of 172.16.80.0/29, and select the Add CIDR button
+﻿
 
-<img width="447" height="296" alt="image" src="https://github.com/user-attachments/assets/e77e6c54-2b12-4593-a2a6-92506ed00a04" />
+6. Show information about the systemd service by running the following command:
 
-7. Repeat the previous step to add the following CIDR blocks:
-172.16.80.8/29
-172.16.80.16/28
-172.16.79.32/29
+systemctl status display-client
+﻿
 
-8. Select Finish to complete the process
+This information can be used to search for other files on the system that may have been modified at the same time. It can also be used to search for account activity during that time.
 
-<img width="446" height="292" alt="image" src="https://github.com/user-attachments/assets/ddb2903d-3bc3-4e1b-b072-d04d481aeedd" />
-GRASSMARLIN has updated the Logical Graph to properly identify devices in their appropriate subnets:
+﻿
 
-<img width="726" height="784" alt="image" src="https://github.com/user-attachments/assets/25170195-2334-46e4-9446-d051ceb47168" />
+7. Run the following command to examine the account logon activity:
 
+last
+﻿
 
-GRASSMARLIN can also provide information about the type of ICS components that were discovered.
- 
-9. In the left pane, select the drop-down arrow to the left of the 172.16.80.0/29 subnet. Right-click 172.16.80.2, and select View Details for 172.16.80.2
+The output of the command shows that the account backup logged on at about the same time as the timestamps of the executable file and the service activation.
 
-<img width="508" height="400" alt="image" src="https://github.com/user-attachments/assets/e77adde5-0e7a-47fe-99fc-1d890c4e27eb" />
+﻿
 
-10. Resize the Node Details window that appears so that the device attributes are visible
-
-<img width="289" height="488" alt="image" src="https://github.com/user-attachments/assets/3465882c-a07d-4fb6-8f8d-4c8a5211d71c" />
-
-
-GRASSMARLIN has provided several pieces of information based on its fingerprinting capability. In addition to possible product and OS matches, it provides valuable insight into this device’s functional role in the OT network. In this case, 172.16.80.2 has been identified as a Master Terminal Unit (MTU), which is synonymous with an HMI.
-
-<img width="422" height="727" alt="image" src="https://github.com/user-attachments/assets/7c0479b7-8462-4745-a915-08ceb5a3bc29" />
-
-
-11. Close the Node Details window.
-
-
-12. Select the drop-down arrow to the left of the 172.16.80.8/29 subnet. Right-click 172.16.80.10, and select View Details for 172.16.80.10
-
-
-<img width="434" height="432" alt="image" src="https://github.com/user-attachments/assets/cb3300c3-35fd-4fef-9638-e9b033bd9931" />
-
-
-13. After resizing the window, view the device attributes. In this case, the device category has been properly identified as a PLC:
-
-
-<img width="441" height="794" alt="image" src="https://github.com/user-attachments/assets/69601160-d654-4525-8175-8fb1080adf49" />
-
+Using the above workflow, answer the following questions.
 
 ---------------
 
-### CDAH-M29L2-ICS Protocols and Implementations ###
-
-Industrial Control System Protocols
-To understand how ICS networks and components communicate, familiarity with the underlying protocols in use is necessary. Protocols implemented in ICS networks are designed to communicate with specialized hardware to complete particular tasks, such as reading sensor values or sending control instructions to an end device. Additionally, some protocols have unique requirements, depending on their applications, such as an emphasis on reliable transport, efficiency due to low-bandwidth communications streams, and extremely low latency to support real-time operations. 
-
-﻿
-
-Like some Information Technology (IT) protocols, ICS protocols can be proprietary or open standard. Proprietary protocols are maintained by the vendors that developed them. The use of these protocols is restricted by licensing requirements and, in general, interoperate only with other devices produced by the vendor. Additionally, the technical information behind the development of the protocols is retained by the vendor and not shared publicly. Open-standard protocols, on the other hand, are free to use by anyone. They are usually designed and developed by organizations like the Institute of Electrical and Electronics Engineers/Internet Engineering Task Force (IEEE/IETF) or as a joint effort by many organizations.
-
-
-----------------
-
-Common Industrial Control System Protocols
-Dozens of communications protocols currently exist in ICSs throughout the world. Some protocols are extremely specialized and used in only certain applications, whereas others have seen widespread adoption throughout the industry. Brief descriptions of some of today’s most common ICS communications protocols follow.
-
-﻿
-
-Modbus
-﻿
-
-Modbus is a data communications protocol originally published by Modicon in 1979 and later adopted as one of the first open-standard ICS protocols. Modbus is one of the most commonly used communications protocols in ICS networks. 
-
-﻿
-
-Modbus is a serial protocol that communicates over Recommended Standard 232 (RS232) or RS485 serial connections. A variant known as Modbus/TCP (Transmission Control Protocol) exists that can communicate over Ethernet networks using TCP port 502 by default. 
-
-﻿
-
-Modbus employs a client–server (originally documented as master/slave) architecture for communications. The client initiates communication with the servers to poll for information or send commands to the end device. The Modbus protocol allows a maximum of 247 Modbus devices per network segment. Figure 29.2-1 provides an illustration of the Modbus process:
-
-﻿
-
-
-<img width="2500" height="1114" alt="image" src="https://github.com/user-attachments/assets/b1fca3b0-037a-4a8f-9f26-885c9d10c01f" />
-
-
-PROFIBUS/PROFINET
-
-
-PROFIBUS is an open-standard communications protocol used widely in factory and process automation systems. PROFIBUS is a serial protocol that communicates over RS232 or RS485 serial connections. 
-
-
-PROFINET is an updated version of PROFIBUS that communicates over industrial Ethernet networks. 
-
-
-DNP3
-
-
-Distributed Network Protocol 3 (DNP3) is used almost exclusively by electric, gas, and water utilities for remote communications between Supervisory Control and Data Acquisition (SCADA) equipment and control centers. This protocol operates over RS232 and RS485 serial connections but can also be encapsulated in Transmission Control Protocol/Internet Protocol (TCP/IP) or transmitted via radio or modem for long-distance communications. 
-
-
-DNP3 supports end-to-end encryption via Virtual Private Network (VPN) tunnels or Transport Layer Security (TLS) encryption. DNP3 also supports authentication and implementation or role-based access controls. 
-
-
-Open Platform Communications
-
-
-Open Platform Communications (OPC) is an open-standard communications protocol evolved from the earlier Object Linking and Embedding (OLE) implementation for process control. The purpose of OPC is to act as an abstraction layer between Human-Machine Interface (HMI) or SCADA systems and Programmable Logic Controllers (PLC) that may be relying on several different protocols, such as Modbus or PROFIBUS. 
-
-
-Essentially, the control and monitoring devices, such as HMI and SCADA servers, communicate directly with OPC servers using the OPC protocol. The OPC server then translates the commands to the appropriate protocol (for example, Modbus or PROFIBUS) in order to communicate with target devices, such as a PLC or actuator. 
-
-
-OPC can provide security through encrypted communications, the use of digital certificates, and enforcing authentication and authorization.
-
-
-WirelessHART
-
-
-WirelessHART (where HART is an acronym for Highway Addressable Remote Transducer) is a protocol that uses a 2.4-gigahertz (GHz) wireless mesh network to communicate with field devices. WirelessHART has a communication range of 200 meters between each device and can be an excellent way to connect field devices when physical connections are not feasible. WirelessHART enforces Advanced Encryption Standard (AES)-128 encryption for device communication.
-
+Automating File System Searches
+One of the most common automated tasks performed during an IR investigation involves using known information to perform searches across a file system for similar or related artifacts. The timestamps from known malicious artifacts are often used to find such artifacts. The goal is to use a sufficiently narrow search to return a manageable list of artifacts for further review. A reasonable starting point is to search for all files modified during the same date and within an hour of the known artifact’s modification time. Searching using only the file’s time, or searching for all modified files within the same month, likely returns many matches unrelated to the malicious file
 
 
 -----------------
 
-Industrial Control System Protocol Security
-From a cybersecurity perspective, the majority of ICS protocols and applications lack what are considered standard security controls in modern enterprise networks. 
 
-﻿
+Comparing Tasks
+During an investigation, some tasks are too complex to reasonably automate without significant time-prohibitive effort. Additionally, tasks that are potentially disruptive to the system, especially in ways that inhibit or disrupt the investigative process, should not typically be automated. As previously discussed, searching across a file system using known information is a good case for automation. However, automating a task that terminates processes without careful review should be avoided. Furthermore, scripts written for automation should avoid requiring repeated manual interaction from the user.
 
-Many ICS protocols were designed before widespread adoption of modern network-based communication technologies. Prior to the internet, ICS systems were isolated within a plant and required physical access to control and monitor them. These legacy protocols typically relied on direct serial connections between HMIs, PLCs, and end devices. Because these systems were traditionally air gapped, security was not a consideration when the protocols were developed. 
-
-﻿
-
-As modern network technologies became widely adopted in corporate environments, organizations began to converge IT and Operational Technology (OT) environments. Legacy ICS protocols were adapted to support transport over Ethernet and IP networks, but they were not always updated to include common security controls, such as authentication and encryption. 
-
-﻿
-
-Modbus is an example of an ICS protocol that was updated to enable transport over IT networks. Modbus TCP communications are sent as cleartext between a client and server over the network. If an attacker were present on a Modbus TCP network, they could eavesdrop on device communications to view commands and responses. Additionally, Modbus TCP does not support authentication or authorization technologies. This means that any properly formatted Modbus TCP message is accepted and processed by an ICS device that uses Modbus TCP. In this case, an attacker can easily send commands to control field devices or send incorrect sensor values to an HMI monitoring a process. 
-
-﻿
-
-In addition to insecure protocols, many ICS networks use applications and servers that lack basic security controls. These applications were traditionally deployed by controls engineers without an IT or cybersecurity background. This can result in such applications as databases or web servers being deployed with default configurations and left unauthenticated. It is also reasonable to assume that these applications and the servers that host them are older, unpatched systems. In some cases, these assets may be intentionally deployed without authentication. Consider an HMI terminal that controls a critical process. Failure to properly authenticate with the HMI may result in a lockout that prevents an OT engineer from controlling the process. In OT environments, availability of critical assets and processes is almost always prioritized over the implementation of a security control. 
-
-﻿
-
-Another contributing factor to the lack of security controls in ICS environments is vendor requirements for warranties and support contracts. Many Distributed Control Systems (DCS) consist of several components, such as control software, HMIs, preconfigured PLCs, and field devices. All these components are built and tested by the vendor before they are installed in an organization’s ICS environment. Updating Operating Systems (OS) or making configuration changes alters the vendor’s baseline and might affect a system’s ability to operate properly. Such changes are generally prohibited by the vendor. Instead, the only authorized changes or updates are those specifically supplied by the vendor as part of a support contract. Such product updates may have extremely long lead times. In some cases, receiving critical security updates from a vendor may take years. 
-
-
-------------------
-
-Control a PLC with Modbus
-The following lab provides a simulated PLC that controls a voltage regulator. Using a command line–based Modbus tool, complete the steps in the workflow to remotely control the PLC. This lab demonstrates how an attacker can take advantage of the lack of security in the Modbus protocol to manipulate control system processes.
-
-﻿
-
-Workflow
-﻿
-
-1. Open the Virtual Machine (VM) win-hunt. The login credentials are as follows:
-
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Select the ModbusPal desktop shortcut.
-
-﻿
-
-3. Import the PLC simulation project file by selecting the Load button and opening the file PLC_Simulation.xmpp located in C:\users\trainee\Documents:
-
-
-﻿<img width="300" height="403" alt="image" src="https://github.com/user-attachments/assets/e36a3de2-8b60-4e44-b35e-94aafcee0d02" />
-
-
-<img width="472" height="365" alt="image" src="https://github.com/user-attachments/assets/801927ab-9859-4aad-907e-85bdd758532a" />
-
-4. Activate the simulation by selecting the Play button to start the automation, and select Run to start the Modbus server. Select the eye icon to the right of the PLC object to view the PLC settings
-
-
-<img width="446" height="601" alt="image" src="https://github.com/user-attachments/assets/391bf8c0-5203-4afe-86ce-1e7a2b9d7678" />
-
-By default, the existing holding registers are displayed. In Modbus, holding registers are used to represent values obtained by reading sensors or to configure set points for a process. The three main fields of interest are Address, Value, and Name. The Address field is used when sending Modbus commands to the PLC to specify the register that is to be read or changed. The Value field displays what the register is currently set to. The Name field, also known as a tag, provides context to associate the register with the part of the physical process it controls. The Name field is only locally significant, meaning this is not a field that can be remotely queried using Modbus commands. 
-
-
-For this example, registers 1 through 4 are in use. The first register represents a reading of input voltage to the voltage regulator. Because this register is reading a sensed value, it fluctuates as the input voltage changes. The OutputVoltage register is a configured set point that specifies what voltage the regulator should maintain; in this case, the regulator is configured to output 120 volts (V). The MinVoltage and MaxVoltage are used as safety settings that should trigger an alert if the output voltage goes below 110 V or above 130 V.
-
-
-<img width="419" height="429" alt="image" src="https://github.com/user-attachments/assets/6ee9e161-00e3-4c6d-8f41-614bed3403b7" />
-
-5. Select the Coils tab to view the configured coils.
-
-
-Modbus coils differ from registers in that they are binary and represent a condition of on (1) or off (0). Coils are typically used to set or read the condition of a switch or a feature. In this example, the OutputEnabled coil is set to 1, which means the voltage regulator is turned on and outputting voltage. The SafetyOverride coil represents a setting that would disable the generation of alerts if the MinVoltage or MaxVoltage thresholds were breached. (This feature is currently disabled.)
-
-<img width="421" height="429" alt="image" src="https://github.com/user-attachments/assets/9b9c3320-5d71-4b0a-9d81-96e6a5d0b1c2" />
-6. Select the run_ctmodbus.bat desktop icon to open the ctmodbus tool.
-
-
-A ctmodbus command prompt appears.
-
-
-7. In the ctmodbus terminal, run the help command. 
-
-
-This displays a list of available commands and brief descriptions of their operation. Select Enter again to acknowledge the help dialog and return to the prompt: 
-
-
-<img width="676" height="372" alt="image" src="https://github.com/user-attachments/assets/30fb4a11-b786-4aa0-be87-0b4453f0de9e" />
-
-8. Run the following command to open a session with the Modbus simulator: 
-
-
-connect tcp 127.0.0.1:502
-
-
-
-9. Once connected, a Success message appears. Select the Enter key to acknowledge the message and return to the prompt:
-
-
-<img width="319" height="149" alt="image" src="https://github.com/user-attachments/assets/95656e86-3863-4020-89d6-9bdd921ba594" />
-
-
-Authentication is not required to send commands to the PLC.
-
-
-The read holdingRegisters command can be used to query the holding register values of the PLC. To use the command, provide the holding register addresses to be queried. The numbering of holding register addresses on the PLC is different from what Modbus uses when sending commands. On the PLC address, numbering starts with 1, but with Modbus commands, register addresses start at 0. 
-
-
-10. Run the following command to read the values for the first five holding registers on the PLC:
-
-
-read holdingRegisters 0-4
-
-
-
-11. Compare the output from the read holdingRegisters command to the holding registers displayed in the PLC.
-
-
-Addresses 0–4 in the command output correspond with addresses 1–5 on the PLC. Also, as previously mentioned, the register names, or tags, are not provided in the output. This means that an attacker can query all the registers and obtain the current values, but they do not know what each register represents
-
-
-<img width="282" height="271" alt="image" src="https://github.com/user-attachments/assets/e385ab9e-face-4522-8a26-a075773525f2" />
-
-
-<img width="419" height="429" alt="image" src="https://github.com/user-attachments/assets/3c12a260-5277-45fd-8dfd-ca6892d3af19" />
-
-The read coils command operates just like the read holdingRegisters command. Provide the addresses of the coils to be read. Again, coil addressing in Modbus starts at 0.
-
-
-12. Run the following command to read the first two coil values on the PLC:
-
-
-read coils 0-1
-
-
-
-The returned coil values match what is displayed on the PLC
-
-
-<img width="207" height="225" alt="image" src="https://github.com/user-attachments/assets/ab1ac914-ef58-4c18-8550-236ec791e852" />
-
-<img width="421" height="429" alt="image" src="https://github.com/user-attachments/assets/b15ee9f8-8038-4be9-b455-6d1893f513d0" />
-
-Registers and coils can also be modified remotely by using the write command. The syntax for this command is as follows:
-
-
-write (register|coil) (address) (value)
-
-
-
-13. Run the following command to increase the MaxVoltage holding register value to 240 V: 
-
-
-write register 3 240
-
-
-
-The PLC now displays the updated value of 240
-
-
-
-<img width="250" height="144" alt="image" src="https://github.com/user-attachments/assets/baed4f9c-1752-48ec-9805-9d80226042d6" />
-
-
-<img width="418" height="430" alt="image" src="https://github.com/user-attachments/assets/0a9356a2-80b1-4ec3-a999-6b9e86ce217f" />
-
-14. Run the following command to configure the PLC’s OutputVoltage to 220 V:
-
-
-write register 1 220
-
-
-
-The PLC is now set to deliver an output voltage of 220 V. This configuration would create an overvoltage situation that could cause physical damage to equipment
-
-
-<img width="249" height="142" alt="image" src="https://github.com/user-attachments/assets/0e44a869-27c8-4442-9c16-bc0df2965dc7" />
-
-<img width="416" height="427" alt="image" src="https://github.com/user-attachments/assets/588ae4cd-23c9-45de-95eb-410e770f2b8d" />
-
-15. Run the following command to turn on the safety override:
-
-
-
-
-write coil 1 1
-
-
-
-The SafetyOverride coil has now been enabled, which disables the safety system, creating yet another dangerous situation for this control system
-
-
-<img width="260" height="144" alt="image" src="https://github.com/user-attachments/assets/689c18aa-2bae-4bb9-9e6f-f59f755bf344" />
-
-
-<img width="418" height="429" alt="image" src="https://github.com/user-attachments/assets/040330a6-77b6-4827-9cfa-cfd15a0d392d" />
-
-----------------
-
-
-### CDAH-M29L3-Availability and Visibility in ICS ###
-
-ICS Host Analysis Tools
-Host analysis tools are used in an ICS environment to gather information about the host computer or device on which the ICS runs. 
-
-﻿
-
-Host Analysis tools gather information such as the following:
-
-Installed software 
-Network configurations
-System-level details
-This information is used to identify vulnerabilities and potential security risks in the ICS, and to understand the overall configuration of the system. 
-
-﻿
-
-Host analysis tools are also used to monitor a system for changes and to detect suspicious activity. An example of this would be a software program that runs on individual devices within an ICS environment, gathers data, and analyzes the state of the system during a cyber incident. 
-
-﻿
-
-There are differences between the analysis tools used in ICS and those used in IT environments.
-
-﻿
-
-ICS Environments 
-﻿
-
-ICS analysis tools are designed to work with the specialized hardware and software tools used in industrial environments. These tools typically have features for working with Programmable Logic Controllers (PLC) and other industrial control systems. 
-
-﻿
-
-ICS tools also have features for interacting with field devices and sensors used to gather data from the physical environment, as seen in Figure 29.3-1 below:
-
-
-<img width="3324" height="1878" alt="image" src="https://github.com/user-attachments/assets/8f435b87-efa7-4f02-8208-32f4cd287a76" />
-
-IT Environments
-
-
-IT analysis tools are generally designed to work with standard IT hardware and software, such as servers, desktop computers, and networks. These tools may have features for working with common IT protocols and services such as Transmission Control Protocol (TCP), Internet Protocol (IP), and Active Directory (AD).
-
-
-Modern ICS environments consist of a combination of specialized ICS devices and commodity IT hardware and operating systems. The integration of IT components in ICS networks provides the opportunity to use traditional IT IR tools when investigating a compromised ICS environment. 
-
-
-However, it is common for the IT components in an ICS environment to be outdated legacy systems that are incompatible with newer host analysis tools and software. For example, imagine trying to use PowerShell to query a 20-year-old WindowsXP device. 
-
-
-While there is some overlap between the functionality of ICS and IT analysis tools, they are designed to address different types of hardware, software, and security concerns. Due to the differences between ICS and IT analysis tools, incident response in ICS environments often requires specialized knowledge and expertise that may not be required in IT environments.
-
-
-------------
-
-ICS Host Analysis Constraints
-In many cases, analysts do not have permission to deploy collection sensors or agents in a mission partner’s ICS environment. In these situations, analysts have to rely on offline artifact analysis to investigate the potential compromise of ICS networks. 
-
-﻿
-
-For offline analysis, use forensics acquisition tools that perform functions such as the following: 
-
-Disk imaging
-Memory image capture
-Artifact extraction
-Once artifacts are gathered, they can be loaded onto a dedicated forensics workstation, or offline SIEM for analysis.
-
-﻿
-
-As seen in Figure 29.3-2 below, there are several constraints that may prevent an analyst from running host analysis and forensic acquisition tools on ICS components. 
-
-
-
-<img width="1600" height="872" alt="image" src="https://github.com/user-attachments/assets/fa64727b-9adb-4783-880a-b1e65e829c1b" />
-
-
-
-Operational Constraints
-
-
-ICS components are often critical to the operation of a facility or process, and running forensic acquisition tools on these components may disrupt or interfere with their normal operation. In some cases, it is not possible to shut down or disconnect the ICS components in order to perform the forensic acquisition, which can make it difficult or impossible to gather the necessary data.
-
-
-Physical Constraints
-
-
-ICS components are often located in remote or difficult-to-access locations, such as in underground mines, offshore oil platforms, or remote substations. In such cases, it may be difficult or impossible for an analyst to physically access the components in order to perform the forensic acquisition. 
-
-
-Technical Constraints
-
-
-Many ICS components use specialized hardware and software that may not be compatible with standard forensic acquisition tools. This can make it difficult or impossible for an analyst to gather the necessary data from the components using standard techniques.
-
-
-Safety Constraints
-
-
-Some ICS components may be located in hazardous environments, such as in nuclear power plants or chemical processing facilities, where the use of forensic acquisition tools may pose a safety risk to the analyst.
-
-
-These constraints pose a unique challenge to host analysts that are responding to an incident in an ICS environment. In an ICS incident response scenario, analysts must work closely with the mission partner to identify the best opportunities for artifact collection within the ICS
-
-
--------------
-
-ICS Remediation
-During the IR process, once a compromise has been identified, the team moves to contain and eradicate the threat. In IT networks, this can involve isolating infected hosts with access controls, or physically disconnecting the hosts from the network. 
-
- ﻿
-
-Once containment has been achieved, the team attempts to eradicate the infection by performing the following actions: 
-
-Device replacement
-Reverting the device to a known good state
-Re-imaging the device
-Critical Processes
-﻿
-
-In an ICS network, it may not be possible to disconnect and replace infected components that are part of a critical process. When an infected ICS component is part of a critical process, and cannot be replaced until a scheduled maintenance window is available, ICS networks may need to remain in the containment phase for an extended period of time. 
-
-﻿
-
-In such cases, the main goal of containment is to minimize the attacker's ability to cause damage to the critical process while still allowing the process to operate. This can be achieved by implementing security controls such as network segmentation and access control lists. 
-
-﻿
-
-ICS Devices
-﻿
-
-To further complicate matters, it may not be possible to make configuration changes that support containment on the infected device itself. ICS device configuration is often tightly controlled. Therefore, changes to the configuration may invalidate the vendor-approved operating baseline and cause system instability. 
-
-﻿
-
-Additionally, the ICS device may not be equipped with the appropriate utilities to support containment, such as a host-based firewall. It may be necessary to make the containment and isolation configuration on network devices such as switches, routers, or firewalls.
-
-
----------------------
-
-IR Practices and ICS Systems, Part 1
-A mission partner that operates a chemical processing plant has detected malicious cyber activity in their enterprise IT network. The mission partner is concerned that the attacker has moved laterally from the enterprise IT network to the ICS network. The mission partner has requested a threat hunting team to investigate the ICS network for signs of compromise. Due to the critical nature of the ICS system, all analysis will be performed offline using datasets provided by the mission partner. 
-
-﻿
-
-Workflow
-﻿
-
-The mission partner has provided a GRASSMARLIN capture of baseline traffic flows in the ICS network that can be used as a starting point for the investigation. ICS network traffic is useful for baselining because it is extremely deterministic and predictable. 
-
-﻿
-
-Use GRASSMARLIN to investigate new connections detected in the ICS network that deviate from the baseline.
-
-﻿
-
-1. Log in to the Virtual Machine (VM) win-hunt with the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-2. Select the GrassMarlin shortcut on the Desktop.
-
-﻿
-
-3. Select File, and then select Open Session.
-
-﻿
-
-4. Select baseline.gm3 from the Desktop/Case folder, and then select Open. 
-
-﻿
-
-Observe the baseline communications present in the ICS network, as seen in Figure 29.3-3 below:
-
-
-<img width="978" height="725" alt="image" src="https://github.com/user-attachments/assets/65f42c03-ea32-4cdb-b7e2-6a8750b9948b" />
-
-5. Open the post_exploit.gm3 file by repeating Step 3 and Step 4. Select No when prompted to save the current file. 
-
-
-Keep this VM open for use in the upcoming workflow. 
-
-
-Compare the baseline and post_exploit environments to answer the following questions. 
-
-
-
--------------
-
-IR Practices and ICS Systems, Part 1
-A mission partner that operates a chemical processing plant has detected malicious cyber activity in their enterprise IT network. The mission partner is concerned that the attacker has moved laterally from the enterprise IT network to the ICS network. The mission partner has requested a threat hunting team to investigate the ICS network for signs of compromise. Due to the critical nature of the ICS system, all analysis will be performed offline using datasets provided by the mission partner. 
-
-﻿
-
-Workflow
-﻿
-
-The mission partner has provided a GRASSMARLIN capture of baseline traffic flows in the ICS network that can be used as a starting point for the investigation. ICS network traffic is useful for baselining because it is extremely deterministic and predictable. 
-
-﻿
-
-Use GRASSMARLIN to investigate new connections detected in the ICS network that deviate from the baseline.
-
-﻿<img width="1917" height="827" alt="image" src="https://github.com/user-attachments/assets/a228f4c8-3bf2-45b2-88a1-a315082573b3" />
-
----------------------
-
-IR Practices and ICS Systems, Part 2
-Comparing the baseline and current network traffic reveals that there is a new connection between 172.16.79.35 and a device outside of the ICS network. A network map provided by the mission partner, as seen in Figure 29.3-4 below, shows that the 172.16.79.35 device is the control system data historian server. 
-
-﻿
-
-A data historian is a centralized database used in ICS networks to collect health and performance data from control system devices. The mission partner also confirmed that the 172.16.4.20 IP address is part of a client workstation subnet in the enterprise IT network. The mission partner highlighted that this communication path is abnormal. 
-
-﻿<img width="2048" height="2048" alt="image" src="https://github.com/user-attachments/assets/6fa81ae4-9963-463e-805d-079dd6a2afd2" />
-
-
-Use the event logs in the Desktop/Case/Logs directory to continue the investigation.
-
-
-Workflow
-
-
-1. Log in to the VM win-hunt with the following credentials:
-Username: trainee
-Password: CyberTraining1!
-
-
-
-2. If open, close GRASSMARLIN. Select Close, and then select No when prompted to save changes.
-
-
-3. Navigate to the Desktop/Case/Logs directory and open sysmon.evtx in Windows Event Viewer.
-
-
-4. Select the Date and Time column header to sort the events from oldest to newest. Navigate to the first event.
-
-
-Sysmon provides valuable log information pertaining to file creation, process creation, and network connections. This log source can help identify the process that is communicating with the external host 172.16.4.20.
-
-
-5. Select the Find icon in the Action pane. 
-
-
-6. Enter the following destination IP address:
-172.16.4.20
-
-
-
-7. Select Find Next.
-
-
-Event Viewer moves to the first log that contains the IP address of 172.16.4.20. 
-
-
-8. Click Close on the Find dialog box.
-
-
-As seen in Figure 29.3-5, below, the network connection log displays several pieces of information that are useful for further investigation such as the filename, the location where payload.exe was created, the SourceIp, and more. 
-
-<img width="661" height="826" alt="image" src="https://github.com/user-attachments/assets/626af6af-98c2-4ad8-8f5e-79cfc3113edd" />
-
-
-Knowledge Check
-Sysmon generates a log entry when a new process is created. This log is represented by Event ID 1.
-
-﻿
-
-Find the Process Create Sysmon log associated with payload.exe to answer the following question. 
-
-﻿
-
-Question:
-﻿
-
-What is the MD5 Hash of payload.exe?
-
-<img width="1085" height="607" alt="image" src="https://github.com/user-attachments/assets/9304d03f-59fb-4fca-a6c1-6dd5d31a3b41" />
-
-
-Knowledge Check
-Sysmon generates a log entry whenever a new file is created. This log is represented by Event ID 11.
-
-﻿
-
-Find the Sysmon log associated with payload.exe to answer the following question.
-
-﻿
-
-Question:
-﻿
-
-At what UTC time was the payload.exe file created?
-﻿
-<img width="1127" height="574" alt="image" src="https://github.com/user-attachments/assets/c156f8e8-23f0-4232-877d-60b01b2f1c64" />
-
-
-Knowledge Check
-Migrating to already-running processes is one method that an attacker uses to avoid detection. Sysmon Event ID 8 can aid in the detection of process migration techniques. 
-
-﻿
-
-Find the Sysmon CreateRemoteThread Detected log associated with payload.exe to answer the following question.
-
-﻿
-
-Question:
-﻿
-
-What is the filename of the TargetImage that the attacker migrated into? 
-
-<img width="1131" height="474" alt="image" src="https://github.com/user-attachments/assets/d05652ee-624d-48f6-a271-b0b4bd5935fc" />
-
-
-Knowledge Check
-﻿
-
-The compromised ICS host, 172.16.79.35, and the running vmtoold.exe process represent critical components of the mission partners OT network.
-
-﻿
-
-The mission partner requires a course of action that stops the identified malicious cyber activity while maintaining the highest level of availability for the ICS host, and the vmtoolsd.exe process. The mission partner stated that changes to the existing server configuration must be avoided due to vendor requirements. 
-
-﻿
-
-Question:
-﻿
-
-Which action should the mission partner perform?
