@@ -1130,11 +1130,163 @@ Here are all the workflow steps pulled out from the file, organized by section. 
 Let me know if you want a deeper explanation of any command, filter, or step!
 
 
+```
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 
+import argparse
+from datetime import datetime
+import psutil
+import subprocess
+
+config = {"mem": False, "part": False, "net": False}
+
+parser = argparse.ArgumentParser()
+parser.add_argument("-m", "--mem", help="collect mem info", action="store_true")
+parser.add_argument("-p", "--part", help="collect part info", action="store_true")
+parser.add_argument("-n", "--net", help="collect net info", action="store_true")
+args = parser.parse_args()
+if args.mem:
+    config["mem"] = True
+if args.part:
+    config["part"] = True
+if args.net:
+    config["net"] = True
+
+def b_to_GB(bytes):
+    gb = bytes/(1024*1024*1024)
+    gb = round(gb, 2)
+    return gb
+
+with open("/proc/uptime", "r") as f:
+    uptime = f.read().split(" ")[0].strip()
+uptime = int(float(uptime))
+uptime_hours = uptime // 3600
+uptime_minutes = (uptime % 3600) // 60
+print("[+] System Uptime: " + str(uptime_hours) + ":" + str(uptime_minutes) + " hours")
+
+if config["mem"]:
+    print("----------------")
+
+    vmem = psutil.virtual_memory()
+    print("[+] Mem present: ", b_to_GB(vmem.total), "Gb")
+    print("[+] Available: ", b_to_GB(vmem.available), "Gb")
+    print("[+] Used: ", b_to_GB(vmem.used), "Gb (", vmem.percent, "%)")
+
+if config["part"]:
+    print("----------------")
+
+    disk_partitions = psutil.disk_partitions()
+    for partition in disk_partitions:
+        print("[+] Partition Device: ", partition.device)
+        print("\t[+] File System: ", partition.fstype)
+        print("\t[+] Mountpoint: ", partition.mountpoint)
+    
+        disk_usage = psutil.disk_usage(partition.mountpoint)
+        print("\t[+] Total Disk Space: ", b_to_GB(disk_usage.total), "GB")
+        print("\t[+] Free Disk Space: ", b_to_GB(disk_usage.free), "GB")
+        print("\t[+] Used Disk Space: ", b_to_GB(disk_usage.used), "GB")
+        print("\t[+] Percentage Used: ", disk_usage.percent, "%")
+
+if config["net"]:
+    print("----------------")
+
+    Id = subprocess.check_output(['netstat','-nat']).decode('utf-8').split('\n')
+    new = []
+
+    for item in Id:
+        if "LISTEN" in item or "ESTABLISHED" in item:
+            new.append(str(item))
+    for i in new:
+        print("[+] ", i)
+
+```
+
+```
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
 
 
+import platform
+import pwd
+import os
+
+print("[+] Node: ", platform.node())
+print("[+] Platform: ", platform.platform())
+
+print("==================================================")
+
+shell_user_list = {}
+odd_user_list = {}
+users = pwd.getpwall()
+shells = open("/etc/shells")
+for user in users:
+    if user.pw_shell in shells.read():
+        shell_user_list[user.pw_name] = [user.pw_uid, user.pw_gid, user.pw_shell]
+    elif user.pw_shell != "/sbin/nologin":
+        odd_user_list[user.pw_name] = [user.pw_uid, user.pw_gid, user.pw_shell]
+    shells.seek(0)
+shells.close()
+
+for key in shell_user_list:
+    print(f"{key} shell access")
+    if shell_user_list[key][0] == 0 and key != "root":
+        print(f"\t{key} has uid 0")
+    if shell_user_list[key][1] == 0 and key != "root":
+        print(f"\t{key} has gid 0")
+for key in odd_user_list:
+    print(f"{key} shell {odd_user_list[key][2]}")
+    if odd_user_list[key][0] == 0 and key != "root":
+        print(f"\t{key} has uid 0")
+    if odd_user_list[key][1] == 0 and key != "root":
+        print(f"\t{key} has gid 0")
+
+do_disable = input("Disable any accounts (YES)? ")
+if do_disable == "YES":
+    acct_list = input("Enter comma-separated list of accounts to disable: ")
+    for acct in acct_list.strip().replace(' ', '').split(","):
+        print("Disabling:", acct)
+        os.system(f"usermod -L {acct}") 
+```
+
+```
+#!/usr/bin/python3
+
+import os
+import subprocess
+
+def pid_check(pid):
+    try:
+        pid_info = {"cmd": "", "exe": ""}
+        fn = f"/proc/{pid}"
+        with open(f"{fn}/cmdline") as f:
+            pid_info["cmd"] = f.readline().replace("\x00", " ").strip()
+        exe_check = subprocess.check_output(["ls", "-l", f"{fn}/exe"], stderr=subprocess.DEVNULL).decode('utf-8').split('\n')
+        pid_info["exe"] = exe_check[0].split('>')[-1].strip()
+        return pid_info
+    except:
+        return False
+
+proc_id = 0
+pid_info = False
+
+# This is line 21
+while proc_id <= 0:
+    try:
+        proc_id = int(input("Enter process ID to examine (0 to exit): "))
+    except:
+        pass
+    if proc_id == 0:
+        exit()
+
+if proc_id > 0:
+# This is line 31
+    pid_info = pid_check(proc_id)
+    if pid_info:
+        print(f'[+] PID={proc_id}: CMD="{pid_info["cmd"]}", EXE="{pid_info["exe"]}"')
+    else:
+        print(f"[+] PID={proc_id}: Could not get info")
 
 
-
-
+```
