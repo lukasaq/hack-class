@@ -1,1511 +1,1514 @@
+### CDAH-M27L1-Host Isolation Options ###
 
 
-### CDAH-M26L1-NIST 800-61 IR Best Practices ###
+Host Isolation Considerations
+Host isolation is a critical step in the containment phase of IR because it helps prevent the spread of a discovered attack and contain damages. However, IR is a tricky proposition since a responder cannot simply kick a host off the network or power it down without considering the effects of these actions. The isolation technique selected may affect the functionality of the rest of the network or the response plan itself. CDAs must consider the following, prior to selecting a host isolation technique:
 
-NIST 800-61 Overview
-Computer security IR is an important component of Information Technology (IT) programs. Establishing a successful IR capability requires effective and efficient planning and resources. NIST 800-61 was enacted to assist organizations in mitigating potential impacts to business operations and assets. The publication provides practical guidance on how to respond to degrading incidents. The guidelines in NIST 800-61 are independent of particular hardware, Operating Systems (OS), protocols, and applications while providing insight on the following: 
+Adverse impacts to mission operations
+Collateral damage
+Evidence collection
+Duration of containment
+Adverse Impacts to Mission Operations
+﻿
 
-Establishing IR capabilities.
-Maintaining situational awareness and handling of incidents using the IR lifecycle.
-
-
------------
-
-
-Incident Response Programs
-An established IR plan, policy, and procedure are important to effectively and efficiently handle the task of mitigating a security breach. Rapid response when a security breach occurs is essential to minimize loss or theft of critical information and disruption of services within an organization. The mission partner should create a plan, policy, detailed list of actionable events, and Standard Operating Procedures (SOP) to prepare for an incident. The Cyber Protection Team (CPT) should review and use these documents to assist the mission partner during an IR.
-﻿﻿
+The first consideration when an attack is detected is the removal of the attackers from the network. The most direct way to do this is to physically unplug the network cable or disable the interface. However, this might not always be the best first step. The host in question may be mission critical to the organization, so pulling the plug may cause more harm than the attack itself. The attack may even spread beyond the single host where it was discovered, so isolating just one host could be ineffective in containing the attack. 
 
 ﻿
 
-The following guidelines created by NIST describe policies, plans, and procedures related to IR:
+Collateral Damage
+﻿
+
+CDAs must also consider possible collateral damage for a given strategy. Malware is rapidly becoming more advanced. Advanced malware may be able to detect a containment strategy, change its attack strategy, and cause more negative impacts. For example, disabling a network interface may stop the malware from accessing the Internet, but this may also prompt the malware to delete important information on the host. Predicting the capabilities of the malware is difficult in a case like this. It may be preferable, then, to choose a containment strategy that impacts the operation of the malware as little as possible while still achieving isolation.
 
 ﻿
 
-Policies
+Evidence Collection
 ﻿
 
-IR policies differ in implementation, but each should contain variants of the following elements:
-
-Purpose and goals.
-
-Scope (who, what, and when).
-
-Descriptions of possible IRs.
-
-Definitions of team roles, responsibilities, and levels of authority.
-
-Incident rating scale.
-
-Organization chart.
-
-Communication guidelines.
-
-Plans
-﻿
-
-A formal, focused, and coordinated approach to responding to incidents can make the difference between a successful and failed event. The plan lays out the necessary resources and management support. A proper plan considers the following elements:
-
-Company mission, objectives, and values.
-
-Consent from leadership.
-
-Communication methods. 
-
-Correlation of risk and threat.
-
-Scheduled road map with timeline of events.
-
-SOPs
-﻿
-
-Procedures should be based on the IR policy and plan. This includes toolsets implemented, techniques used, and communication practices. These procedures should stem from company goal prioritizations and be used as a training and instructional baseline.
+Another consideration when dealing with an incident is evidence collection and preservation. A clumsy approach to containment may corrupt or completely destroy vital evidence. This evidence may be necessary for determining the entire scope of the infection and any potential legal prosecution. Volatile information is lost when powering down a host. This may prevent the collection of information about memory-resident malware.
 
 ﻿
 
-External Parties
+Duration of Containment
 ﻿
 
-Organizations often communicate with external parties regarding an incident. While maintaining appropriate OPSEC, the mission partner may find communication with the following parties helpful in mitigating attacks on the network:
-
-Public Affairs office
-
-Legal department
-
-Management
-
-Media
-
-Law enforcement
-
-Internet Service Providers (ISP)
-
-Software vendors
-
-CPT Roles and Responsibilities
-﻿
-
-Per Cyber Warfare Publication (CWP) 3-33.4, Cyber Protection Team (CPT) Organization, Functions, and Employment:
+The duration of the containment is another important consideration that is difficult to accurately predict. An ideal containment strategy minimally impacts business operations while fully addressing and containing the incident. 
 
 ﻿
 
-“If MCA [Malicious Cyber Activity] discovery and mitigation exceeds local network operators or local service provider expertise, capabilities, or capability, CPTs may respond to provide support conducting cyberspace defense actions, either remotely or by deploying to the affected location, or a combination thereof. A CPT’s role in reinforcing or augmenting local network defenders resides in the CPT’s execution of approved Joint Mission Essential Tasks (JMETs) by maneuvering dynamically to reconnoiter terrain in networks and systems and validate MRT-C [Mission-Relevant Terrain in Cyberspace] (or KT-C [Key Terrain in Cyberspace] if required) and MCA.”
+Overall, the containment strategy employed must take into consideration all of the above factors. CDAs who have a well thought-out and established process prior to an incident are more likely to succeed during incident response. The established process depends on the specific host that is compromised and may have progressive steps based on the duration of the incident response timeline. 
 
-﻿
-
-NOTE: Bracketed material has been added above to define various acronyms.
-
-﻿
-
-CPTs respond to provide support to a mission partner during an IR scenario to perform four primary functions:
-
-Hunt
-
-Clear
-
-Enable hardening
-
-Assess
-
-﻿<img width="1071" height="636" alt="image" src="https://github.com/user-attachments/assets/fcc16127-9154-4810-af35-e3ff928d7217" />
-<img width="1125" height="630" alt="image" src="https://github.com/user-attachments/assets/b2a0afb1-fe35-4f44-9203-c5c763a37979" />
-<img width="1079" height="658" alt="image" src="https://github.com/user-attachments/assets/1968712a-aae0-428f-8324-064cfea87484" />
-
------------
-
-
-
-Phases of the IR Lifecycle
-The IR lifecycle consists of four phases, shown in Figure 26.1-1. The initial phase, Preparation, consists of establishing a trained CPT and analyzing available equipment within the Joint Deployable Mission Support System (JDMSS) kit based on locally protected network or system configurations. This is done to determine necessary hardware and applications based on mission scope and scale. Also, a set of controls based on the results of risk assessments is implemented to attempt to limit the number of incidents; residual risk persists after controls are inherited. The second phase, Detection and Analysis, is necessary to alert the organization about any incident that occurs. In the third phase, the incident can be eradicated by containing it and ultimately recovering from it. The final phase, Post-Incident Activity, consists of a generated report documenting the cause and cost of the incident as well as recommended hardening steps by the CPT to prevent future incidents. 
-
-
-
-<img width="2500" height="1253" alt="image" src="https://github.com/user-attachments/assets/67476414-0318-4dd3-8855-630b8d49c623" />
-
-
-------------------
-
-Preparation
-﻿
-
-﻿
-
-Sustaining CPT readiness includes deliberate planning, preparation, execution, and assessment, but CPTs are not intended to replace a supported organization’s local network defenders. Onsite CPTs complete their own Mission Analysis (MA) before determining any actions.
-
-﻿
-
-Per CWP 3-33.4:
-
-﻿
-
-“Once CPT MA is completed, available CPT forces are examined to determine CPT mission accomplishment capability. The scope of the proposed mission and other on-going CPT requirements factor into mission element and crew selection. Specifically, CPT leadership examines the team members’ experience, proficiency, and training levels, as well as administrative readiness status against the number of personnel required to complete the mission as determined during CPT MA. The scope of the terrain and operational-level mission completion date drive the number of personnel required. For example, a critical hunt and clear operation may necessitate twenty-four-hour-a-day coverage over a one week period and require more personnel than an enable hardening or assess mission with a longer completion deadline conducted during normal duty hours only. Once selected, personnel prepare for mission execution.”
-
-﻿
-
-IR methodologies emphasize preparation and ensuring that systems, networks, and applications are sufficiently secure. Preparing to handle and prevent incidents includes the following:
-
-Information gathering: This involves promptly accessing available information, including network diagrams, contact directory, on-call information, network application and technology documentation, network baselines, and hashes of known good files in the mission partner’s network.
-
-Coordination: This involves establishing an IR plan, cementing roles and responsibilities, and demonstrating an effective line of communication between the CPT and mission partner. There should be an issue-tracking system, smartphones, encrypted software, and a war room, all for the purpose of having secure communication methods on a separate medium from the location of the attack.
-
-Checklists: Actions must be taken quickly during an IR. Checklists provide guidelines on steps to be performed to handle an incident. 
-
-Mitigation plans: This includes determining supplies readily available for restoration and recovery purposes, such as clean laptops for analysis, a sandbox for testing, blank media discs, portable printers, clean OS images, and additional tools needed in conjunction with the CPT JDMSS kit.
-
----------------
-
-
-Detection and Analysis
-﻿
-
-﻿
-
-Threat-focused hunt operations illuminate known or unknown malicious cyber actors and determine MCA scope and purpose within the mission partner’s protected network or system. Hunting is the process of proactively and iteratively searching through networks to detect evidence of MCA to gain and maintain contact with an adversary and develop the situation. Network defenders and Cyber Security Service Providers (CSSP) should not rely on CPT hunting operations for threat detection. Passive incident detection and threat hunting operations can, and should, be conducted simultaneously. 
-
-﻿
-
-Hunt operations involve active reconnaissance and counter-reconnaissance on the mission partner’s supported network. The steps below correspond to the Preparation and Detection and Analysis phases of an IR lifecycle:
-
-﻿
-
-1. Gain and maintain situational awareness of the MCA.
-
-2. Consult with Subject Matter Experts (SME) to determine methods and intent behind MCA.
-
-3. Engage with mission partner CSSPs to assist with an IR plan.
-
-4. Make a risk mitigation recommendation based on the benefits or consequences of continuing hunt operations versus initiating clear operations.
-
-﻿
-
-Executing proactive hunt operations requires consideration of, but is not limited to, the following:
-
-Constantly evolving attack vectors; methods; or Tactics, Techniques, and Procedures (TTP).
-
-Dwell time.
-
-Risk to mission.
-
-Available intelligence.
-
-Attack Vectors   
-﻿
-
-Different types of incidents merit different response strategies. The following vectors provide a basis for defining more specific handling procedures:
-
-External/Removable Media: Attacks from a removable media device, such as a Universal Serial Bus (USB) device or Compact Disc (CD), to execute malicious code on a vulnerable system. 
-
-Attrition: Attacks employing brute force methods to compromise, degrade, or destroy  networks, systems, and services.
-
-Web: Attacks executed from a website or web-based application (for example, Cross-Site Scripting [XSS] attacks).
-
-Email: Attacks executed via email messages or attachments. 
-
-Impersonation: Attacks involving the replacement of something benign with malicious intent (for example, Man-in-the-Middle [MitM] attacks, spoofing, Structured Query Language injection [SQLi]). 
-
-Improper Usage: Incidents resulting from violation of organization policies by authorized users (for example, installation of file-sharing software). 
-
-Loss or Theft of Equipment: The loss or theft of a computing device or media used by an organization.
-
-Signs of Incident 
-﻿
-
-The most tedious part of an IR process is accurately detecting and assessing possible incidents. This includes determining if an incident has occurred and the type, context, and magnitude of the problem. Signs of incidents fall into two categories: precursors and indicators. Incorporating technologies that can flag malicious activity, such as antivirus software, Intrusion Detection Systems (IDS)/Intrusion Prevention Systems (IPS), and Security Information and Event Management (SIEM), is essential. 
-
-﻿
-
-Precursors
-﻿
-
-Precursors are signs of an attack prior to the attack’s occurrence. The best way to mitigate damages from an attack is to stop it before it occurs. If precursors are detected, an incident may be prevented by altering the security posture of the organization. Examples of precursors include the following:
-
-Web server log entries indicate the use of a vulnerability scanner.
-
-An outside notable threat states that the organization will be attacked.
-
-Indicators
-﻿
-
-Indicators are signs that an attack is actively occurring against a network. Indicators are relatively common. Examples of indicators include the following:
-
-An IDS alerts a buffer overflow attempt.
-
-Host records display an auditing configuration change in logs.
-
-Application logs display multiple failed login attempts from a remote system.
-
-Analysis
-﻿
-
-CPTs should work diligently to analyze and validate each incident following a predefined IR plan. NIST recommends the following to aid in this process:
-
-Create a network profile.
-
-Understand the mission partner’s normal network behavior.
-
-Have a log retention policy.
-
-Correlate potential incidents with multiple network sources.
-
-Keep all host clocks synced.
-
-Create a network knowledge base.
-
-Research information on unusual activity.
-
-Collect additional data using packet sniffers.
-
-Filter out insignificant data. 
-
-Incident Documentation
-﻿
-
-All evidence about the status of the incident, such as system events, conversations, and observed changes in files, should be documented. The incident data should be safeguarded, as it contains sensitive information. 
-
-﻿
-
-Incident Prioritization and Notification
-﻿
-
-Each time an incident is discovered, a risk-based analysis must be considered and discussed with the appropriate personnel on any further actions that must be taken. Incident analysis can be broken down into three separate impact areas — functional impact, information impact, and recoverability impact — and the levels of threat of each. 
-
-﻿
-
-Functional Impact
-﻿
-
-Does the incident impact user productivity or system availability? Table 26.1-1 describes the four threat level categories of functional impact:
-
-﻿
-<img width="2500" height="1177" alt="image" src="https://github.com/user-attachments/assets/40ff2ed6-0e67-4e94-b374-ab3523e7e7d5" />
-
-
-Information Impact
-
-
-Could the incident result in the release of sensitive company or personal information? Table 26.1-2 describes the four threat level categories of information impact:
-
-<img width="2500" height="1118" alt="image" src="https://github.com/user-attachments/assets/e02c4375-4c16-4f06-99d8-a66b5815bb06" />
-
-Recoverability Impact
-
-
-If possible, what resources would be required to recover from the incident? Table 26.1-3 describes the four required resource categories of recoverability impact:
-
-
-<img width="2500" height="1028" alt="image" src="https://github.com/user-attachments/assets/ad2851e0-5527-42a3-ba74-22f501ab02d6" />
-
-
-
--------------------
-
-Containment, Eradication, and Recovery
-﻿
-
-﻿
-
-Once the Detection and Analysis phase is handled properly, the following is performed, corresponding to the Containment, Eradication, and Recovery phase as directed or tasked: 
-
-﻿
-
-1. Contain affected systems and networks simultaneously to prevent adversary repositioning.
-
-2. Neutralize and eradicate adversary activities in each network or system.
-
-3. Observe and characterize adversary behavior and TTP to enable follow-on operations (for example, enable hardening).
-
-4. Enable recovery or restoration of affected systems and networks.
-
-﻿
-
-Containment Strategy
-﻿
-
-Strategies vary based on the type of incident, and a strategy should be created and documented for each major incident type. Criteria for determining the appropriate strategy include the following:
-
-Potential damage to, and theft of, resources.
-
-Evidence preservation.
-
-Service availability.
-
-Resources and duration needed to implement the strategy and provide an effective solution.
-
-Effectiveness of the strategy.
-
-Evidence Gathering and Handling
-﻿
-
-Evidence should be gathered according to procedures that meet all regulations. A detailed log should be kept for all evidence, including the following:
-
-Details on who collected the information.
-
-Where evidence was collected.
-
-When evidence was collected.
-
-Where and how evidence was stored.
-
-Identifying Attackers
-﻿
-
-Identification of the attacking host(s) can be a time-consuming and futile process. It can prevent a CPT from achieving the primary goal of minimizing the impact to the mission partner’s network environment. Nevertheless, any information found could aid authorities in the capture or identification of the attacker. Methods for identifying attacking hosts are as follows:
-
-Validating the attacking host’s IP address.
-
-Researching the attacking host online.
-
-Monitoring incident databases.
-
-Monitoring attacker communication channels.
-
-NOTE: When doing online open-source research of attacking hosts, use a non-attributable system while maintaining OPSEC.
-
-﻿
-
-Eradication and Recovery
-﻿
-
-Eradication and recovery are done in a phased approach so that remediation steps are prioritized. Eradication is done to eliminate components of the incident, such as deleting malware and disabling breached user accounts. In some cases, eradication is not necessary or is done in tandem with recovery efforts. During recovery, systems are restored to normal operation and hardening actions are initiated on known vulnerabilities to prevent similar incidents in the future. 
-
-
------------
-
-Post-Incident Activity
-﻿
-
-﻿
-
-Post-incident activity involves learning and improving based on new threats, improved technology, and lessons learned. After an IR, the network should be in a more secure state. Maintaining a secure state means learning from mistakes and improving security posture, such as developing improved policies and procedures for future incidents. All collected actionable data is to be secured and retained for a period of time specified in record retention policies by the organization for legal proceedings. Post-mortem meetings should be conducted with all parties involved in the IR to contemplate lessons learned (objective and subjective data) during the IR lifecycle. 
-
-﻿
-
-Follow-up reports using collected incident data should be generated. This data can be put back into the risk assessment process, ultimately leading to the selection of additional security controls. The checklist in Table 26.1-4, reproduced from NIST 800-61, provides major steps to be followed in the handling of an incident:
-
-<img width="1962" height="2500" alt="image" src="https://github.com/user-attachments/assets/c39c070b-f477-4d35-8f50-80935e604131" />
-
-<img width="1087" height="650" alt="image" src="https://github.com/user-attachments/assets/d7e5ff0b-b344-4a89-9b07-ad4bc2c2ddac" />
-
-
---------------------
-
-NIST Best Practices
-Keeping the number of incidents reasonably low to protect the business processes of an organization is imperative. More incidents may occur if security controls are insufficient, and the IR team may be overwhelmed. As a result, slow and incomplete responses by the team may occur, negatively impacting the business process of an organization through more extensive network damage and longer periods of service and unavailability.
-
-﻿
-
-An IR team can play a key role in risk assessment and training by identifying gaps in the security architecture. The following provides an overview of primary recommended practices for securing systems, networks, and applications. 
-
-
-<img width="2500" height="1194" alt="image" src="https://github.com/user-attachments/assets/aa3fba34-1dd7-47bd-ac66-efcaf8ba7ef5" />
-
-Risk Assessments
-
-
-Periodic risk assessments should be conducted regularly to identify critical resources within the organization to emphasize monitoring and response activities. An assessment determines what risks are posed by combinations of threats and vulnerabilities to systems and applications. Risks can be mitigated, transferred, or accepted. 
-
-
-Host Security
-
-
-All hosts should have auditing enabled and be hardened appropriately using standard configurations. Hosts should be configured to log significant security events and follow the principle of least privilege, granting users only the necessary privileges to complete authorized tasks.
-
-
-Malware Prevention
-
-
-Malware protection should be deployed at the host level (for example, server and workstation OS), the application server level, and the application client level. 
-
-
-User Awareness and Training
-
-
-Users within an organization should be aware of policies and procedures regarding appropriate use of networks, systems, and applications. By improving user awareness, the frequency of incidents should be reduced. 
-
-
-----------
-
-Use NIST Best Practices for Incident Response
-An Administrator account within the mission partner’s network browsed to a web page that was hosted by a workstation located within the network environment. The Administrator account was present there from Aug 2, 2022 @ 09:20:00.000 to Aug 2, 2022 @ 09:25:00.000. The user downloaded and executed a file that resulted in suspicious activity on the host. 
-
-﻿
-
-For training purposes and resource limitations, a sandbox environment was created and the suspicious file was implanted and replicated on the Host Analyst machine.
-
-﻿
-
-Items of interest include the following:
-
-
-Created files
-
-Persistence mechanisms
-
-Network activity
-
-
-Complete the steps in the following lab to investigate the potential MCA and the resulting events using Windows Sysinternals and Kibana. 
-
-﻿
-
-NOTE: In a real event, the primary functions of an IR lifecycle —  Preparation, Detection and Analysis, Containment, Eradication and Recovery, and Post-Incident Activity — are conducted by the IR team.
-﻿
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to the Virtual Machine (VM) win-hunt using the following credentials:
-
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-The following steps align with the Preparation and Detection and Analysis phases of an IR lifecycle. 
-
-﻿
-
-2. Open the Process Monitor (Procmon64) shortcut located on the desktop. Select Run, and select Yes. 
-
-﻿
-
-Procmon is part of Windows Sysinternals and records live file system activity, such as process creations and registry changes. 
-
-﻿
-
-3. Minimize Procmon, and return to the desktop. Select Lab1.exe, located on the desktop. 
-
-﻿
-
-4. Close the malware notification:
-
-﻿<img width="1272" height="632" alt="image" src="https://github.com/user-attachments/assets/2033693c-edf1-4a50-ae01-7a16116fa3a4" />
-
-
-﻿
-
-At this point in a real event, a Clear operation would be in effect, and the host in the mission partner’s network would immediately be contained and quarantined (for example, by disabling the Network Interface Card [NIC]) to prevent the MCA from propagating to other hosts. 
-
-
-Malware protection should be deployed at the host level (for example, server and workstation OS), the application server level, and the application client level within a network environment. 
-
-
-5. Return to Procmon. Select Filter on the menu task bar, and select Filter on the drop-down menu. In the Process Monitor Filter window that appears, select Process Name, and enter Lab1.exe as the search term. Select Add and OK. 
-
-
-<img width="1487" height="852" alt="image" src="https://github.com/user-attachments/assets/fd5bb880-cfbd-452a-9455-99e0fcf13aa4" />
-
-
-<img width="1180" height="724" alt="image" src="https://github.com/user-attachments/assets/60a3e5af-4f6a-438c-95a4-decec75118da" />
-
-NOTE: If Add is not selected after inputting the filter, a prompt asks to add the filter. 
-
-
-The events are now filtered to display the MCA. Specific files, connections, or processes that the application is accessing can now be analyzed. 
-
-
-6. Scroll down the filtered output list, and analyze the results that display interactions with the registry, created file activity, and network connections. 
-
-
-NOTE: Additional filters can be applied to Procmon, if needed, to assist with the output analysis. 
-
-
-7. Close Procmon.
-
-
-8. Open tcpview64, located on the desktop, to further analyze network connections from the MCA. Select Yes to open the application when prompted. 
-
-
-TCPView displays detailed listings of all Transmission Control Protocol (TCP) and User Datagram Protocol (UDP) endpoints on a system, including local and remote addresses and the state of any TCP connections. 
-
-
-9. In the TCPView search box, enter Lab1.exe to filter the network connections toward the MCA:  
-
-
-<img width="1374" height="142" alt="image" src="https://github.com/user-attachments/assets/b8399fee-9966-4734-a2f5-1f1a4b40b3ed" />
-
-The output shows that the application is continuously making connections to a remote IP address over a specific port. 
-
-
-10. Make a note of the remote IP address and port. 
-
-
-Another Windows Sysinternals tool, Autoruns, can be used to analyze and detect any persistence mechanisms that malware is using to survive on the infected host. To survive and evolve, malware must outlive a system reboot by creating a persistence mechanism, such as a scheduled task or specific run keys in the registry. 
-
-
-11. Open Autoruns64, located on the desktop. Select Run to continue. If administrative rights are requested, select Yes.
-
-
-The tabs located on the taskbar are the areas that Autoruns checks for persistence. 
-
-
-12. Analyze the returned entries for anomalous activity. Once completed, close Autoruns. 
-
-
-<img width="2050" height="852" alt="image" src="https://github.com/user-attachments/assets/73f7febe-919c-41ef-bf44-a6da0e9af57e" />
-
-
-It is evident that the MCA creates a persistence mechanism by creating a specific run key in the registry. 
-
-
-The Clear operation in an IR lifecycle can move forward, and the Host Analyst can use Kibana to correlate the MCA behavior with Indicators of Compromise (IOC) and TTPs. 
-
-
-13. To view Sysmon events pertaining to the MCA, open Google Chrome, and select the Security Onion bookmark. Log in using the following credentials:
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
-
-
-
-NOTE: If the warning Your connection is not private appears, select Advanced, and select Proceed to 199.63.64.92 (unsafe). 
-
-
-14. Set the time period of interest as Aug 2, 2022 @ 09:20:00.000 to Aug 2, 2022 @ 09:25:00.000, and select Update.
-
-
-15. Analyze the resulting data. 
-
-
-Look for the infected host(s) in the mission partner’s network, suspicious files that were created, executables run, persistence capabilities, and IPs or ports used for communication.
-
-<img width="2048" height="962" alt="image" src="https://github.com/user-attachments/assets/fe32d915-26e6-4abd-a366-b6f9b765192f" />
-
-
-Once the critical details of adversary behavior are discovered, Eradication (for example, deleting malware and disabling breached user accounts) and Recovery or Restoration, followed by Hardening actions on the infected host(s) within the mission partner’s network, can be performed. These actions are crucial to restore normal system operations.
-
-
-Some Hardening actions are as follows: 
-Propose network architecture changes to improve security and reduce risk.
-Ensure unnecessary services are disabled.
-Ensure that the latest patches are installed.
-Audit installed software.
-Enforce an audit policy.
-Enhance security systems and logging.
-
-Assessing post-incident activity is critical to an organization’s security posture, and all hosts should have auditing enabled and be hardened appropriately using standard configurations. Users within an organization should also be aware of policies and procedures regarding appropriate use of networks, systems, and applications and be given only the necessary permissions to conduct tasks. 
-
-
-By following these procedures and conducting periodic risk assessments regularly to identify critical resources within an organization, the frequency of incidents is reduced. 
-
-
-Answer the questions that follow. 
-
-<img width="1133" height="694" alt="image" src="https://github.com/user-attachments/assets/76866370-2681-4750-ac77-b194bba9b7a2" />
-<img width="1090" height="710" alt="image" src="https://github.com/user-attachments/assets/8c5ce722-69f6-40ca-adf1-931ab14e830d" />
-<img width="1043" height="621" alt="image" src="https://github.com/user-attachments/assets/2bae75a0-9bf7-473b-8825-8d2969b96844" />
-<img width="1055" height="732" alt="image" src="https://github.com/user-attachments/assets/98c4aa15-bbf2-4e2e-809c-d2f7eaac34a8" />
-<img width="1096" height="654" alt="image" src="https://github.com/user-attachments/assets/7947d3b9-100e-42e9-918d-0bdcc1e0d361" />
 
 ----------------
 
-IR OPSEC Considerations
-OPSEC is the security and risk management process to ensure the protection of details and assets of an organization’s network environment. In IR, OPSEC is required to validate that the mission or operation of a mission partner’s network environment can function without being further compromised by MA, and the assets are not returned to operation until the incident at hand has been fully resolved and malware has been eradicated. 
+Host Isolation Techniques
+There are many different methods by which a host can be isolated when an attack occurs in an attempt to contain the extent of the malware. The most common mechanisms are network isolation and lateral movement blocking.
 
 ﻿
 
-Containment, eradication, and recovery methods while prioritizing, securing, and maintaining critical assets within the network environment to reduce the risk of further network compromise must be a primary focus. The most expedient efforts to restore the organizational operations to a minimum operating state must be applied. To reduce the risk of further network compromise, the following must be performed:
-
-Information Gathering: Deployment of additional sensors may provide an adversary with critical information due to undesired monitoring and logging. Containment of infected machines before gathering additional information may be necessary.
-Containment: Delaying containment of compromised hosts to gather additional information is risky and is a liability to the mission partner as it allows attacks to continue. Compromised hosts must be isolated and ensure that all affected systems have threats eradicated and capabilities restored before allowing operations to return to a normal state. 
-Communication: Coordination with the mission partner is common during planning and up to execution, depending on the mission task. Hunt missions may result in minimal or no communication with the mission partner for OPSEC reasons. The internal team ultimately makes the operational decisions. 
-Post-Incident Recovery: Recovery or restoration actions to reestablish security and defenses using verification checklists, as seen in Table 26.1-4, must be performed. In addition, observations must be collected, and security and defenses must be collected in preparation for future Defensive Cyber Operations (DCO). All of this must occur while prioritizing OPSEC. 
+Network Isolation
 ﻿
-<img width="1144" height="672" alt="image" src="https://github.com/user-attachments/assets/eff04e09-e2e8-4d71-ba41-6dad1092c5c7" />
-<img width="1111" height="713" alt="image" src="https://github.com/user-attachments/assets/074390ec-d905-41b8-a4d5-51ca03cc4e8e" />
 
-
------------
-
-### CDAH-M26L2-Identify Critical Systems and Vulnerabilities within Infrastructure ###
-
-Critical Systems
-An enterprise network is composed of hardware devices connected together through an intricate series of network links. Every configured device has the possibility of containing vulnerabilities. Network administrators attempt to mitigate the risks associated with these devices, however vast this task may seem. The vulnerabilities these devices emit are a weakness in architecture and provide a potential foothold for an adversary to gain access to a network and perform lateral movement to search for key data or assets. This risk is why cybersecurity teams must establish a complete and accurate view of all the critical systems that are part of a network, then attempt to address each vulnerability.
+Network isolation is the primary method of isolation during incident response. This method is effective because it prevents the infected host from communicating with other hosts on the network. Blocking communication before the malware spreads may effectively contain the infection to a single host. 
 
 ﻿
 
-The following three tables define common critical network systems and the roles they play in the network. The tables describe why each system is critical and targeted and categorize them as follows:
+While there are many different ways to accomplish network isolation, the most straightforward method is to disable the network interface. The following describe different options for disabling the network interface:
 
-Network Devices
-Constructs
-Applications
-
-Network Devices
-
-<img width="856" height="1600" alt="image" src="https://github.com/user-attachments/assets/bd58743f-d0ac-4012-a7f8-7ab1c870b052" />
-
-Constructs
-
-<img width="1600" height="615" alt="image" src="https://github.com/user-attachments/assets/53bc48fb-b4a1-40a4-ba42-b1909559cbd6" />
-
-Applications
-
-
-<img width="1581" height="1600" alt="image" src="https://github.com/user-attachments/assets/e76876a1-bc30-44bb-9d06-62fb6e9ca8dd" />
-
-
-<img width="1110" height="599" alt="image" src="https://github.com/user-attachments/assets/b1040abc-1b71-4d42-b341-c086de0b7304" />
-
-<img width="1004" height="638" alt="image" src="https://github.com/user-attachments/assets/c4ce2a8c-d385-4841-a398-62b3e45bcaab" />
-<img width="1120" height="628" alt="image" src="https://github.com/user-attachments/assets/971adeb5-900d-4de0-9f3e-db53d4c8319e" />
-
-------------------
-
-
-Understanding Critical Devices and Associated Risk
-Every military operation must follow an Intelligence Preparation of the Operational Environment (IPOE) process. The IPOE requires an analysis of enemy capabilities, possible courses of action, and a detailed analysis of Key Terrains (KT). KT are physical locations that may provide an advantage to an adversary. KTs are easy to identify on a map. Identifying key terrain provides valuable information on where to focus efforts to defend or attack a physical location. 
+Physical Removal: Unplug the network cable, if one is available.
+Programmed Scripts: Run a script to disable the network interface from the Operating System (OS). 
+Logical Partitions: Move the infected host into a separate Virtual Local Area Network (VLAN). 
+Firewall Configurations: Set up a firewall on either the host or network to block all traffic into and out of the host. 
+In each case, the host ceases all its usual ability to communicate over the network. For an end user workstation, this is likely acceptable. For mission critical servers, this might not be acceptable. Often, the best answer for mission critical servers is to have backup hosts that can take the load while the infected host is isolated. In the absence of proper backup hosts, network isolation may not be a desirable option for host isolation. 
 
 ﻿
 
-The level of analysis required for an IPOE also applies to cyberspace operations. The Joint Publication 3-12, Cyberspace Operations defines the term "cyberspace" as a "global domain within the information environment consisting of the interdependent network of Information Technology (IT) infrastructures, including the Internet, telecommunications networks, computer systems, and embedded processors and controllers." 
-
- 
-
-Key Terrains in Cyberspace (KT-C)
+Lateral Movement Blocking
 ﻿
 
-Cyber terrain is not always directly related to a physical location. Instead, cyber terrain may include physical mediums such as software, Operating Systems (OS), network protocols, virtual personas, and other computing devices. KT-C are considered physical nodes or data that enable or support mission execution. Adversaries may attempt to exploit, compromise, damage, or destroy various elements of KT-C. If an adversary inflicts damage to a particular area of the network or a particular component of infrastructure, the impact on the mission depends on the function of the network area or component. KT-C fall into three tiered categories that are based on the levels of impact any attack has on the Operational Environment (OE). This will be covered in greater detail in the next section. 
+Blocking lateral movement is another important part of effective host isolation. After an attacker establishes a foothold on an infected host, blocking lateral movement may help contain the attack and spare the rest of the network. Two common methods for blocking lateral movement are by limiting inter-host communication and by leveraging compromised credentials.
 
 ﻿
 
-The United States Cyber Command (USCYBERCOM) Operational Guidance, Identification of Mission Relevant Terrain in Cyberspace, provides guidelines for Defensive Cyber Operations (DCO) team members working with cyber terrain. This guide requires the following components when defining cyber terrain, which include both logical and physical components:
+Limit Inter-Host Communication
+﻿
 
-KT-C: Any locality or area (physical or logical) where seizure, retention, or other specified degree of control provides a marked advantage in cyberspace to any combatant. 
-
-Mission Relevant Terrain in Cyberspace (MRT-C): All devices, internal/external links, OSs, services, applications, ports, protocols, hardware, and software on servers required to enable the function of a critical asset.
-
-Task Critical Asset (TCA): An asset so critical that its incapacitation or destruction would have a serious, debilitating effect on the ability of one or more Department of Defense (DoD) or Office of the Secretary of Defense (OSD) components to execute the capability or mission-essential task it supports. 
-
-Defense Critical Asset (DCA): An asset so critical to operations in peace, crisis, and war that its incapacitation or destruction would have a serious, debilitating effect on the ability of the DoD to fulfill its missions. TCAs are used to identify DCAs.
-
-Identifying terrain has a direct impact on a Cyber Protection Team (CPT) mission, when performing hunting, clearing, hardening, and assessing operations. After the CPT is assigned a terrain in which to hunt and operate, the threat hunter can filter data based on the types of systems and datasets available. Data requirements are driven by the analysis of potential threat actors that can target the mission partners' networks and the Tactics, Techniques, and Procedures (TTP) they employ. Identifying terrain, in turn, reduces the number of analytics necessary for the team to execute the mission objectives. The threat hunter can also filter for data on the identified MRT-C and KT-C to prioritize the required data collection. 
+Defenders can block lateral movement by isolating networks, as described above, and by limiting other aspects of inter-host communication. For example, defenders may disable specific protocols, such as Server Message Block (SMB) and Remote Desktop Protocol (RDP). SMB is one of the most common protocols used by attackers for lateral movement in a Windows network environment.
 
 ﻿
 
-Understanding KT-C provides a distinct advantage over the adversary by allowing the analyst to focus on defenses for the network. For example, a Network Analyst knowledgeable of KT-C would be able to foil an adversary from further penetrating the vulnerable network by providing mitigating controls for identified weak security postures resulting from identified vulnerabilities supporting KT-C. CPTs are continually required to adjust and adapt to new adversaries or TTPs as KT-C constantly remains at risk. 
+Leverage Compromised Credentials
+﻿
+
+Another common method of lateral movement in an attack is reuse of compromised credentials or leveraging the access of a compromised account to obtain sessions on other computers. Thus, an effective isolation technique could be to disable the compromised accounts. This would allow the host to continue functioning in the network environment as before, just without the compromised account. This would be an effective technique in the case of a compromised account that only has limited privileges and privilege escalation has not yet been accomplished by the attacker. 
 
 ﻿
 
-Critical Tiers
+Related to disabling compromised accounts is changing of account passwords. This would be effective in the case of a password breach. Changing the affected passwords would prevent the attackers from being able to use those credentials, limiting them to the access they already have, and preventing them from reusing those passwords to move laterally and expanding their footprint. 
+
+﻿<img width="1096" height="709" alt="image" src="https://github.com/user-attachments/assets/fa6ec280-5c4e-4a35-8224-7509ccc47515" />
+
+------------
+
+
+Host Isolation With PowerShell
+Analysts can use PowerShell to run script commands that logically isolate a device and significantly improve response time during an IR scenario. Since the compromised device is not always physically available, the ability to remotely isolate it before unplugging the network cable is invaluable. There are multiple methods by which a host may be isolated, and applying all of them as a form of defense in depth is appropriate. The following methods may use scripting to isolate the host:
+
+Prevent Outbound Activity
+
+Isolate a Host from a Domain
+
+Turn Off the Network Adapter
+
+Prevent Outbound Activity
 ﻿
 
-A network, its supporting infrastructure, and the various integrated applications can be prioritized into three tiers of critical assets, with respect to potential loss or damage severity. Adversaries attempt to compromise various elements of critical assets to exploit, compromise, damage, or destroy the network. Figure 26.2-1, below, describes the three tiers of damage or disturbance impact. If a tier is not assigned, this means the impact is low priority.
+Setting the local and network firewall to prevent all outbound network activity from the isolated device is an effective logical fallback measure to employ. However, this should not be the only measure taken for host isolation. Local firewalls can also be turned off by administrative privileges.
 
 ﻿
-<img width="1667" height="834" alt="image" src="https://github.com/user-attachments/assets/8b5ad438-e92b-4fbb-bc87-b7a7a0f860f6" />
+
+For example, a mission partner network that employs Vyatta routers for network communications may run the following script to set a firewall rule. This script sets the rule to block a specific Internet Protocol (IP) address from communicating outward:
+
+conf
+set firewall name Isolation-Rule default-action 'accept'
+set firewall name Isolation-Rule description 'ISOLATED'
+set firewall name Isolation-Rule rule 999 action 'drop'
+set firewall name Isolation-Rule rule 999 description 'Isolate IP address'
+set firewall name Isolation-Rule rule 999 source address 1.2.3.4
+set interfaces ethernet eth0 firewall local name Isolation-Rule
+commit
+save
+In a line-by-line manner, this script performs the following actions:﻿
+
+Initiates configuration mode on the device.
+
+Creates the rule set named Isolation-Rule and sets the default action to accept so that traffic not explicitly blocked by other rules is allowed.
+
+Sets the description of the rule to ISOLATED.
+
+Creates a rule with ID 999 within the Isolation-Rule set to drop matching traffic.
+
+Sets the description of rule 999 to Isolate IP address.
+
+Specifies that the source address of rule 999 is 1.2.3.4.
+
+Associates the Isolation-Rule set with eth0 on the firewall.
+
+Applies the configuration changes.
+
+Saves the configuration changes.
+
+Using an address group improves the extensibility of this rule. The current rule requires adding a new numbered rule to the firewall with each additional isolation. Additional isolations may be necessary during a widespread compromise.
+
+﻿
+
+Isolate a Host from a Domain
+﻿
+
+Removing a host from the domain prevents domain-authenticated communications. This effectively makes the device unusable because authentication cannot occur. 
+
+﻿
+
+Use the PowerShell cmdlet Remove-Computer to remove a computer from the domain. This cmdlet uses the parameters listed in Table 27.1-1, below, to receive the necessary input from the user and remove a host from the domain:
+
+<img width="1667" height="887" alt="image" src="https://github.com/user-attachments/assets/418ee210-9402-4a68-8c0c-8a56f1497576" />
 
 
-Tier 3 - Medium Priority
+Turn Off the Network Adapter
 
 
-Tier 3 covers general data and applications. Compromise of these assets or information makes the organization subject to periods of degraded performance, but it does not destroy or corrupt data or halt business processes. Examples include data or services that, if lost, corrupted, or destroyed, can be recovered or restored with minimal impact on business processes.
- 
-Tier 2 - High Priority
+Network connectivity at the host level must be severed as completely as possible. Although removing the physical cable from the system is the best way to accomplish this, there are other effective backups defenders can use until responders arrive onsite. One option is to logically turn off the network adapter for all network interface cards. Defenders can run the following command in PowerShell to turn off the cards:
+Disable-NetAdapter -Name "Device Name" -Confirm:$false
 
 
-Tier 2 covers important data and applications. Compromise of these assets or information makes the organization subject to serious damage and interrupts or degrades business processes. Examples include data that, if lost, corrupted, or destroyed, would have a serious impact on the organization or the essential applications or servers critical to that data. 
- 
-Tier 1 - Critical Priority
 
-
-Tier 1 covers top value, critical, and essential data, applications, network services, and information processing. Compromise of such assets or information makes the organization subject to exceptionally grave damage and prevents critical business processes. Examples include any asset whose data compromise, corruption, or destruction has a devastating impact on the organization’s applications, critical network infrastructure, or data systems.
-In Figure 26.2-2 is an example of a network map reflecting identified critical systems in a network environment and their associated terrain tiers. Table 26.2-4 displays the critical systems and their potential effects of compromise. 
-
-<img width="2048" height="1654" alt="image" src="https://github.com/user-attachments/assets/3ec655fb-ed9d-43a9-912f-e10ef43b8e3a" />
-<img width="1271" height="2048" alt="image" src="https://github.com/user-attachments/assets/7cae1cfe-a1a9-4ad8-ac00-6db547e40ac5" />
-
-
------------------
-
-Vulnerability Risk Levels
-Vulnerabilities are identified by a Common Vulnerabilities and Exposures (CVE) number. This number generally consists of the four-digit year and a unique number identifier, such as CVE-2000-0001. Each CVE is assigned a score to represent its severity level. This score is based on the Common Vulnerability Scoring System (CVSS), which assigns a number between 0.0 and 10.0, where 10.0 is the most severe. Table 26.2-5, below, describes each level:
-
-<img width="1668" height="1755" alt="image" src="https://github.com/user-attachments/assets/e4bc8764-feca-4f05-941a-467d4011a533" />
-
-After risk levels have been identified, the organization should consider which devices on the network are critical assets of the greatest concern. Identifying these device criticality levels is part of the risk analysis process.
-
-
-Assigning Risk Based on Risk Levels and Device Criticality
-
-
-Analyzing the risk associated with a vulnerability and the criticality level of devices on a network provides a way to rank and prioritize risks to the organization. This process is risk analysis, which leads directly into patch prioritization. The risk analysis process shows how organizations identify the highest level of risk. Patches should be prioritized based on this analysis. 
-
-
-Figure 26.2-3, below, provides a risk matrix for prioritizing vulnerability risk levels. This matrix is an example of the visualization an organization may use to determine the patches to prioritize for implementation, based on the availability of organizational resources. The figure suggests priority levels for associated vulnerabilities and devices using the following patterns and colors:
-Minimal: Green, vertical stripes
-Low: Yellow, horizontal stripes
-Moderate: Orange, narrow diagonal stripes
-High: Red, wide diagonal stripes
-Extreme: Solid black
-
-<img width="1667" height="834" alt="image" src="https://github.com/user-attachments/assets/74156e43-a43c-4725-a71a-feed77b1738f" />
-
-Organizations may alter this matrix to better fit their businesses. For example, some organizations may consider all high- and critical-level vulnerabilities an extreme priority. Another factor of risk analysis is in determining risk likelihood. Risk likelihood considers the likelihood of a specific risk to occur. For example, on a network with many mitigating controls in place, a critical vulnerability may have such a small likelihood of occurrence that it may not need resources allocated for patching. In a thorough analysis, all risks are compared with the vulnerability level, criticality of the device, and the likelihood of the risk. All of this information factors into how an organization handles risks.
+After the incident is resolved, defenders may use the following command to re-enable the device:
+Enable-NetAdapter -Name "Device Name" -Confirm:$false
 
 
 ---------------
 
-Common Exploits
-Analysts who develop an in-depth understanding of common exploits are better equipped to implement effective defensive measures for securing critical systems from potential Malicious Cyber Activities (MCA). An exploit is any tool or technique that leverages a vulnerability to gain access to networks and systems. Adversaries frequently exploit vulnerabilities that have not been properly addressed. Exploits can either be either local or remote and affect three target groups: clients, web applications, and infrastructure. 
 
-﻿
-
-Local exploits target the system on which they are performed. This is usually a system that an attacker has already accessed. An example is executing the privilege escalation exploit DirtyCOW to gain root access on a system where the attacker already has user-level access. 
-
-﻿
-
-Remote exploits target a system other than the system from which they are performed. An example is EternalBlue, which sends malformed instructions to a remote Server Message Block (SMB) service to gain Remote Code Execution (RCE). A remote exploit is still remote even if it is performed on a localhost or a system where user-level access is already gained. For example, an attacker may gain user-level access to a machine and use that access to turn on SMB before using EternalBlue to elevate to the SYSTEM level account.
-
-﻿
-
-Exploits by Attack Style
-﻿
-
-Table 26.2-6, below, lists and explains common types of exploits by their attack style. This table also provides the vulnerabilities that each exploit targets and examples of real life exploits that can be classified under each type.
-
-<img width="1234" height="2048" alt="image" src="https://github.com/user-attachments/assets/ef87500c-6a98-45c4-a440-2c428832665a" />
-
-
-Exploits by Architecture
-
-
-Exploits can also be classified by the architecture they target, such as the following:
-Clients
-Web Applications
-Infrastructure
-Client Exploits
-
-
-A client exploit targets an individual machine or software instance. Workstations and software such as File Transfer Protocol (FTP), Java, and web servers may be vulnerable to client exploits. Software that runs on a server and is shared to a network may also be the target of a client exploit, in some cases. For example, if the exploit targets the software explicitly and results in access to the software or an underlying system. Infamous examples of client exploits include the following:
-EternalBlue
-BlueKeep
-DirtyCOW
-
-
-EternalBlue
-
-
-EternalBlue (CVE-2017-0144) is a well-known remote exploit targeting the SMB service on Windows computers. The exploit leverages an input validation vulnerability in SMBv1, which was previously enabled by default despite having been superseded by SMBv2 and SMBv3 to support legacy systems. Although the exploit was patched after Windows 10 Version 1507, systems without the proper Windows Patches Knowledge Base (KB) are vulnerable. The attacker sends a specially-crafted packet to the service, which grants RCE. This access is SYSTEM level and represents a total compromise of the system through a vulnerable port such as Transmission Control Protocol (TCP) Port 445. 
-
-
-BlueKeep
-
-
-BlueKeep (CVE-2019-0708) is a memory-based remote exploit targeting the Remote Desktop Protocol (RDP) service on Windows 7 computers. The vulnerability exists in a pre-authentication mechanism by which clients negotiate aspects of the connection with the server. By requesting specific connection parameters, heap corruption occurs that allows for remote code execution at the SYSTEM level. Since this occurs pre-authentication, a username and password are not required. SYSTEM level access represents a total compromise of the system.
-
-
-DirtyCOW
-
-
-DirtyCOW (CVE-2016-5195) is a local race condition privilege escalation exploit targeting the copy-on-write mechanism in the Linux kernel. Using the right timing, the race condition allows the attacker to use the copy-on-write mechanism to make a non-writable file mapping writable. This file is then modified and compromised before it is executed. If this file runs with a greater privilege level than the user running it, for example, a Set User Identification (SUID) binary, it is used to run commands or other code as root. The most common payloads are commands to spawn a root-level system shell or a Remote Access Trojan (RAT) executed as root. 
-
-
-Web Application Exploits
-
-
-A web application is hosted by a server accessible by a web browser. This includes mobile applications that rely on web-based protocols and frameworks such as Hypertext Markup Language version 5 (HTML5), even if the applications are not presented as traditional websites. Web application exploits are different from exploits against web server software, such as Internet Information Services (IIS) or Apache. Exploits against web server software are considered client exploits. Web application exploits target the functionality of a web application through Structured Query Language (SQL) Injections or command injections. Web application exploits often focus on compromising information or gaining initial access to a network. Examples of web application exploits include the following:
-Injection
-ShellShock
-
-
-Injection
-
-
-The term "injection" is a catch-all descriptor for input validation attacks against web applications. The most common injection attacks are SQL injections and command injection, also called code injections or OS injections. An injection attack targets legitimate application functionality. The attack attempts to force the application to run unintended commands by exploiting oversights in the application's validation and sanitization of user-provided input. 
-
-
-ShellShock
-
-
-ShellShock (CVE-2014-6271) is a collection of security bugs in the Unix Bash shell that allow for command injection. The attack specifically targets Bash’s function export feature. This feature allows one Bash process to share scripts with the other Bash processes it executes.
-
-
-Infrastructure Exploits
-
-
-Infrastructure refers to anything that provides a service to a network. Attackers exploit infrastructure services to impact a broader scale of targets, rather than accessing targets individually. For example, Active Directory (AD) is a core part of Windows infrastructure. Attackers generally exploit AD to compromise or affect an entire network or large sections of a network. Even though an infrastructure exploit may communicate directly with a Domain Controller (DC), this doesn't mean the DC, itself, is the ultimate target. Other potential targets include services such as a Domain Name System (DNS), Dynamic Host Control Protocol (DHCP), and Link-Local Multicast Name Resolution (LLMNR). Some examples of infrastructure exploits include the following: 
-Kerberoasting
-SIGRed
-Kerberoasting
-
-
-Kerberos is an authentication service that relies on a ticketing system. A Service Principal Name (SPN) identifies Windows services. To enable authentication with Kerberos, each SPN must associate with a service account. A service account is an account specifically tasked with running a specific service. These accounts often inherently have high privilege levels because their services require it. 
-
-
-To use these services, users request Ticket-Granting Service (TGS) tickets that allow them to use the service account to temporarily leverage a service. These TGS tickets use Rivest Cipher 4 (RC4) encryption. RC4 uses the service account’s hash as the private key for the encryption. The attacker downloads and saves these tickets as a file to brute force the hash offline. This hash then authenticates as the associated account. It is often trivial for attackers to compromise the Domain Administrator (DA) account or an entire network due to the privilege level of these service accounts.
-
-
-SIGRed
-
-
-SIGRed (CVE-2020-1350) is a memory-based exploit targeting the Windows DNS service WinDNS. In this exploit, an attacker sends requests to the victim's DNS server. The request is forwarded and resolved to a DNS server that the attacker controls. The victim DNS server then essentially becomes a client that the attacker forces to communicate with their server at any time. 
-
-
-Due to a flaw in the way DNS handles overly large DNS packets, a specially-crafted packet has the capability to cause a heap-based overflow, resulting in RCE. Any payload delivered runs as the local SYSTEM account of the machine running the DNS server. This process generally results in a complete network compromise, due to the DNS and the privilege level of its service account.
-<img width="1087" height="638" alt="image" src="https://github.com/user-attachments/assets/dd387dfa-ec77-408e-95f6-4120f8a8322b" />
-<img width="1081" height="607" alt="image" src="https://github.com/user-attachments/assets/167c6f37-9c5f-4ce0-8a8a-67a10ee6a218" />
-
-
------------------
-
-Identify Vulnerabilities
-In the following scenario, a Cyber Defense Analyst (CDA) is assisting a mission partner with prioritizing vulnerabilities associated with their critical IT infrastructure within the network environment. A network scan of the mission partner's network environment has been conducted using Assured Compliance Assessment Solution (ACAS). Multiple vulnerabilities were detected, placing critical IT infrastructure at risk to MCA. 
-
-﻿
-
-Identify Infrastructure Vulnerabilities
-﻿
-
-Use ACAS and the conducted scan to prioritize the critical IT infrastructure vulnerabilities within Elastic Stack. Recommend and mitigate gaps by enabling hardening of the critical IT infrastructure to improve security and reduce risk to MCA.  
-
-﻿
-
-NOTE: The mission partner's network map pinpointing the critical IT infrastructure has been provided as an attachment. 
+Develop a PowerShell Isolation Tool
+The previous sections of this lesson described various methods for isolating a computer. In the following lab, write a script to turn off the network adapter, remove the computer from the domain, and prevent the computer from communicating in any other way on the network, even if the adapter is turned on or any cables are reconnected.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the Virtual Machine (VM) acas using the provided credentials:
+1. Log in to the Virtual Machine (VM) dc01 using the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open a Firefox web browser and select the bookmark Nessus.
+2. Open the PowerShell Integrated Scripting Environment (ISE).
 
 ﻿
 
-NOTE: If a warning appears in the browser, select Advanced…, then select Accept the Risk and Continue. If prompted to log in, use the credentials from step 1.
+3. Define the following user-supplied parameters:
+
+param(
+    [Parameter()]
+    [String]$ComputerName,
+    [String]$RouterIP,
+
+    [String]$UserName,
+    [String]$Password
+)
+﻿
+
+4. Enable PowerShell cmdlets to manipulate Active Directory (AD) objects by importing the following AD module:
+
+Import-Module ActiveDirectory
+﻿
+
+5. Obtain the IP address of the isolated computer by defining the following variable:
+
+$ComputerIP = $(Resolve-DnsName $ComputerName).IPAddress
+﻿
+
+6. Turn off the network adapter in five minutes by entering the following script: 
+
+Invoke-Command -ComputerName $ComputerName -ScriptBlock {Register-ScheduledTask -TaskName 'Isolate' -InputObject ((New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument '-Enable-NetAdapter -Name "Ethernet1" -Confirm:$false') -Trigger (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(5)) -Settings (New-ScheduledTaskSettingsSet))) -User $Using:UserName -Password $Using:Password}
+﻿
+
+The following is the script block broken down into its discrete parts: ﻿﻿
 
 ﻿
 
-3. From the left pane of the Nessus dashboard, select My Scans, then select Mission Partner's Network. 
+Execute everything within the script block as the current domain administrator:
+
+Invoke-Command -ComputerName $ComputerName -ScriptBlock { 
+﻿
+
+Register and create a scheduled task on dc01:
+
+Register-ScheduledTask -TaskName 'Isolate' -InputObject ((New-ScheduledTask 
+﻿
+
+Isolate the network adapter on the malware-infected host:
+
+-Action (New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument '-Enable-NetAdapter -Name "Ethernet1" -Confirm:$false') 
+﻿
+
+Set the task to execute in five minutes:
+
+-Trigger (New-ScheduledTaskTrigger -Once -At (Get-Date)AddMinutes(5))
+﻿
+
+Call the new scheduled task setting function:
+
+-Settings (New-ScheduledTaskSettingsSet)))
+﻿
+
+Execute the task creation process with administrator privileges and end the script block:
+
+-User $UserName -Password $Password}
+﻿
+
+NOTE: In some situations it is wise to avoid running commands on the infected computer. If forensic data collection has not yet been completed, running new code or making configuration changes might negatively affect the value of the forensic data. If touching the infected host is inadvisable or disallowed, the remote commands in the code above can be excluded from the script. The firewall rules created in later steps will also effectively disconnect the infected host from the network. 
 
 ﻿
 
-The network scan of the mission partner's network environment displays numerous vulnerabilities associated with the critical IT infrastructure and their severity. The page for the selected network scan provides the following tabs, displayed in Figure 26.2-4, which provide additional information:
+7. Remove the malware-infected host from the domain and have it join the workgroup Isolated by entering the following PowerShell cmdlet:
 
-Hosts: Scanned hosts
-Vulnerabilities: Vulnerabilities associated with the scanned hosts
-Notes: Notes about the scan
-VPR Top Threats: Tenable's patented Vulnerability Priority Rating
-History: History of scan results initiated on the network
+Remove-Computer -ComputerName "$ComputerName" -UnjoinDomainCredential energy\trainee -WorkgroupName "Isolated" -Force
+﻿
 
-﻿<img width="2048" height="1172" alt="image" src="https://github.com/user-attachments/assets/d7bfc322-4d72-44e0-9a30-531269c56ea1" />
-
-
-4. Analyze the information presented under the tab Hosts and the provided attachment of the mission partner's network map to accurately pinpoint the hosts that have been scanned for vulnerabilities. 
-
-
-5. Select the tab Vulnerabilities and analyze the information presented for more specific details regarding each vulnerability. 
-
-
-6. Select the tab VPR Top Threats analyze the information regarding remediation efforts to effectively reduce risk.
-
-
-This tab reveals severe flaws in the configuration of the critical IT infrastructure within the mission partner's network environment. These flaws may lead to grave damage to the architecture.
-
-
-7. Select the vulnerability MS17-010: Security Update for Microsoft Windows SMB Server, as highlighted in Figure 26.2-5, below, to display more information regarding the criticality of this vulnerability.
-
-
-<img width="2048" height="1094" alt="image" src="https://github.com/user-attachments/assets/42be26f5-ec62-4528-abe3-4fef8128a9c5" />
-
-The information indicates that a single host is affected by MS17-010. This vulnerability allows adversaries to remotely execute arbitrary code and gain access to a network by sending specially-crafted packets. The code exploits a software Input Validation vulnerability in Microsoft's Windows OS SMBv1 protocol that allows access to files on a remote server. Adversaries can compromise the entire network through the host and all devices connected to the host, making remediation efforts difficult. This exploit is also known as EternalBlue. Other ransomware such as WannaCry can also take advantage of this exploit. 
-
--------------------
-
-
-Prioritize Vulnerabilities With Elastic Stack
-In this scenario, the mission partner states that there has been network traffic present within the network regarding the vulnerability MS17-010 from Sep 22, 2022 @ 10:00:00.000 to Sep 22, 2022 @ 13:00:00.000. 
+NOTE: A best practice is to restart the device after making domain membership changes to the host. However, in this scenario, the restart is being delayed until the IR team arrives at the workstation location and completes the necessary forensics.
 
 ﻿
 
-Prioritize Critical IT Infrastructure Vulnerabilities with Elastic Stack
-﻿
-
-Use Elastic Stack to prioritize the mission partner's critical IT infrastructure for the vulnerability.
+So far, the script turns off the network adapter and removes the computer from the domain. The next series of commands aims to prevent the computer from communicating in any other way on the network. This also prevents the attacker from restoring connectivity prior to the IR team resolving the incident. To achieve these goals, the next part of the script sets up a firewall rule on the router to block all network traffic from the intruder IP address.
 
 ﻿
+
+This part of this lab uses the Putty Secure Shell (SSH) client. This SSH client is installed on the current domain controller (dc01), though it is not commonly present in default installations of Windows server or Windows workstations. In this case, Putty SSH has been installed to extend the functionality of the isolation script by enabling remote interaction with the router which governs network connectivity to the host in question. 
+
+﻿
+
+Analysts are able to use the command plink from within a PowerShell script to SSH into the Vyatta router and configure firewall rules that isolate the malware-infected system. The configuration passed to the router creates a firewall rule that denies all traffic from a Domain Name Server (DNS)-resolved IP address and applies that rule to all interfaces.
+
+﻿
+
+8. SSH into the router by entering the following command in the script:
+
+plink -ssh vyatta@$RouterIP -i $env:UserProfile\id.ppk -batch 
+﻿
+
+9. Use the configuration command wrapper to pass commands to the Vyatta router with the wrapper command begin by entering the following command in the script:
+
+"/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin; 
+﻿
+
+10. Create the firewall address group ISOLATED with the host IP or IP range to isolate and set a description for the group:
+
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED address $ComputerIP; 
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED description 'Isolated IP Addresses';
+﻿
+
+11. Under the address group ISOLATED, create a rule named Isolation-Rule that accepts traffic by default, then sets a description:
+
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule default-action 'accept';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule description 'ISOLATED';
+﻿
+
+Creating an address group allows engineers and administrators to quickly reduce overhead by centrally managing individual IPs and IP ranges without manually updating each rule. The rule created in the next step uses the address group through its name, Isolation-Rule, to set the IP or IP range the rule applies.
+
+﻿
+
+12. Create a new rule numbered 999 that drops all network traffic from the infected host:
+
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 action 'drop';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 description 'Isolate IP address';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 source group address-group ISOLATED;
+﻿
+
+The next step applies this rule to the interfaces to prevent the infected host from communicating across the network.
+
+﻿
+
+13. Apply the created firewall rule to the seven available interfaces by entering the following set of commands in the script:
+
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth1 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth2 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth3 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth4 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth5 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth6 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth7 firewall local name Isolation-Rule;
+﻿
+
+14. Commit and save the configuration changes by entering the following commands in the script:
+
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save;"
+﻿
+
+15. Ensure all lines of the script from the previous steps have been entered correctly by comparing them to the following completed script:
+
+param(
+    [Parameter()]
+    [String]$ComputerName,
+    [String]$RouterIP,
+    [String]$UserName,
+    [String]$Password
+
+)
+
+Import-Module ActiveDirectory
+
+$ComputerIP = $(Resolve-DnsName $ComputerName).IPAddress
+
+Invoke-Command -ComputerName $ComputerName -ScriptBlock {Register-ScheduledTask -TaskName 'Isolate' -InputObject ((New-ScheduledTask -Action (New-ScheduledTaskAction -Execute 'pwsh.exe' -Argument '-Enable-NetAdapter -Name "Ethernet1" -Confirm:$false') -Trigger (New-ScheduledTaskTrigger -Once -At (Get-Date).AddMinutes(5)) -Settings (New-ScheduledTaskSettingsSet))) -User $Using:UserName -Password $Using:Password}
+
+Remove-Computer -ComputerName "$ComputerName" -UnjoinDomainCredential energy\trainee -WorkgroupName "Isolated" -Force
+
+plink -ssh vyatta@$RouterIP -i $env:UserProfile\id.ppk -batch "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin; /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED address $ComputerIP; 
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall group address-group ISOLATED description 'Isolated IP Addresses';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule default-action 'accept';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule description 'ISOLATED';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 action 'drop';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 description 'Isolate IP address';
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set firewall name Isolation-Rule rule 999 source group address-group ISOLATED;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth1 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth2 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth3 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth4 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth5 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth6 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper set interfaces ethernet eth7 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save;"
+﻿
+
+16. Save the entire PowerShell script on the Desktop with the file name IsolateHost.ps1.
+
+﻿
+
+Execute the PowerShell Isolation Tool
+﻿
+
+Continue working in the VM dc01 to run the script IsolateHost.ps1 in PowerShell ISE. Use the VM core-router to verify that the script executes correctly.
+
+﻿
+
+NOTE: Executing the script in PowerShell ISE configures the router. This displays warnings regarding rules already existing and generates Invalid command [] errors due to a software bug in the current software version. For this lab, ignore the warnings and errors that display during script execution.
+
+﻿
+Workflow
+﻿
+
+1. In the VM dc01, execute the script IsolateHost.ps1 within the PowerShell ISE terminal by entering the following commands:
+
+cd c:\Users\trainee\Desktop
+.\IsolateHost.ps1 -ComputerName ENG-WKSTN-1 -RouterIP 172.16.2.1 -UserName Administrator -Password CyberTraining1!
+﻿
+
+Enter CyberTraining1! if prompted for a password.
+
+﻿
+
+
+This command executes the script IsolateHost.ps1 for the host ENG-WKSTN-1 at the router located at IP address 172.16.2.1.
+
+﻿
+
+2. Login to the VM core-router with the following credentials
+
+Username: vyatta
+Password: simnet
+﻿
+
+3. Verify the script executed correctly by entering the following two commands:
+
+configure 
+show firewall
+﻿
+
+The address-group ISOLATED should be visible with the configured IP address 172.16.4.2﻿
+
+﻿
+
+show interfaces
+﻿
+
+The output for a correct execution indicates that the firewall local name Isolation-Rule applies to the ethernet adapters eth1 through eth7.
+
+<img width="801" height="141" alt="image" src="https://github.com/user-attachments/assets/0edad5d7-1449-4682-9077-ca27934d3148" />
+<img width="1110" height="491" alt="image" src="https://github.com/user-attachments/assets/7cad63fb-9d59-44a0-bc3d-d9dcab70c2fd" />
+
+
+-----------
+
+
+Resolve an Intrusion Incident
+Analysts may return an isolated host back into the organization’s operating environment after concluding the incident that required host isolation. An incident is concluded when one or more of the following conditions are met:
+
+The system was restored completely from a backup image after collection occurred.
+The system was thoroughly investigated and all malicious artifacts were eradicated.
+The contaminated objects, such as user accounts, have undergone sufficient state change from the time of compromise, including password changes.
+Developing a PowerShell Restoration Tool
+﻿
+
+An incident has concluded. A host requires the restoration of full connectivity to the network. Use PowerShell to develop a script that aids by automating the restoration process. 
+
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the VM kali-hunt using the provided credentials:
+1. Log in to the VM dc01 using the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open a Firefox web browser from the desktop and select the bookmark Security Onion. 
+2. Open the PowerShell ISE. 
 
 ﻿
 
-NOTE: If prompted for credentials, log in with the following, then select the bookmark, again:
+3. Define the following user-supplied parameters:
+
+param(
+    [Parameter()]
+    [String]$ComputerName,
+    [String]$RouterIP
+)
+﻿
+
+4. Import the Active Directory module by entering the following cmdlet:
+
+Import-Module ActiveDirectory
+﻿
+
+5. Turn network access to the device back on at the router level by entering the following series of commands:
+
+﻿
+
+NOTE: Executing these commands displays warnings and generates Invalid command [] errors due to a software bug in the current software version. For this lab, ignore the warnings and errors that display during script execution.
+
+﻿
+
+plink -ssh vyatta@$RouterIP -i $env:UserProfile\id.ppk -batch "/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper begin; /opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete firewall group address-group ISOLATED;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete firewall name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth1 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth2 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth3 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth4 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth5 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth6 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper delete interfaces ethernet eth7 firewall local name Isolation-Rule;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper commit;
+/opt/vyatta/sbin/vyatta-cfg-cmd-wrapper save;"
+﻿
+
+6. Add the host back into the domain by entering the following cmdlet:
+
+Add-Computer -ComputerName $ComputerName -LocalCredential $ComputerName\Administrator -DomainName energy.lan -Credential energy\trainee -Restart -Force
+﻿
+
+7. Save the file on the Desktop as RestoreIsolatedHost.ps1.
+
+﻿
+
+8. Log in to the VM eng-wkstn-1 with the following credentials: 
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+9. Open a PowerShell terminal.
+
+﻿
+
+10. Turn on the Network Adapter by entering the following cmdlet:
+
+Enable-NetAdapter -Name "Ethernet1" -Confirm:$false
+﻿
+
+11. Return to the VM dc01.
+
+﻿
+
+12. In a PowerShell terminal, execute the script RestoreIsolatedHost.ps1 for the host eng-wkstn-1:
+
+.\RestoreIsolatedHost.ps1 -ComputerName ENG-WKSTN-1 -RouterIP 172.16.2.1
+﻿
+
+13. Enter CyberTraining1! when prompted for Administrator and Trainee passwords.
+
+﻿
+
+Use the information from this lab to answer the following question.
+
+<img width="1118" height="715" alt="image" src="https://github.com/user-attachments/assets/11a78a23-046c-49cb-b307-e37ffefd0467" />
+
+
+------------
+
+### CDAH-M27L2-Forensic Image Acquisition ###
+
+Forensic Acquisition Overview
+Forensic acquisition is the process of collecting and creating a bit for bit copy of data from a specified storage device or host. Forensic acquisition is accomplished using two primary methods: memory acquisition and disk image acquisition. Once the acquisition has been completed, the data must be authenticated through hashing. Verifying the integrity of a forensic image through hashing maintains confidence in the reliability and authenticity of the acquired data. By comparing the hash value of the acquired forensic image with the known reference value, investigators can quickly determine whether the image has remained unchanged or if any modifications have been introduced.
+
+﻿
+
+Memory Acquisition
+﻿
+
+Volatile memory, or Random Access Memory (RAM), is the memory used by the host in a powered-on state. Memory acquisition is the process of copying the data stored in the volatile memory of a host. For most operating systems, the data is stored in volatile memory, RAM, and is lost when a host loses power or is shut down. Memory acquisition effectively copies data from a volatile state to a non-volatile state and is completed by a memory dump, which may occur in one of several formats: RAW, crash dump, hibernation file, page file, or virtual snapshot. Each format is unique and may be available on only certain Operating Systems (OS). 
+
+﻿
+
+RAW File
+﻿
+
+A RAW-format memory dump is manually extracted from OSs in a live environment. A .raw file contains uncompressed and unprocessed data captured from the host. When memory is dumped using the RAW format, the data does not contain a header, metadata, or supporting information. 
+
+﻿
+
+Crash Dump
+﻿
+
+A crash dump is a memory dump of information collected by the OS about the host’s physical memory. The Windows OS, by default, collects information about the system in the event of a system crash. A Windows OS crash dump is usually saved in the C:\Windows\MEMORY.DMP file. Linux crash dumps are usually found in the /var/crash/ directory named as .crash files.
+
+﻿
+
+Hibernation File
+﻿
+
+A hibernation file is a snapshot of the host’s memory that the Windows OS collects and can return after a hibernation period. The hibernation file, hiberfil.sys, is a binary file located in the root directory (%SystemDrive%/hiberfil.sys). If hibernation is enabled on the host, the file is captured when an image, or copy, of the Hard Disk Drive (HDD) or Solid-State Drive (SSD) is created.
+
+﻿
+
+Page File
+﻿
+
+Page files (swap files) enable a system to place infrequently accessed information from RAM to a file on a non-volatile storage device, like a hard disk drive, letting the system use volatile RAM more efficiently. While a 64-bit system with a significant physical RAM capacity may not require a page file, the page file still plays a critical role in extending the system commit limit and supporting crash dumps as necessary, essentially serving as overflow for RAM. While users can create page files, most system administrators disable this ability through security policies. Additionally, administrators may elect to store page files on physical media outside the system architecture as an additional security measure or for performance gains. However, moving the page file from the C:\ drive on a Windows system is usually only done for critical infrastructure and heavy-load assets, not for user workstations. The CPT should coordinate with the mission partner to ascertain the location of all essential files when conducting forensic acquisition.
+
+﻿
+
+Virtual Snapshot
+﻿
+
+A virtual snapshot is a saved state of a Virtual Machine (VM) at a specific point in time. A virtual snapshot allows users to re-create the VM in the exact state in which the snapshot was captured. 
+
+﻿
+
+Table 27.2-1 provides a summary of the memory acquisition file formats described above:
+
+<img width="1667" height="1058" alt="image" src="https://github.com/user-attachments/assets/dae9cd8d-a4a4-4fdb-a1d9-43500412e0e9" />
+
+Disk Image Acquisition
+
+
+Disk image acquisition is the process of copying all data, sector by sector, present on the host’s HDD. An HDD contains the host’s non-volatile memory. Disk imaging is thorough in its copying, as it copies data from sectors, including physical and logical drives, active file systems, and unused areas of the drive. Although disk imaging is thorough, it is also resource heavy, requiring significant time and memory resources to execute. Disk imaging acquisition occurs through various techniques:
+
+Disk-to-disk: Uses hardware to create an exact copy of a source hard drive.
+Disk-to-image: Makes a copy of a hard disk and saves the data as a file, such as an Optical Disk Image, or ISO, file. 
+Logical: Creates a bit-for-bit copy of the data from only specific files or artifacts of interest. 
+Sparse: Targets specific files and collects fragments of unallocated or deleted data. 
+
+
+----------------
+
+Volatile Memory vs. Hard Disk Acquisition
+Recommending a particular forensic acquisition methodology depends on the details, components, and complexity of the incident. Table 27.2-2 provides factors that must be considered when recommending a forensic acquisition strategy:
+
+<img width="1667" height="858" alt="image" src="https://github.com/user-attachments/assets/1d6533cf-5bef-49b4-8cca-53bec160a3a3" />
+<img width="1131" height="683" alt="image" src="https://github.com/user-attachments/assets/7963a6a7-539f-4030-bc50-d69d0f5b2306" />
+
+
+-----------
+
+Identify a Compromised Host
+Read the scenario below, and complete the steps in the workflow to analyze and identify the infected host(s) on the network.
+
+﻿
+
+Scenario
+﻿
+
+An analyst in the Security Operations Center (SOC) noticed unusual traffic during an organizational off-day. The SOC analyst tracked the suspicious traffic from the 172.16.4.0/24 Engineer subnet. As a result, the organization has implemented its IR procedures. The Cyber Protection Team (CPT) is tasked with identifying any infected hosts and relevant information to determine initial access and the best forensic acquisition method. Each workstation is providing Packetbeat, Winlogbeat, and Sysmon data to the Security Information and Event Manager (SIEM).  
+
+﻿
+
+Workflow
+﻿
+
+1. Open the VM win-hunt. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the Chrome browser.
+
+﻿
+
+3. Select the 1 - DashBoard - Security Onion bookmark.
+
+﻿
+
+4. Log in to the Security Onion Console with the following credentials:
 
 Username: trainee@jdmss.lan
 Password: CyberTraining1!
 ﻿
 
-3. Select the hamburger menu at the top left, then select Kibana in the section Tools.
+5. On the main dashboard, adjust the time frame to Oct 4, 2022 @ 05:00:00.000 → Oct 4, 2022 @ 17:00:00.000, and document the entries in the dataset for Log Count by Node.
 
 ﻿
 
-This displays the Security Onion - Home Dashboard.
+6. Select Network under Event Category:
 
 ﻿
+<img width="337" height="203" alt="image" src="https://github.com/user-attachments/assets/021cd5e3-41d6-4423-84dc-92d6c237e656" />
 
-4. Select Alert under Event Category in the pane Security Onion - Navigation, as displayed in Figure 26.2-6, below:
 
 
-<img width="2048" height="1071" alt="image" src="https://github.com/user-attachments/assets/10a04505-de24-4546-9b47-6a2acc5bd2a3" />
+7. Ensure the time frame is still filtering for Oct 4, 2022 @ 05:00:00.000 → Oct 4, 2022 @ 17:00:00.000, and select an Internet Protocol (IP) address in the dataset Source IPs.
 
 
-5. In the field highlighted in Figure 26.2-7, below, set the time period from Sep 22, 2022 @ 10:00:00.000 to Sep 22, 2022 @ 13:00:00.000, then select Refresh
+8. Observe the IPs in the dataset Destination Ports.
 
-<img width="2048" height="1058" alt="image" src="https://github.com/user-attachments/assets/26717b62-3f4a-4cbb-8586-667531f52a84" />
 
+9. Select the 2 - Kibana Discover - Elastic bookmark. Using the *:so-* index, set the time frame to Oct 4, 2022 @ 05:00:00.000 → Oct 4, 2022 @ 17:00:00.000. 
 
-Network data associated with the critical IT infrastructure within the mission partner's network environment has been logged and the severe vulnerabilities can be identified and analyzed. 
 
+10. Select and add the following columns to the search index: 
+source.ip
+source.port
+agent.type
+destination.ip
+destination.port
 
-Modern instances of SMB use TCP port 445 for direct host-to-host communication in the client-server model. SMB port 139 is used along with Network Basic Input/Output System (NetBIOS) name resolution — requiring NetBIOS ports for resolution — to perform the same operation. In the case of the vulnerability MS17-010, adversaries can leverage SMBv1 and TCP port 445 to propagate malware and perform lateral movements in the network. After the initial SMB handshake, an administrative share on the remote machine can be compromised. 
+11. Add the following filter to the query to show only data containing destination port traffic:
+destination.port exists
 
 
-Forming a Kibana Query Language (KQL) query and using filters can help detect the use of the SMB protocol.
 
+12. With the columns added to the index from Step 10, perform a search for the main traffic generated by the Engineer subnet, using the following search criteria: 
+destination.port : <ports identified in Step 8> 
+network.data.decoded : GET
+destination.port : <port> and event.dataset.keyword :* exe
+event.provider : Microsoft-Windows-Sysmon
 
-6. To analyze events using port 445, add the following filter then select Refresh:
-destination.port: 445 
 
+Use the data returned from the query to answer the following questions.
 
-
-As displayed in Figure 26.2-8, below, this returns 283 events that pertain to the usage of port 445. By analyzing the returned data, there are rules and highly critical events pertaining to SMB usage within the mission partner's network. 
-
-<img width="2048" height="1379" alt="image" src="https://github.com/user-attachments/assets/22572fe2-a1f7-464a-bd4d-2c29b5ee615c" />
-
-
-7. To allocate SMB usage along with the exploit MS17-010, apply the following rules to the search:
-event.severity_label.keyword: high AND
-rule.name.keyword: ET EXPLOIT Possible ETERNALBLUE Probe MS17-010 (MSF style)
-
-
-
-Another way to complete step 7 is by selecting + next to the rule under the pane Security Onion - Rule - Name.
-
-
-8. Scroll down to the pane Security Onion - All Logs and analyze the fields destination.ip and message in the log @ 12:33:11.272.
-
-
-The results displayed in Figure 26.2-9, below, indicate the SMBv1 on the vulnerable host in the mission partner's network has been exploited
-
-<img width="2048" height="388" alt="image" src="https://github.com/user-attachments/assets/3510e2e0-e43e-4f9d-aed6-d65983621bfd" />
-
-
-9. Remove the previous filter rule and replace it with the following rule:
-rule.name.keyword: ET POLICY Powershell Activity Over SMB - Likely Lateral Movement
-
-
-
-Another way to complete step 9 is by selecting + next to the rule under the pane Security Onion - Rule - Name.
-
-<img width="2048" height="338" alt="image" src="https://github.com/user-attachments/assets/ba3e5a4a-67f9-40c1-817d-4758695fe1a4" />
-
-
-10. Scroll down to the Security Onion - All Logs pane and analyze the field message in the log @ 12:59:40.698.
-
-
-As displayed in Figure 26.2-11, below, a connection was made to a share other than IPC$. Further analysis of the situation is required to discover whether any data has been compromised. 
-
-<img width="2048" height="280" alt="image" src="https://github.com/user-attachments/assets/90ed70ea-c833-4d64-bf6d-075c8509f884" />
-
-Considering the mission partner's network is vulnerable to SMBv1 attacks, all hosts infected need to be disconnected from the network to be assessed further. Analysts must then clear current MCA and conduct hardening to prevent future risks before moving on to the post-incident activity. The following are possible hardening actions that may apply:
-Ensure unnecessary services are disabled.
-Ensure the latest patches are installed.
-Remediate insecure configurations.
-Audit installed software.
-Enforce an audit policy.
-Enhance security systems and logging.
-<img width="1914" height="759" alt="image" src="https://github.com/user-attachments/assets/ad4ff979-7f9f-420f-99fc-6e3238443af4" />
-<img width="1864" height="794" alt="image" src="https://github.com/user-attachments/assets/47d157f9-fdc6-4fd7-91c1-64e726fc9c4e" />
-
-<img width="1097" height="528" alt="image" src="https://github.com/user-attachments/assets/334837c4-03a4-4f72-87e1-d360e0dae535" />
-<img width="1903" height="765" alt="image" src="https://github.com/user-attachments/assets/b8de632e-4b72-4364-85db-548649606320" />
-
-<img width="1121" height="685" alt="image" src="https://github.com/user-attachments/assets/1da7868d-b77f-436f-b8aa-8c388d65d09a" />
-<img width="946" height="293" alt="image" src="https://github.com/user-attachments/assets/f5ee4d6b-1d57-4b26-852e-cca1f1d5c85d" />
-
-<img width="1078" height="672" alt="image" src="https://github.com/user-attachments/assets/736d3f49-1aeb-4fb2-833c-e736a0f4b9e2" />
-
-
-
-
---------------
-
-### CDAH-M26L3-Responding in an OT Environment ###
-
-Operational Technology
-In securing computer networks, most devices in a network are associated with IT. This includes devices for storing, transferring, and securing data. However, other network devices must be considered when securing networks. These devices, known as Industrial Control Systems (ICS), control heavy factory machinery and measurement capabilities. Security considerations for these OT devices differ from IT network devices, as the OT devices keep machines running at all times. 
-
-﻿
-
-Industry Impact
-﻿
-
-All industries need OT, and attacks on ICSs have varying impacts, depending on the industry being attacked and the versatility of these systems. Examples of the most highly impacted industries are as follows:
-
-
-Automobile factories
-Chemical processing
-Construction
-Food production
-Manufacturing
-Nuclear
-Oil/gas
-Power/utilities
-Transportation
-Waste management
-Water treatment
-
-Severe repercussions are possible for both IT and OT in the event of a network attack, as Table 26.3-1 shows: 
-
-
-<img width="1667" height="531" alt="image" src="https://github.com/user-attachments/assets/91e77ad9-1395-4f07-9417-c52c6ccc271d" />
-
-
-OT systems are used invasively in each industry to have efficient automation of processes and safety. Many of these industries are dangerous to humans but can be managed through the use of mechanical robots controlled with OT. Such robots usually cannot have any productional downtime and communicate with surrounding technology in unique ways. 
-
-
-Systems
-
-
-Common systems have devices working in tandem to perform tasks based on the reading of other devices. Systems used in OT networks are as follows: 
-
-ICSs: ICSs may be composed of one device or thousands. ICSs have interweaving instruments meant to measure and react to those measurements to complete daily activities.
-Distributed Control Systems (DCS): In a DCS, the OT that is set up has no administrative controls. It runs on a series of control loops that allows the system to manage itself.
-Supervisory Control and Data Acquisition (SCADA): SCADA systems provide a level of administration to OT devices. Through a SCADA system, an engineer can manipulate and control variables on such devices as Programmable Logic Controllers (PLC), as necessary.
-Devices
-
-
-OT devices tend to be built with their sole functions in mind, without much regard to their own security. They work in a network to take measurements and readings or perform functions based on these readings. OT devices are divided into the following classifications. 
-
-
-Programmable Logic Controllers 
-
-
-PLCs are simple computers built for industry processes for automation. They are designed to withstand the pressures of intense factory environments. PLCs must function in real time, with an ability to provide prompt communications to their surroundings to control the processes as they are being completed. 
-
-
-Remote Terminal Units 
-
-
-Remote Terminal Units (RTU) transmit device telemetry and control signals between equipment and SCADA systems.
-
-
-Digital Protective Relays, Numerical Relays, Intelligent End Devices 
-
-
-Digital protective relays, numerical relays, and intelligent end devices are advanced power surge protectors and power regulators.
-
-
-Phasor Measurement Units 
-
-
-Phasor Measurement Units (PMU) are voltage and amperage management devices, ensuring that the correct amount and power needs are allotted to the relevant device.
-
-
-Real-Time Operating Systems
-
-
-A Real-Time Operating System (RTOS) is a device OS designed to not fluctuate during operation. IT OSs may vary significantly in performance of similar tasks, but OT RTOSs must be predictable and are therefore designed to perform the same function in exactly the same manner and same amount of time during every cycle.
-
-
-Sensor Networks 
-
-
-Sensor networks are usually monitor-only telemetry units that report information back to a DCS or SCADA system. For example, a network of temperature sensors for refrigeration does not perform any control functions on the refrigeration system but reports back performance, temperature, and other telemetry data.
-
-
-Human-Machine Interfaces 
-
-
-A Human-Machine Interface (HMI) is any device, or part of a device, designed to allow people to interact with a machine. An HMI may be a control panel composed of buttons and a simple screen, or it may be a piece of software that sends commands to equipment over a network.
-
-
-Operational Technology Network Example
-
-
-In Figure 26.3-1, the SCADA server, which allows control of the other devices, is managed through the HMI. The SCADA server manages the PLCs’ tasks on the industrial equipment inside the power plant, based on the readings received from the RTU, which receives data from the temperature sensor.
-
-
-
-<img width="1667" height="1770" alt="image" src="https://github.com/user-attachments/assets/d26a448c-7f8d-4813-b648-bd96ed883db5" />
-
-<img width="1093" height="643" alt="image" src="https://github.com/user-attachments/assets/afdd674b-0f95-4816-9f1d-b8c768e40269" />
-<img width="960" height="593" alt="image" src="https://github.com/user-attachments/assets/c6933dfb-0cba-4727-98ed-94b3440d4057" />
-<img width="1053" height="593" alt="image" src="https://github.com/user-attachments/assets/777fa9fc-8225-4d0c-8756-b284d3b2ae84" />
-
-
------------------
-
-Incident Response in Operational Technology
-Differences between OT and IT
-﻿
-
-Due to the nature of OT ICSs, performing IR in an OT environment requires a different approach from the IT environment. To create the best IR program for OT devices, the differences between OT and IT devices must be understood. Devices perform different roles in the network, and the risks and vulnerabilities they display are vastly different as well.
-
-﻿
-
-Current industrial processes are impossible without networks containing both OT and IT devices. Administrators must interact with both to complete day-to-day functions successfully. The following offers guidance on the differences between IT and OT networks.
-
-﻿
-
-Primary Differences
-﻿
-
-OT/ICS assets are often inaccurately compared to IT assets. During an incident, IT and OT/ICS systems have different missions, objectives, and impacts. The primary differences between IT and OT/ICS systems are in six areas, as shown in Figure 26.3-2: security IR, safety, skill sets, system designs, support, and security controls.
-
-﻿
-
-NOTE: Figure 26.3-2 is adapted from a SANS Institute resource, identified in Additional Resources below.
-
-
-<img width="1667" height="1092" alt="image" src="https://github.com/user-attachments/assets/8fc0acd6-199e-4c06-941f-aa3dd4d20255" />
-
-Figure 26.3-2
-Security IR: IT and OT/ICS systems have different devices, missions, objectives, and impacts during an incident. Adversaries targeting ICS must use different attack Tactics, Techniques, and Procedures (TTP) for access, execution, collection, and persistence to degrade safety, manipulate control, and damage physical engineering assets or property. 
-Safety: The main goals for OT/ICS systems are not Confidentiality, Integrity, and Availability (CIA), as they are for IT. Rather, the OT/ICS primary goal is safety of personnel, followed by integrity to trust operational commands, availability, and then confidentiality.  
-Skill Sets: IT and OT/ICS security teams differ in their unique security skill sets. OT/ICS teams focus on nontraditional systems, protocols, and engineering systems. 
-System Designs: OT/ICS systems contain nontraditional computer and legacy systems with industrial and proprietary protocols. 
-Support: OT/ICS systems rely on external vendor support. 
-Security Controls: Security controls are used to perform different actions, depending on whether they are used within an IT or OT/ICS environment. 
-
-
----------------
-
-IT vs. OT Physical Environments
-The physical environments of IT and OT networks are different. IT networks are often accessed from an office, whereas OT networks are decentralized and may be located in remote areas, often next to the related OT equipment of the network. Table 26.3-2 provides a list of IT and OT device physical environments and characteristics:
-
-<img width="1667" height="1475" alt="image" src="https://github.com/user-attachments/assets/6f51230c-f682-496a-98fe-d1be00c3ca32" />
-
--------------------------
-
-Industrial Control System Roles
-ICS roles and responsibilities have similarities with IT systems. The subtle differences that are built in warrant consideration during IR.
-
-﻿
-
-Network/System Administrators
-﻿
-
-System administrators manage the IT aspect of the ICS systems, interconnecting Transmission Control Protocol/Internet Protocol (TCP/IP) devices, configuring computer systems, and monitoring security. The main focus of IT administrators in an OT environment is to secure the IT equipment that can potentially affect OT operations. 
-
-﻿
-
-Administrators, analysts, and other IT personnel are tasked with managing the servers and workstations that other members of a given organization use daily. Some SCADA systems may be running on Windows or Linux machines that IT manages, but OT equipment rarely falls under general IT purview.
-
-﻿
-
-Operators/Engineers/Technicians
-﻿
-
-Operators use the OT systems to manage, monitor, and program the physical processes. Operators include any personnel who require OT equipment to perform their relevant functions. A nurse using vital signs monitors and a factory worker cutting steel beams are both considered operators in an OT environment. Engineers and technicians vary across a wide range of disciplines, and OT software engineers may have some overlap with IT administration and security, but technicians and equipment engineers only manage or repair OT-related equipment.
-
-﻿
-
-Security personnel and analysts likely interact with SCADA- and DCS-related systems rather than controllers and device-level components. Every equipment vendor has different tools for managing updates and administration for devices, and security personnel are tasked with learning all the vendor-specific information needed to secure OT systems.
-
-
------------------
-
-OT/ICS Vulnerability Management
-Most OT/ICS components and protocols are sensitive to unexpected or improperly formatted control messages. Use of traditional IT tools, such as vulnerability scanners or port mappers, can cause system instability or even permanent damage. Many OT/ICS devices have only their manufacturer management network port open for communication and are designed only to receive network traffic from their proprietary software. For the sake of availability and operational speed, many standard IT-related communication functions are removed from device controllers, and simple handshakes and remote session requests cause system failure. Because of this, most modern controllers reject all traffic from standard IT devices to maintain stability.
-
-﻿
-
-Some ICS functions, such as HMIs or data historians, can be hosted on traditional enterprise Operating Systems (OS) like Microsoft Windows or Linux. Telemetry data–generating machines like an HMI do not send many instructions to device controllers and, instead, are simply receiving forwarded telemetry data that is then sent upstream to a SCADA system, for example. Traditional IT monitoring and investigation tools, such as PowerShell, Sysinternals, or IR scripts, may not be supported on these devices, however. Such devices rely on passive information-gathering techniques rather than active tools in field networks.
-
-
-----------------
-
-
-Incident Response Differences
-OT/ICS includes the steps of IT IR: Preparation; Detection and Analysis; Containment, Eradication, and Recovery; and Post-Incident Activity. However, OT/ICS includes additional steps, and each step must be adapted for the safety and reliability of operations that prioritize personnel and the protection of physical assets within the organization. 
-
-﻿
-
-Preparation
-Risks: OT risks on the incident-rating scale involve more danger than IT networks, as the machinery being controlled by OT devices can be dangerous.
-Roles and responsibilities: Who is responsible for OT devices during an IR?
-Stakeholders: Does everyone understand the impact OT devices have on a network?
-Communication: If separate IR teams exist, how do they interact?
-Attack vectors: What are the types of attacks that can be performed on OT devices?
-Detection and Analysis
-Detection by user observation: Such detection includes any member of the organization, including operators, process engineers, or system administrators observing abnormal system or component behavior.
-Detection by automation: Such detection includes abnormal system or component behavior detection through applications or routines, such as network monitors, network traffic analysis applications, IDSs and antivirus programs detecting and flagging malware, intrusion attempts, policy violations, exploits, and component failure. 
-Analysis: IR team members analyze captured events from user observations or IR tools. Once an attack is properly identified, the incident should be categorized and the response prioritized based on the potential damage to the ICS. 
-Containment, Eradication, and Recovery
-Containment: Containment varies, depending on the type of malware, importance of the affected system, and the acceptable level of risk. It also serves two purposes: to stop the spread of malware to other parts of the ICS and to prevent damage to the ICS. 
-Eradication: Any malware left on the system should be eradicated. The process of removing malware can be time consuming, depending on the type of malware, severity of the infection, and containment method used. Such eradication tools as spyware detection and removal utilities and patch management software can be used but may remove or alter legitimate system or data files. Most antivirus software focuses on IT systems and does not detect malware on more specialized control systems. 
-Recovery: Although some recovery commonalities exist between IT and ICS environments, such as removal of malware, restoring backup data to databases, systematically removing temporary containment actions, and restarting all operation systems and applications, additional complexities relate to ICS environments. These complexities relate to the manner in which systems must be managed, because many of the services provided by the facility cannot be shut down during IR. Other approaches must be taken, such as switching the control functions to fail-over systems, moving to temporary backup equipment with limited capabilities, or isolating system components from network access. Processes continue to operate but with reduced functionality.  
-Post-Incident Activity
-Lessons learned: An attempt is made to analyze the incident, the response, and the impact to discover and document what could have been done differently to improve upon the response. 
-Recurrence prevention: Such prevention includes applying what was learned in remediating discovered weaknesses in the cybersecurity program, including preventing similar incidents. 
-Forensics and legal issues: This includes capturing and protecting data as evidence for potential legal action. 
-
----------------
-
-Securing IT and OT Devices
-Security controls are used to perform different actions, depending on whether they are used within an IT or OT network, as shown in Table 26.3-3:
-
-﻿<img width="1284" height="2048" alt="image" src="https://github.com/user-attachments/assets/6f5d508d-a018-4d87-aa62-eec6b0507aef" />
-
-Network Intrusion Detection and Prevention 
-
-
-All network IDSs/IPSs deployed within a network environment should be able to conduct Deep Packet Inspection (DPI) and interpret ICS protocols and commands. However, false positives can occur when conducting network inspections. Thus, an IDS alerting suspect network traffic on a control network is more suitable than an IPS because IPS solutions may block or drop network traffic that could end up being legitimate control commands, which wrongly disrupts the control system. 
-
-
-Vulnerability Scanning
-
-
-Automated vulnerability scanning in IT is a common practice and does not interfere with processes. In OT, vulnerability scanning can have undesirable effects on aged firmware versions or legacy devices not designed to handle abnormal network traffic patterns. This disparity requires a cautious approach to vulnerability scanning in ICS to minimize the risk of inadvertently taking down critical systems. Alternatively, vulnerability scanning in an ICS can be conducted effectively by comparing asset inventories, configuration files, and firmware versions against threat intelligence and vulnerability advisories.  
-
-
-Encryption
-
-
-Confidentiality on the network’s OT side is less of a requirement than on the network’s IT side. Encrypting insecure channels can protect both IT and OT networks. Adhere to endpoint processing power, network latency, and bandwidth consumption, especially in networks that consist of legacy devices. The risk of adversaries eavesdropping or sniffing personal data inside the OT network is not the same as on the IT side of the network, and Network Security Monitoring (NSM) defense capabilities may be severely limited if the control network is encrypted. 
-
-
-Endpoint Protection
-
-
-Most IT environments consist of signature-based endpoint protection or heuristic engines to identify threats. Signature-based endpoint protection tools are not ideal within OT environments, as they are difficult to update. These tools can cause false positives and disrupt industrial processes, causing unsafe conditions. To avoid such issues, allowlisting features are effective and do not require signature or constant updates. 
-
-
-Firewalls
-
-
-OT devices require the defensive capabilities of firewalls as much as IT devices do. They differ in the necessity of what traffic is being prevented from accessing these systems. In a regular IT network, these firewalls segment areas of the network that have no need to communicate with each other. They are also commonly used to block specific ports and protocols from being used. In an OT environment, they should completely isolate the ICS network for the rest of the network. The internet should have no connectivity; this is also true for any workstation or server in the domain, with the exception of any HMI device specifically inserted to administer these devices.
-
-
-Patching
-
-
-In IT, device patching is a routine occurrence that happens on a common schedule or whenever a vulnerability is discovered. IT networks can administer reboots to individual boxes or whole subnets of the network without the rest of the network being shut down. OT devices, on the other hand, control the industrial machinery, and if they are rebooted or shut down for updates, the industrial machines cannot function. Patching for these devices must be scheduled in advance at a time during which the factory is not in operation. Patching is not possible with some legacy ICS devices.
-
-
-Protocols
-
-
-Some traditional protocols are used within both IT and OT environments. However, control system environments go well beyond common protocols and may include specific industrial and several proprietary protocols, as Table 26.3-4 shows:
-
-
-<img width="1600" height="1358" alt="image" src="https://github.com/user-attachments/assets/0c58fe8c-7c7f-4455-b4bb-9ac66a6055cd" />
+<img width="1917" height="696" alt="image" src="https://github.com/user-attachments/assets/9b79639a-39a9-4a0c-bac0-2ad8271f4e6e" />
+<img width="1082" height="470" alt="image" src="https://github.com/user-attachments/assets/e0084b1c-ca8d-4029-841b-4e84d4a817c3" />
+<img width="1910" height="696" alt="image" src="https://github.com/user-attachments/assets/063c2617-0c76-46f9-9bb2-a3075510f967" />
+<img width="1115" height="659" alt="image" src="https://github.com/user-attachments/assets/54e03f98-48bb-4306-a876-797d05fd1855" />
+<img width="1893" height="622" alt="image" src="https://github.com/user-attachments/assets/6067b55a-e961-4c7b-b80a-b9da1ef40034" />
+<img width="1112" height="530" alt="image" src="https://github.com/user-attachments/assets/2abc3555-12cf-4ff9-96c7-4b0a0485a20d" />
+<img width="1112" height="449" alt="image" src="https://github.com/user-attachments/assets/298a4273-b599-4b15-bc13-734f0bad5bfd" />
+<img width="1126" height="671" alt="image" src="https://github.com/user-attachments/assets/3d428fc4-2b90-4899-8c0f-5fc73eb42dd0" />
 
 
 --------------------
 
-IT/OT Device Convergence
-IT and OT convergence may be broken down into two elements: technology and resources (or teams). OT and IT devices leverage traditional OSs and infrastructure to automate and improve control system processes. The OT devices support the control system mission and should be properly managed and protected as OT assets. Controlling ICS networks is becoming easier with the possibility of remote administration and is a more efficient way to manage these systems. Administrators of OT devices are no longer always specialized engineers in this field. Instead, they may be any IT personnel with proper training in such ICS-specific areas as the ICS mission, safety, the engineering process, protocols, and active defense strategies. Understanding how these devices must be handled and secured in different scenarios is different from traditional IT security. 
 
+Acquisition Strategy during an Active Breach
+Acquisition strategy during an active breach requires deliberate and thorough actions. An active breach means that the adversary is currently present in the network. While active in the network, the adversary may keep a keen eye out, looking for actions that indicate that they have been found and an investigation has begun. If discovered by the owners of the victim network, the adversary may attempt immediate actions to remove their presence or steal valuable data. Table 27.2-3 provides factors the adversary may attempt to identify:
+
+﻿<img width="1667" height="717" alt="image" src="https://github.com/user-attachments/assets/8cbb8bc7-bb83-4ae9-897e-bf727b089623" />
+
+Techniques to Avoid Adversary Detection
+
+
+IR teams must consider the actions the adversary may look for while maintaining a foothold in the network. Although the top priorities remain driving the adversary out of the network and preventing further damage, IR teams must act with intention, revealing themselves to the adversary only when they have complete control of the situation. Table 27.2-4 provides techniques IR teams may implement to avoid alerting the adversary of detection:
+
+
+<img width="1667" height="992" alt="image" src="https://github.com/user-attachments/assets/208b8b9c-f801-43de-bded-68698d1b56cf" />
+
+
+---------------
+
+IR Evidence Acquisition during an Active Breach
+Read the scenario below, and complete the steps in the workflow to discover forensic artifacts during an active breach.
+
+﻿
+
+Scenario
+﻿
+
+A malicious actor has compromised the eng-wktsn-1 system. Analysts have acquired a system image of the infected machine and built an isolated VM for further analysis. After reviewing available network logs, Network Analysts have posited that, based on the C2 activity, the malware attacked a remotely exploitable vulnerability and has developed persistence from memory. Still, the team is missing complete details about the malware. Conduct a memory dump using Redline, a tool for finding signs of malicious activity through memory and file analysis.
+
+﻿
+
+Workflow
+﻿
+
+1. Open the VM eng-wkstn-1. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1! 
+﻿
+
+2. Create a folder on the desktop, and name it Memory Analysis 2. (This folder is used in a later step.) 
+
+﻿
+
+3. Open Redline, and select Create a Standard Collector.
+
+﻿
+
+4. Under Review Script Configuration, select the checkbox under Acquire Memory Image. Select the newly created folder Memory Analysis 2 as the destination to save the collector, and select OK:
+
+
+<img width="1437" height="1015" alt="image" src="https://github.com/user-attachments/assets/7a8267a3-c8a7-4532-ac3d-5b9fb5c683f6" />
+
+
+5. Once OK has been selected, Redline provides a pop-up window detailing collector instructions. In the pop-up window, select the link Open Directory Containing Portable Package. This opens the Memory Analysis 2 folder.
+
+
+<img width="984" height="588" alt="image" src="https://github.com/user-attachments/assets/779ea2ad-9359-4cd7-8582-62ba18ff4645" />
+
+6. Return to Redline, exit any menus or pop-up windows, and return to the main Redline dashboard. This is a housekeeping step to close open dialog windows. 
+
+
+7. Return to the Memory Analysis 2 folder, right-click the Windows batch file RunRedlineAudit, and select Run as administrator
+
+<img width="613" height="337" alt="image" src="https://github.com/user-attachments/assets/6117aa77-4499-4268-ab2b-2064ed0fa3fb" />
+
+A Command-Line Interface (CLI) window opens and begins executing the selected Redline analysis options. 
+
+
+8. Allow the CLI prompt to complete its run. Once it has completed, return to the Redline application. 
+
+
+NOTE: Depending on the physical components and amount of RAM installed, this process may require 1 hour to 24 hours to complete. 
+
+
+NOTE: For the current component configuration of eng-wkstn-1, along with the selected Redline options, analysis requires up to 8 hours to complete. This lesson’s analysis has already been performed for efficiency and time constraints. The following steps continue from the point at which the report is completed and is ready for review. 
+
+
+9. In the Redline dashboard, select AnalysisSession1.mans under Recent Analysis Sessions.
+
+
+
+After this memory analysis report opens, an interactive interface displaying the selected Standard Collector options appears.
+
+
+10. In the Analysis Data pane of the interface, select Processes to expand the Processes option. Review the processes to identify the malicious process.
+
+<img width="313" height="205" alt="image" src="https://github.com/user-attachments/assets/8760d4a5-9e8f-4b2d-82f2-d6578934051f" />
+
+
+The use of filters aids in identifying malicious information. For example, a filter can be created on each column, such as the Username column, to display only processes belonging to a specific user account. 
+
+
+11. To create a filter for the trainee user account, select the funnel icon in the Username column; select contains in the drop-down menu; enter trainee in the dialog box; and select Add Filter
+
+
+<img width="945" height="244" alt="image" src="https://github.com/user-attachments/assets/cf75def0-fd8d-4a81-b996-556e22252c57" />
+
+
+
+12. Conduct analysis of ports used by processes by selecting the Ports option in the Analysis Data pane. All ports, only listening ports, or only ports with established connections may be displayed. 
+
+
+Use this workflow to answer the following questions
+
+
+<img width="1916" height="833" alt="image" src="https://github.com/user-attachments/assets/56f5c910-ce83-4b0b-97cf-ff331e5fe429" />
+<img width="1114" height="718" alt="image" src="https://github.com/user-attachments/assets/5e7e6cb2-6e71-47e6-bc7a-e4bc9e6d6e8c" />
+<img width="1040" height="410" alt="image" src="https://github.com/user-attachments/assets/54aa46ec-5fc2-423f-a40a-66c69b012d4e" />
+<img width="1913" height="828" alt="image" src="https://github.com/user-attachments/assets/bf4d792b-9450-4a46-9cc0-538937e968da" />
+<img width="1106" height="524" alt="image" src="https://github.com/user-attachments/assets/127dcc0a-f3fd-493f-8307-5513153cdd16" />
+
+---------------
+
+
+### CDAH-M27L3-Preserve Logs in Incident Response ###
+
+Challenges in Acquiring Logs
+Log collection is a critical component of monitoring and responding to incidents on the network. Logs can show such key data points as events, network connection, and processes that can assist the IR team. Log collection does have challenges, and Table 27.3-1 includes factors that organizations must remember when collecting logs
+
+
+<img width="2500" height="1635" alt="image" src="https://github.com/user-attachments/assets/b6bc707b-2a77-439a-9cd5-295210c50552" />
+
+
+Log Integrity
+
+
+When log challenges are considered and addressed thoughtfully, the result is high log integrity. Log integrity is the collection of log data that is accurate, true, and uncontaminated. Log data with high integrity allows for the data to be used as evidence due to the trust in the collection process and data handling. An additional benefit of high log integrity is reduced time to prepare and execute an investigation. When log data is accurate and efficiently collected, an investigation can start promptly.
 
 
 --------------
 
-IR in OT and IT Architecture | Part 1
-A Cyber Defense Analyst (CDA) has been tasked by a mission partner to assist in analyzing suspicious network traffic affecting the IT side of the network that is potentially causing disruption in the functionality of OT processes.
+
+Analyze Compromised Logs
+Based on the scenario below, complete the steps in the following workflow to identify and analyze compromised host logs.
 
 ﻿
 
-The OT side of the network environment consists of a number of virtualized networks in addition to a functioning simulation of a Feed Water Treatment System (FWTS). A virtualized PLC leverages the Modbus protocol to monitor process measurements and accept commands from the HMIs within the DCS network.
+Scenario
+﻿
+
+The host bp-wkstn-3 contains malware, the effects of which are currently unknown. Investigate bp-wkstn-3 using Kibana to discover the malware's impact on log collection. Use host eng-wkstn-2 as a comparison baseline of proper log collection.
 
 ﻿
 
-Use Elastic Stack to analyze the suspicious activity and logs to understand the differences in behavior of the IT and OT devices in the mission partner’s network environment. A network map of the mission partner's network environment is attached.
+In Kibana, customize the Discover view and use the search function to identify if any Windows Logs have been cleared.
 
-  
+﻿
 
-Workflow 
+Workflow
 ﻿
 
 1. Open the Virtual Machine (VM) win-hunt. The login credentials are as follows:
 
-
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
+2. Open the Chrome browser.
 
-2. Open the Chrome web browser, select the Security Onion bookmark, and log in using the following credentials:
+﻿
+
+3. Select the Discover - Elastic bookmark.
+
+﻿
+
+4. Log in to the Security Onion Console (SOC) with the following credentials:
 
 Username: trainee@jdmss.lan
 Password: CyberTraining1!
 ﻿
 
-
-3. Select the hamburger menu icon in the top left corner, and select Kibana in the Tools section:
-
-
-
-<img width="2012" height="1270" alt="image" src="https://github.com/user-attachments/assets/9f253ac3-db81-4c79-a5e8-d61c091ae52a" />
-
-The Security Onion - Home dashboard appears.
-
-
-4. Select the hamburger menu icon again, and select Discover in the Analytics section
-
-<img width="2014" height="1112" alt="image" src="https://github.com/user-attachments/assets/3579f139-74f1-4241-b84c-0293cae9cad8" />
-
-5. Set the time period of interest from Sep 29, 2022 @ 10:00:00.000 to Sep 29, 2022 @ 13:00:00.000, and select Update. 
-
-
-Compare IT and OT captured network traffic logs from the mission partner’s network. A functioning IT workstation is located in the Business Processing Department of the network. On the OT side of the network, the PLC leverages the Modbus protocol to monitor process measurements from the FWTS and receives commands from the HMI. Messages containing the Modbus protocol are embedded into the frame or packet structure used on the OT network. 
-
-
-6. Use the following Kibana Query Language (KQL) query to locate the network traffic associated with the host in the Business Processing Department, and select Update:
-
-
-destination.ip: 172.16.3.2
-
-<img width="2036" height="298" alt="image" src="https://github.com/user-attachments/assets/4c095151-30cf-473b-902f-317fb6d93545" />
-
-7. Scroll down, and analyze the log captured on Sep 29, 2022 @ 12:28:26.976:
-
-<img width="2036" height="1360" alt="image" src="https://github.com/user-attachments/assets/12afcbe6-127b-49b8-a90c-a386cd4cf687" />
-
-IT includes any use of computers, storage, networking devices, infrastructure such as Domain Controllers (DC), and processes to create, store, secure, and exchange all forms of data. 
-
-
-Notice in the message field that the workstation is communicating with the DC to edit policies over the Server Message Block (SMB) protocol. These particular actions do not occur with OT devices. 
-
-
-8. Remove the previously used KQL query, and use the new KQL query to search for the IP address of the PLC. Select Update: 
-
-
-source.ip: 172.16.80.10
-
-
-
-
-9. Add the following filter to analyze Modbus protocol traffic, and select Save:
-
-
-event.dataset.keyword: modbus
-
-<img width="2036" height="1368" alt="image" src="https://github.com/user-attachments/assets/157a2d05-ac0e-45fc-9e5d-dfe7b148ec62" />
-
-
-
-NOTE: Refresh data if no data shows after adding filter.
-
-
-10. Scroll down and analyze the log captured on Sep 29, 2022 @ 12:59:59:980: 
-
-<img width="2036" height="1366" alt="image" src="https://github.com/user-attachments/assets/1cb20932-2158-470a-a54f-b32f64d95cdc" />
-
-Such OT devices as PLCs use the Modbus protocol over port 502. The messaging structure of Modbus uses client–server communication between devices, which transmits functions such as READ and WRITE input registers. These registers tell the device what function to perform. 
-
-
-
------------
-
-IR in OT and IT Architecture | Part 2
-The mission partner reports that an employee has come forward stating that they downloaded an unknown executable file from an email they thought was from their manager. Since the download occurred, the host within the Business Processing Department has been seen making unwarranted interactions with the PLC. The FWTS has also produced erratic behavior.
+5. Set the search time frame as Sep 21, 2022 @ 00:00:00.000 to Sep 21, 2022 @ 23:30:00.000. 
 
 ﻿
 
-In the following workflow, use Elastic Stack to analyze the captured network traffic between the host in the Business Processing Department and the PLC. Use the findings to assess and compare IR actions for the IT and OT architecture. A network map of the mission partner’s network environment is attached. 
+6. Select Filter by type, then set the Hide Missing Fields toggle button to Off.
+
+﻿
+
+7. Select and add the following columns:
+
+agent.name 
+agent.type
+event.code
+event.action
+event.dataset
+event.module
+log.level
+
+8. Using the *:so-* index, execute the following query in SOC:
+
+event.code: 1102 or event.code: 104 or event.code: 517 
+﻿
+
+Event codes 1102, 104, and 517 indicate logs were cleared from the host.
+
+﻿
+
+
+Use the data returned from the query to answer the following questions.
+<img width="1909" height="709" alt="image" src="https://github.com/user-attachments/assets/cda69728-29a0-4306-ab56-03d4571d7e68" />
+
+<img width="1077" height="448" alt="image" src="https://github.com/user-attachments/assets/07df443c-6b93-4c35-bc93-151556574b82" />
+
+
+-----------------
+
+
+Compromised Host
+Host bp-wkstn-3 is compromised with malware that is modifying or deleting logs. As shown in Figure 27.3-1, bp-wkstn-3 experiences multiple Log clear events, preventing log collection from occurring as expected: 
+
+﻿
+<img width="1846" height="759" alt="image" src="https://github.com/user-attachments/assets/c7a5c932-95e9-47b1-92f0-21ce77fcf305" />
+<img width="1909" height="709" alt="image" src="https://github.com/user-attachments/assets/533db269-615f-40d3-973b-76d4fc3ddefc" />
+
+<img width="1070" height="632" alt="image" src="https://github.com/user-attachments/assets/9c1a0cd3-956f-4ceb-8b4a-8c192eb08702" />
+<img width="1091" height="502" alt="image" src="https://github.com/user-attachments/assets/89515e6a-089f-4583-94d7-3516fbdea787" />
+
+-------
+
+Activity Cleared
+As seen in Figure 27.3-2 below, the event.dataset and agent.name fields indicate that bp-wkstn-3 experienced multiple Log clear events in both the Security and System log categories. 
+
+﻿
+
+The agent.type field shows that the Log clear events w ere collec ted, transported, and preserved using Winlogbeat.
+<img width="1451" height="547" alt="image" src="https://github.com/user-attachments/assets/05e24607-66d6-433c-972d-a1f22dd1c54a" />
+
+
+--------------
+
+Analyze Winlogbeat
+Complete the steps in the following workflow to determine which logs are shipped via analysis of the Winlogbeat configuration files.
 
 ﻿
 
 Workflow 
- ﻿
+﻿
 
-1. Remove the Modbus filter and KQL query that was set in the previous task, and add a new query, to include the following:
+1. Open the VM bp-wkstn-3. The login credentials are as follows:
+
+Username: administrator
+Password: CyberTraining1!
+
+
+
+
+2. Open File Explorer, and ensure the Hidden Items box is checked under the View tab.
 
 ﻿
 
-source.ip: 172.16.3.2 and destination.ip: 172.16.80.10
+3. Navigate to the C:\ProgramData\Elastic\Beats\winlogbeat folder.
 
 ﻿
 
-Forty-one captured log hits should result between the two IP addresses:
+4. Right-click the winlogbeat.yml file, and copy and paste it on the desktop.
 
+﻿
 
-<img width="2036" height="772" alt="image" src="https://github.com/user-attachments/assets/3edc5037-bd85-466c-a567-5485008bede5" />
+5. Right-click the winlogbeat.yml file on the desktop, select Open with, select More apps, select Notepad, uncheck Always use this app to open .yml files, and select Open.
 
+﻿
 
+6. Review the configuration file, and answer the following question.
 
-
-2. Analyze the log captured on Sep 29, 2022 @ 12:41:44.556. Notice the port and protocol used as a line of communication between the two devices. 
-
-
-An IT workstation should not be making these types of connections with a PLC device. This traffic can be deemed malicious, as this is lateral movement toward the control environment. The situation warrants further investigation, as processes within the organization may be disrupted. 
-
-
-The workstation of the victim employee is possibly being used as a pivot point to access the OT network and disrupt services of the organization. Containment of the IT workstation is necessary to observe and characterize adversary behavior and TTPs to enable follow-on operations. However, the PLC device cannot be disabled, as this controls the FWTS and will disrupt the organization’s processes. The traffic warrants further investigation using Zeek logs to determine if a false positive has been captured, as processes within the organization can be disrupted.
-
-
-3. Select the hamburger menu icon, and select Dashboard under Analytics. 
-
-
-
-The Security Onion - Home dashboard should now be present. 
-
-
-NOTE: If the Security Onion - Home dashboard does not appear, enter Home in the search bar, and select the Security Onion - Home dashboard.
-
-
-4. Select Network under Event Category: 
-
-
-
-<img width="2048" height="799" alt="image" src="https://github.com/user-attachments/assets/f90a91dd-a1ca-4aa3-825b-b3ebcd08ac0c" />
-
-
-
-5. Edit the KQL query search bar to include the IP address of the PLC in the query. Select Refresh:
-
-
-event.category: network and source.ip: 172.16.80.10
+<img width="1920" height="837" alt="image" src="https://github.com/user-attachments/assets/e2b091b2-14ad-4747-9e60-e851665369cf" />
+<img width="1098" height="422" alt="image" src="https://github.com/user-attachments/assets/47bfcaf4-5f9f-4902-9a7e-39639e6e8f45" />
 
 
 
 
-6. Analyze the Security Onion - Destination IP pane:
+
+---------
+
+Identify Modified Logs
+Use PowerShell cmdlets to identify log acquisition challenges based on the scenario below.
+
+
+﻿
+
+Scenario
+﻿
+
+The host bp-wkstn-3 contains malware, the effects of which are currently unknown. Investigate bp-wkstn-3 using PowerShell cmdlets to discover the malware's impact on log collection. Use host bp-wkstn-1 as a comparison baseline of proper log collection.
+
+﻿
+
+Compare the PowerShell cmdlet output between bp-wkstn-1 and bp-wkstn-3, and determine the status of logging services. 
+
+﻿
+
+Workflow 
+﻿
+
+1. Open the VM bp-wkstn-1 using the Administrator account. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open a PowerShell prompt as an Administrator, and enter the following cmdlets:
+
+get-eventlog -list; get-service "ev*" | sort-object status
+﻿
+
+3. Open the VM bp-wkstn-3. The login credentials are as follows:
+
+Username: administrator
+Password: CyberTraining1!
+﻿
+
+4. Open a PowerShell prompt as an Administrator, and enter the following cmdlets:
+
+get-eventlog -list; get-service "ev*" | sort-object status
+﻿
+
+5. Start the stopped service using the start-service -name "ServiceName" cmdlet. 
+
+﻿
+
+6. Use the services.msc command to open the Microsoft Management Console (MMC) snap-in for managing Windows services. 
+
+﻿
+
+7. Locate and examine the Windows Event Log service to determine the startup type. 
+
+﻿
+
+The host bp-wkstn-1 has cleared the proper IR protocol and is free from malware. The host bp-wkstn-3 has not cleared the IR protocol and still contains malware. 
+
+﻿
+
+Use the data returned from the cmdlets to answer the following question.
+
+<img width="1113" height="660" alt="image" src="https://github.com/user-attachments/assets/c02d08f8-0112-4142-95bd-a0ff21a0973d" />
+<img width="1099" height="408" alt="image" src="https://github.com/user-attachments/assets/6ec5eec7-1d6d-47d4-afca-d50c0d4c7636" />
 
 
 
-<img width="263" height="380" alt="image" src="https://github.com/user-attachments/assets/d67479c6-a395-4e10-9ca6-7be50aa87ac3" />
+-----------------------
+
+Challenges in Preserving Logs
+Log preservation is a critical component that allows CDAs to monitor and investigate activity on the network. Logs must be stored and be easily accessible to network defenders. Like log collection, log preservation has its challenges, and Table 27.3-2 includes factors that organizations must remember when preserving logs: 
 
 
-Not only are unwarranted connections being made to the PLC from the Business Processing Department workstation, but a connection is also being made to an IP address outside the scope of the network environment. As a false positive can be ruled out, this malicious IP address may well be the perpetrator of these events. The IR process can be further elevated. 
+<img width="2500" height="1264" alt="image" src="https://github.com/user-attachments/assets/9d1eb5d0-3def-4e5c-bd39-cea39a4df213" />
 
 
-As mentioned earlier in the lesson, the steps of IT IR still adhere to the OT/ICS IR process. 
+Preservation Techniques
 
 
-If malware is not detected on the OT device, containment of the PLC device requires removing access to the device from all sectors of the network. Containment includes the following:
-Block the intruder.
-Restore the equipment, if affected.
-Apply prevention methods, such as patch management. 
-If malware is detected on the OT device, it is best to prevent continued damage to the control systems. Containment methods include the following:
-Use automated technologies such as virus removal programs to eradicate the virus and prevent spreading to other systems and restore system functions.
-Halt services while the incident is handled.
-Block certain network connectivity by using filtering processes. 
-Regarding OT recovery and restoration in the IR process, although commonalities with IT exist (such as removal of malware, restoring backup data to databases, systematically removing temporary containment actions, and restarting all operational systems and applications), other approaches must be taken because many services cannot be shut down. Such approaches include the following: 
-Switch the control functions to fail-over systems.
-Move to backup equipment that is temporary or has limited capabilities.
-Isolate system components from network access.
-The final stage of recovery is not to just restore the system to where it was but, rather, to make it more secure. The system should have the same operational capabilities but should also protect against the exploit that caused the incident in the first place. 
+Log preservation relies on a predetermined set of parameters that define which data is preserved, where the data is stored, and how long the data is maintained. Once the parameters have been determined, it is critical that an organization creates redundant processes to ensure that data is not lost due to a single point of failure. To create redundancy, organizations may develop a backup storage location for logs. The storage location may be located on an additional server or on the host itself. When logs are collected on the host, they may be duplicated and sent to both the primary server and the backup location. Such tools as Task Scheduler and PowerShell may be used to automate the backup collection.
 
+
+---------------
+
+
+Confirm Modification of Logs
+Based on the scenario below, complete the steps in the following workflow to resume analysis of the malware attack using the VM win-hunt. 
+
+﻿
+
+Scenario 
+﻿
+
+Due to the malware attack, system and security logs on bp-wkstn-3 were cleared, and the Windows Event Log service was disabled. These actions have caused a significant gap in the log data, posing a challenge for any post-incident analysis. 
+
+﻿
+
+Analyze the available logs in the Elastic Stack from bp-wkstn-3, identify the timeline of events, and determine the extent of the logging interruption. Use bp-wkstn-1 as a comparison baseline. 
+
+﻿
+
+Workflow 
+﻿
+
+1. Open the VM win-hunt. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the Chrome browser.
+
+﻿
+
+3. Select the Discover- Elastic bookmark.
+
+﻿
+
+4. Log in to the Security Onion Console (SOC) with the following credentials:
+
+Username: trainee@jdmss.lan
+Password: CyberTraining1!
+﻿
+
+5. Set the search time frame to Sep 21, 2022 @ 00:00:00.000 to Sep 21, 2022 @ 23:30:00.000.  
+
+﻿
+
+6. Select Filter by type, then set the Hide missing fields toggle button to Off.
+
+﻿
+
+7. Ensure the following columns have been selected and added:
+
+agent.name 
+agent.type
+event.code
+event.action
+event.dataset
+event.module
+log.level
+
+8. Limit results to bp-wkstn-3. Select Add Filter.
+
+﻿
+
+9. In the Edit Filter area, enter agent.name to narrow the selection results. 
+
+﻿
+
+10. From the drop-down menu, select agent.name, as seen in Figure 27.3-3  below. 
+
+<img width="885" height="182" alt="image" src="https://github.com/user-attachments/assets/743b94a9-1d7b-461f-978c-39321b2aaa55" />
+
+11. From the Operator drop-down menu, select is, as seen in Figure 27.3-4 below.
+
+<img width="920" height="219" alt="image" src="https://github.com/user-attachments/assets/902096f5-05b6-4163-8270-27ccffa709ac" />
+
+12. In the Value field, enter bp-wkstn-3. 
+
+
+13. Select Save
+
+<img width="910" height="374" alt="image" src="https://github.com/user-attachments/assets/528bdef6-979d-43da-9b5e-ef89b2855c46" />
+
+14. Search for the following strings to determine the timeline of operations for clearing and disabling the Windows Event Logs:
+event.code: 6006
+event.action: Log cleared
+
+Use the information gathered in this workflow to respond to the following questions.
+
+<img width="1094" height="633" alt="image" src="https://github.com/user-attachments/assets/c2ca3015-972a-451d-be1a-f06be3859e72" />
+<img width="1123" height="705" alt="image" src="https://github.com/user-attachments/assets/89f4e58f-b1ce-43d2-8ac4-55e267c1357d" />
+
+-------------
+
+Use Logs to Find Malware Attack Paths
+Based on the scenario below, complete the workflow to resume analysis of the malware attack using the VMs bp-wkstn-3 and win-hunt. 
+
+﻿
+
+Scenario 
+﻿
+
+After a malware attack, system and security logs on bp-wkstn-3 were deleted, and the Windows Event Log service has been disabled. These actions have led to a significant gap in the log data, creating a formidable challenge for post-incident forensic analysis. However, the attackers neglected to clear the Sysmon Operational logs during their attack. 
+
+﻿
+
+Enable the Windows Event Log service and conduct log analysis to determine the attack path. 
+
+
+﻿
+
+Workflow
+﻿
+
+1. Open the VM bp-wkstn-3. The login credentials are as follows:
+
+Username: administrator
+Password: CyberTraining1!
+﻿
+
+2. Open a PowerShell prompt as an Administrator and enter the following command:
+
+MMC
+
+
+
+3. Add the Computer Management function to the MMC console. Select File. 
+
+﻿
+
+4. Select Add/Remove Snap-in. 
+
+﻿
+
+5. Select Computer Management, and then Add. 
+
+﻿
+
+6. When prompted, select the Local Computer radio button, and then Finish. 
+
+﻿
+
+7. Enable the Windows Event Log service. Select to expand the Computer Management menu. 
+
+﻿
+
+8. Select to expand the Services sub-menu. 
+
+﻿
+
+9. Locate and right-click the Windows Event Log service, and then select Properties. 
+
+﻿
+
+10. For Startup Type, select Automatic, and then Apply. 
+
+﻿
+
+11. Select Start to start the service, then select OK. 
+
+﻿
+
+12. Select OK. 
+
+﻿
+
+If the service does not start, reboot bp-wkstn-3 and perform Steps 1-6 again.
+
+﻿
+
+13. Open the Sysmon Operational event log. Select to expand the System Tools menu. 
+
+﻿
+
+14. Select to expand the Event Viewer sub-menu, and Windows Logs. 
+
+﻿
+
+15. Select to expand the Applications and Services Logs sub-menu, and then Microsoft. 
+
+﻿
+
+16. Select to expand the Windows submenu. 
+
+
+<img width="457" height="508" alt="image" src="https://github.com/user-attachments/assets/7204470d-a269-400e-931f-217a633924a9" />
+
+17. Locate and select Sysmon. 
+
+
+18. Open the Operational log.
+
+
+19. Create a filter. From the Actions menu, select Filter Current Log. 
+
+
+20. Select the Logged drop-down menu, and then Custom. 
+
+
+21. Enter the following date information: 
+From: Events On 9/21/2022 12:00:00 AM
+To: Events On 9/22/2022 11:30:00 PM
+
+<img width="675" height="288" alt="image" src="https://github.com/user-attachments/assets/fdc0d040-8632-4d87-8274-f8f0400aace1" />
+
+
+22. In the Includes/Excludes Event IDs field, enter the following information: 1,11,13
+
+
+<img width="805" height="463" alt="image" src="https://github.com/user-attachments/assets/27e54ad0-bba9-425e-be60-31d007a06f22" />
+
+23. Select OK to apply the filter.
+
+
+24. From the Actions menu, select Find
+
+<img width="292" height="412" alt="image" src="https://github.com/user-attachments/assets/de1de1d1-6ddb-4d16-b62f-6eca3442f5ba" />
+
+
+25. In the Search field, enter clear-eventlog.
+
+
+26. Use Kibana to perform a similar search. In Kibana, set the search time frame to Sep 21, 2022 @ 00:00:00.000 to Sep 21, 2022 @ 23:30:00.000. 
+
+
+27. Select Filter by Type, then set the Hide Missing Fields toggle button to Off.
+
+
+28. Select and add the following columns: 
+agent.name 
+agent.type
+event.code
+event.action
+event.dataset
+event.module
+Log.level
+
+29. Create an agent.name filter for bp-wkstn-3, as seen in Figure 27.3-10 below.
+
+
+<img width="910" height="374" alt="image" src="https://github.com/user-attachments/assets/15d474bf-6bca-41c7-8a3a-15c0bea65bd2" />
+
+30. Enter the following query:
+event.action: "Process Create (rule: processCreate)" and process.command_line: "powershell"
+
+
+
+Figure 27.3-11 below displays the query results. 
+
+
+<img width="1509" height="272" alt="image" src="https://github.com/user-attachments/assets/b3fefba7-27e8-4948-b7fc-245fe4be9083" />
+
+
+Use the information collected in the workflow to answer the following question.
+
+<img width="1145" height="687" alt="image" src="https://github.com/user-attachments/assets/3ffb4fb2-3ecf-46c8-bb0a-ff1792fe067f" />
+
+
+--------------------
+
+
+### CDAH-M27L4-Investigate Contained Hosts ###
+
+ Investigative Process Overview
+As discussed in earlier Cyber Defense Analyst – Host (CDA-H) lessons, the IR lifecycle consists of four phases: Preparation; Detection and Analysis; Containment, Eradication, and Recovery; and Post-Incident Activity. Figure 27.4-1 illustrates this lifecycle. This lesson focuses on investigation of contained hosts to determine an incident’s root cause and scope. Investigation is performed within the Containment portion of the third phase. 
+
+﻿
+
+Investigation is complete once the Recovery process of the phase begins. Upon entering Recovery, adversarial presence is eradicated and the Cyber Protection Team (CPT) should have a firm understanding of attack timelines, vectors, and other pertinent information that it submits in an After Action Report. 
+
+
+<img width="2500" height="1253" alt="image" src="https://github.com/user-attachments/assets/74ff8064-c865-42c2-a031-139093b14b4e" />
+
+Static Analysis
+
+
+Static malware analysis is a basic and effective technique that allows analysts to investigate a malware sample without actually running its code. Instead, the file is examined for signs of malicious intent. Technical indicators, such as file names, hashes, Internet Protocol (IP) addresses, domains, and file header data, can be identified and evaluated. Other malware analysis tools, such as a disassembler or network analyzers, can be used to observe the malware without running it, to collect information about how the malware works in its current state. 
+
+
+Dynamic Analysis
+
+
+Dynamic analysis also aids analysts during the investigative process. Manual dynamic analysis involves running a file or program inside a contained environment, or sandbox, and examining it there to discover malicious content. Through the use of a VM, a snapshot of the infected host is taken at a specific point in time. Analysts use the VM snapshot to manually execute, manipulate, and experiment with the malware. The result of manual dynamic analysis is a better understanding of what the malware does, what artifacts it leaves, and how it was contracted. 
+
+
+Automated static and dynamic analyses also exist and rely on software and algorithms. Although the process is efficient, automated analysis is not as thorough as manual analysis. 
+
+
+This lesson uses only manual static and dynamic analyses.
+
+
+<img width="1667" height="753" alt="image" src="https://github.com/user-attachments/assets/83de8b85-d276-44ba-9e57-50a5a6cb1683" />
+
+
+----------------
+
+Investigate Malware Indicators of Compromise
+Read the scenario below, and complete the lab that follows. The lab includes three exercises:
+
+Perform static and dynamic analyses on an infected host.
+Investigate the C2 component.
+Determine event execution to help in generating a timeline of events. 
+Scenario
+﻿
+
+Security analysts identified a host within the organization that has been infected with malware. The malware is known to quickly spread among hosts on the network, especially those that have recently established connections with one another. The CPT is investigating the host sandbox, which was exposed to and infected with malware through communications within the network. The CPT has conducted initial containment operations to isolate and contain the malware. The CPT collected a snapshot of the sandbox host to allow for dynamic manual analysis. The malware varies in name but is frequently seen using folders (that may be hidden) and the registry to maintain persistence. The malware also includes a C2 component, where it attempts to send information to an external location. Table 27.4-1 presents the possible IOC associated with the malware:
+
+
+<img width="882" height="2048" alt="image" src="https://github.com/user-attachments/assets/24b0e5ed-cafd-4141-9ccf-99b01dc1526a" />
+
+-------------
+
+
+
+Perform Analyses
+A pre-investigative briefing conducted by the All-Source Analyst provided Host Analysts with critical information about the malware, indicating that its origin is from a known adversary. This adversary is known to use sleep functions that cause their malware to sleep between 30 and 120 seconds on random intervals between actions. Analysts should take this information into account when conducting dynamic analysis operations. 
+
+﻿
+
+Complete the steps in the following workflow to perform both static and dynamic analyses on the sandbox host, which is located in a sandbox environment. The functionality of the malware on the host is largely unknown, and although dynamic analysis is included, such unusual occurrences as connection attempts, dialog boxes, and error messages may occur. 
+
+﻿
+
+Prior to initiating the malware in this lab, open and set up tools for analysis, such as Process Monitor (ProcMon), Process Explorer, and Autoruns.﻿﻿
+
+﻿
+
+Workflow
+﻿
+
+1. Open the Virtual Machine (VM) sandbox. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Open the folder C:\Users\trainee\Desktop\Malware, and double-click msg.exe to execute it. 
+
+﻿
+
+N﻿OTE: The malware may take a few minutes to complete its activities.
+
+﻿
+
+
+3. Conduct static and dynamic analyses of the msg.exe file by determining the processes, registry changes, and event logs changed after executing the malware executable.  
+
+﻿
+
+Using this workflow, answer the questions that follow.
+
+﻿
+
+Keep the VM sandbox open, as it is used in the next exercise.
+
+<img width="1418" height="583" alt="image" src="https://github.com/user-attachments/assets/f689528b-0db6-407b-8fd4-0da04d7efcfc" />
+<img width="1134" height="671" alt="image" src="https://github.com/user-attachments/assets/f5f20a34-cae1-4e36-9845-93d8b7023d95" />
+<img width="778" height="256" alt="image" src="https://github.com/user-attachments/assets/f19865c3-96b9-427f-bcc3-08efe5096cad" />
+<img width="1000" height="518" alt="image" src="https://github.com/user-attachments/assets/f97bb7c1-1775-4e44-8316-d4c4bf61184b" />
+<img width="1052" height="219" alt="image" src="https://github.com/user-attachments/assets/880ae95e-9402-4eb0-bee7-9303d68cdcc5" />
+<img width="1074" height="573" alt="image" src="https://github.com/user-attachments/assets/3a5f4c96-8239-4992-8d18-16c323b94fb6" />
+
+
+
+---------------
+
+Determine the Associated Command-and-Control Mechanism
+Shift the investigation to determine the C2 mechanism associated with the malware. Investigate whether the C2 component is hard-coded into the malware, and identify any created or modified files and folders. Conduct static or dynamic analysis, as needed. 
+
+﻿
+
+Answer the questions that follow.
+<img width="1113" height="694" alt="image" src="https://github.com/user-attachments/assets/d291d445-e3b3-42ce-b4e3-7be3781ee25e" />
+
+<img width="1021" height="612" alt="image" src="https://github.com/user-attachments/assets/95803c70-9cb2-4d2f-ab0c-fbc5261c8e99" />
+
+<img width="1054" height="644" alt="image" src="https://github.com/user-attachments/assets/4af30f96-308f-4e75-aca3-98a802ebd4c2" />
+
+
+-------------
+
+
+
+Determine Event Execution
+Conduct static analysis of the malware-generated artifacts in C:\ProgramData\ and C:\ProgramData\SystemData folders, and also observe results from the earlier dynamic analysis, to determine event execution. This aids in developing a holistic incident timeline. 
+
+﻿
+
+NOTE: For this timeline investigation, the igfxCUIService process and the persistence mechanism have been disabled to preserve timestamp evidence. 
+
+﻿
+
+Workflow
+﻿
+
+1. Open the VM ls-wkstn-3. The login credentials are as follows:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Review the artifacts, and answer the questions that follow.
+
+﻿
+
+Keep the VM ls-wkstn-3 open, as it is used in the next exercise.
+
+
+<img width="1407" height="736" alt="image" src="https://github.com/user-attachments/assets/bf5a6b43-767b-446e-a356-35de3258d936" />
+<img width="1160" height="705" alt="image" src="https://github.com/user-attachments/assets/46fa9658-275b-4fca-a3f0-871f0ca83897" />
+
+-------------
+
+
+Incident Response Timeline Overview
+A timeline is a series of events deemed to be important and plotted on a line sequentially. Types of timeline events vary but may include when a certain process was first seen, when an email was received, or when a machine experienced a system reboot. The creation of a timeline aims to aid an investigation by providing context to the speed and scope of the infection. Timelines are created using data that includes a time and date and that is associated with a key event. Critical skills in creating a timeline are event analysis and correlation. Analysts must review, digest, and organize a large amount of data to discover the sequence of events.
+
+﻿
+
+Figure 27.4-3 shows a timeline of a malware infection that includes the planting and opening of a malicious document and the establishment of a C2 channel. Each event on the timeline is established by identifying and collecting an associated artifact. The associated artifact includes a timestamp that allows analysts to place the event on the timeline. 
+
+
+<img width="1667" height="488" alt="image" src="https://github.com/user-attachments/assets/2948196b-c2a8-4632-97df-0f7531574df3" />
+
+
+-------------
+
+
+Establish Timestamps for an Incident Response Timeline
+Complete the steps in the following workflow to discover timestamps associated with artifacts from an incident investigation.  
+
+﻿
+
+Workflow
+﻿
+
+1. Ensure that the VM ls-wkstn-3 is open. If it is not open, log in with the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Review artifacts found on the host during the investigation.
+
+﻿
 
 Answer the following questions.
-<img width="1125" height="646" alt="image" src="https://github.com/user-attachments/assets/18971446-7d8b-4924-b01f-f6573d2fc1bc" />
-<img width="1070" height="641" alt="image" src="https://github.com/user-attachments/assets/cecb616a-5d23-41e4-ae2c-7f3c1c975e77" />
-<img width="1124" height="662" alt="image" src="https://github.com/user-attachments/assets/017f6e47-a056-4e4d-bc08-559d9543ba4c" />
+
+
+
+
+----------------
+
+Investigation Results
+With the rapid response and identification of an IOC, the All-Source Analyst identifies the malware as the SysJoker. SysJoker malware is a recently developed, multi-platform backdoor that targets Windows, Mac, and Linux Operating Systems (OS). 
+
+﻿
+
+Upon further research, the CPT recommends additional mitigation strategies for Intrusion Detection Systems (IDS) or Intrusion Prevention Systems (IPS) through custom-developed detection rules. 
+
+﻿
+
+The CPT IR investigation resulted in the timeline shown in Figure 27.4-3 and the event correlation table shown in Table 27.4-4: 
+
+
+
+<img width="1088" height="2048" alt="image" src="https://github.com/user-attachments/assets/55ba5d3b-e5ba-4344-a7a8-75d55dc5da74" />
