@@ -1,421 +1,172 @@
-### CDAH-M28L1-Analyzing a Compromised Host ###
+### CDAH-M29L1-ICS Architecture ###
 
-Host Incident Response and Forensics
-When an incident is suspected on a host, analysis and forensics must begin immediately. As covered in prior Cyber Defense Analyst – Host (CDA-H) lessons, the IR process begins by identifying whether an incident has occurred and the initial impacts to operations. The process of identifying the initial compromise of a host requires an understanding of certain tools as well as providing IOCs for analysis. IOCs found in diagnosing an incident occurrence are crucial to all stages of the IR process. Additionally, the tools used to identify IOCs, such as Autopsy and Volatility, are often used for later stages of the IR process, including evidence gathering.
+
+Operational Technology vs. Information Technology
+OT and ICS are devices and controllers that manage physical industrial equipment and operations. OT devices are hardware and software systems that interface directly with a piece of industrial hardware. OT/ICS controllers may be found on any physical equipment, such as equipment cranes, hospital patient health monitors, and refrigeration sensors. Any microcomputer attached to a physical device and designed specifically to make that device function is an OT device.
+
+﻿
+
+OT/ICS devices are divided into categories based on the kinds of data and equipment they control and how the equipment is controlled. The most common examples are as follows:
+
+Supervisory Control and Data Acquisition (SCADA): SCADA systems are comprehensive system solutions that allow operators to see an entire system’s process within an industrial context; a SCADA suite often includes direct system management tools. An example is a software suite that displays a power plant’s relevant operational data for all the machines that make the power plant function rather than for individual pieces of equipment.
+Distributed Control System (DCS): Similar to SCADA, DCSs create a hierarchical structure of management based on a worker’s role. DCS management levels range from level 0 to level 4, where 0 is a direct machine operation console and 4 might be a plant manager's station. Usually, however, DCS setups are entirely onsite, with no remote administration. For example, a steel mill might use a DCS-based setup to manage factory operations and even report its level 4 data to its parent company’s SCADA setup.
+Programmable Logic Controller (PLC): PLCs are the devices directly connected to the equipment being operated. PLCs usually have some kind of networking built in so that the device can be managed by DCS or SCADA systems. 
+Differences between IT and OT Asset Management and Security
+﻿
+
+IT and OT devices are managed, maintained, and secured differently due to the nature of the organizational needs they fulfill. IT devices like servers and user workstations are designed to fulfill a large number of functions. IT Operating Systems (OS) like Windows contain a multitude of tools so that a user’s needs may be met across a wide range of business disciplines. OT devices, on the other hand, often contain only the system code and function required to operate the specific task they are required to perform. OT devices often need nearly 100% uptime; a power plant’s generators, for example, cannot simply be disabled for updates and routine patches. OT equipment usually entails much greater safety concerns than IT devices. If a Dynamic Host Configuration Protocol (DHCP) server goes down, users may need to stop work briefly, but if a hospital heart monitor stops working, a patient’s physical health may be in jeopardy.
+
+﻿
+
+Another difference between IT and OT devices is their relative lifecycles. Whereas new IT equipment is replaced, upgraded, and refreshed every few years, OT/ICS equipment is often in place for 1 or 2 decades before being removed due to equipment failure or to a forced equipment change for a new organizational requirement.
+
+﻿
+
+OT security has several challenges that IT security lacks. OT devices are often not directly manageable with IT patching solutions and instead may require custom management software, if a fix is available at all. Direct administration is also not an option for most OT devices, as controllers do not contain full OSs and can be accessed only through a physical control panel or through proprietary management software provided by the manufacturer.
+
+
+
+-----------------
+
+
+Industrial Control System Components
+OT/ICS equipment consists of several components that work together to create a fully operational environment:
+
+PLCs: PLCs are devices attached directly to physical equipment that governs the operation of that equipment.
+Remote Terminal Units (RTU): RTUs transmit device telemetry and control signals between equipment and SCADA systems.
+Digital Protective Relays, Numerical Relays, and Intelligent End Devices: Digital protective relays, numerical relays, and intelligent end devices are advanced power surge protectors and power regulators.
+Phasor Measurement Units (PMU): PMUs are voltage and amperage management devices, ensuring that the correct amount and kind of power needs are being given to a relevant device.
+Real-Time Operating Systems (RTOS): An RTOS is a device OS that is designed to not fluctuate during operation. IT OSs can vary significantly in performance of similar tasks, but OT RTOSs must be predictable and are therefore designed to perform the same function in exactly the same manner, and in exactly the same amount of time, every time.
+Sensor Networks: Sensor networks are usually monitor-only telemetry units that report back information to a DCS or SCADA system. A network of temperature sensors for refrigeration does not perform any control functions on the refrigeration system but does report back performance, temperature, and other telemetry data.
+Human-Machine Interfaces (HMI): An HMI is any device, or part of a device, designed to allow people to interact with a machine. An HMI may be a control panel composed of buttons and a simple screen, or it may be a piece of software that sends commands to equipment over a network.
+﻿Figure 29.1-1 provides an OT network example. The SCADA server, which allows control of the other devices, is managed through the HMI. The SCADA server manages the PLCs’ tasks on the industrial equipment inside the power plant, based on the readings received from the RTU, which receives data from the temperature sensor.
+
+<img width="1667" height="1770" alt="image" src="https://github.com/user-attachments/assets/93258b4a-fbf2-4d44-b01a-4118e0f3b9e5" />
+
 
 ------------------
 
-Review of Host Forensics Tools
-The following are common tools used for host forensics.
+
+Industrial Control System Roles
+Administration and security within an OT/ICS environment are often divided into roles to set responsibilities and tasks for the correct personnel.
 
 ﻿
 
-Forensic Toolkit
+Network/System Administrators 
 ﻿
 
-Forensic Toolkit® (FTK®) is a full suite of tools to conduct forensic analysis. The following are common capabilities of FTK:
-
-Process forensic images
-Decryption and password cracking
-Parsing of registry files
-Visualizations
-
-FTK® Imager is available as a stand-alone, free tool and can be used to create forensic images. Forensic images can be used for analysis and serve as a great tool for identifying nefarious activity or suspected malware on a compromised host.
+System administrators manage the IT aspect of the ICS systems, interconnecting Transmission Control Protocol/Internet Protocol (TCP/IP) devices, configuring computer systems, and monitoring security. The main focus of IT administrators in an OT environment is to secure the IT equipment that can potentially affect OT operations. IT administrators also manage and secure all after-business critical systems just like any other IT environment.
 
 ﻿
 
-Autopsy
-﻿
-
-Autopsy is used to forensically analyze disks or disk images to identify artifacts of malicious activity. Autopsy can be used to analyze malware behavior as well as extract artifacts and full malware. In conjunction with FTK Imager, Autopsy provides an open-source solution for conducting full-disk forensic analysis.
+Administrators, analysts, and other IT personnel are tasked with managing the servers and workstations that other members of a given organization use daily. Some SCADA systems may be running on Windows or Linux machines that IT manages, but OT equipment rarely falls under general IT purview.
 
 ﻿
 
-Volatility
+Operators/Engineers/Technicians 
 ﻿
 
-Volatility is used to capture images of memory in a compromised host. This preserves the state of memory that a system is in when an attack occurs. Volatility can also be used to analyze and extract artifacts of malware activity. Volatility has custom plug-ins that can be used to provide new capabilities, such as VolDiff, which adds a memory malware footprint analysis. 
+Operators use the OT systems to manage, monitor, and program the physical processes. Operators include any personnel who require OT equipment to perform their relevant functions. A nurse using vital signs monitors and a factory worker cutting steel beams are both considered operators in an OT environment. Engineers and technicians vary across a wide range of disciplines, and OT software engineers may have some overlap with IT administration and security, but technicians and equipment engineers manage or repair only OT-related equipment.
 
 ﻿
 
-Cuckoo Sandbox
+Security personnel and analysts likely interact with SCADA- and DCS-related systems rather than controllers and device-level components. Every equipment vendor has different tools for managing updates and administration for devices, and security personnel are tasked with learning all the vendor-specific information needed to secure OT systems.
+
+
+---------------
+
+Security Tool Use in Industrial Control System Environments
+OT/ICS Vulnerability Management
 ﻿
 
-Cuckoo Sandbox is a sandbox tool equipped with automated malware analysis. Cuckoo executes malware in a sandbox environment and then provides an automated report of the malware behavior. This report can be used to identify artifacts and additional compromises caused by the malware.
+Most OT/ICS components and protocols are sensitive to unexpected or improperly formatted control messages. Use of traditional IT tools, such as vulnerability scanners or port mappers, can cause system instability or even permanent damage. Many OT/ICS devices have only their manufacturer management network port open for communication and are only designed to receive network traffic from their proprietary software. For the sake of availability and operational speed, many standard IT-related communication functions are removed from device controllers, and simple handshakes and remote session requests cause system failure. Because of this, most modern controllers reject all traffic from standard IT devices to maintain stability.
 
+﻿
+
+Some ICS functions, such as HMIs or data historians, can be hosted on traditional enterprise OSs like Microsoft Windows or Linux. Telemetry data–generating machines like an HMI do not send many instructions to device controllers and, instead, simply receive forwarded telemetry data, which is then sent upstream to a SCADA system, for example. Traditional IT monitoring and investigation tools, such as PowerShell, Sysinternals, or IR scripts, may not be supported on these devices, however. Such devices rely on passive information-gathering techniques rather than active tools in field networks.
+
+﻿
 
 -----------
 
-
-Extracting Indicators of Compromise with Forensics Tools
-Extracting IOCs with Volatility
-﻿
-
-Understanding the state of a compromised machine depends on gathering a snapshot of the memory of a compromised host. This can be done with Volatility and its memory-imaging capability. Volatility creates a .vmem file, which is a snapshot of the host’s memory and provides access to all processes and functions running at the time of creation. If malware or malicious processes are running, they can be identified through analysis of this image.
+Scan ICS Networks
+The following exercises use a simulated Feed Water Treatment System (FWTS) OT network that is part of the vCity Power Plant. The system owner provided the attached network diagram. 
 
 ﻿
 
-Conducting analysis with Volatility is possible by directly analyzing the memory image or by using plug-ins to automate some analysis for specific behaviors. Volatility plug-ins can be used to detect specific activities, such as malware in Hypertext Transfer Protocol (HTTP) packets found in memory images. Malicious processes or artifacts found in memory can be extracted using Volatility.
-
-﻿
-
-Memory Malware Extraction Process
-﻿
-
-Identification of profiles is a necessity to ensure that Volatility can scan properly. The profile is based on the type of image being used. Identifying the needed profile is done with the kdbgscan command:
-
-$ python vol.py -f (Insert Image Name) kdbgscan
-﻿
-
-Once a profile has been identified, Volatility can be used to scan and analyze the memory image. The command pslist can be used to display the processes running on the system at the time of the image capture:
-
-python vol.py -f ~(Insert Image Name) --profile=(Insert profile found in kdbgscan) pslist
-﻿
-
-If a malicious process is suspected and an analyst wants to conduct further analysis, the process can be extracted using the procdump command. This command extracts the executable, and other tools, such as Cuckoo Sandbox, can be used to further analyze the executable for malware.
-
-python vol.py -f (Insert Image Name) --profile=(Insert profile found in kdbgscan) procdump -D dump/ -p (Insert Process Name)
-﻿
-
-Many other commands are available through Volatility to meet specific situations and needs. Analyzing the memory of an image can be a giveaway to malicious activity that occurred on a host. Analysts must understand how to use Volatility to adequately defend and eradicate during ongoing incidents. 
-
-﻿
-
-Extracting IOCs with FTK/Autopsy
-﻿
-
-Creating forensic disk images is key to understanding the state of a compromised system, enabling analysis of the malware artifacts. FTK Imager can create these forensic images, and FTK or Autopsy can provide analysis capabilities for forensic disk images.
-
-﻿
-
-Autopsy has automated and manual tools that allow for the inspection of forensic images and help to find artifacts of malicious activity. Malware and artifacts can be extracted from these images for further analysis. 
-
-﻿
-
-For this lesson, Autopsy is used to analyze and extract IOCs.
-
-﻿
-
-Disk Malware Extraction Process
-﻿
-
-Using Autopsy is simpler than using other command-line tools due to its intuitive User Interface (UI). The UI allows the user to select forensic images to ingest and inspect. The process for inspecting images with Autopsy is as follows:
-
-﻿
-
-1. Create a Case: A case is a container for data sources that must be created before data is analyzed.
-
-2. Add a Data Source: Data sources are added to the case. Data sources include disk images or local files.
-
-3. Analyze with Ingest Modules: Ingest modules operate in the background to analyze the data. Results are posted to the interface in real time and provide alerts as necessary. 
-
-4. Perform Manual Analysis: The user navigates the interface, file contents, and ingest module results to identify the evidence.
-
-5. Generate a Report: The user initiates a final report based on selected tags or results.
-
-﻿
-
-Figure 28.1-1 illustrates this process:
-
-<img width="1667" height="834" alt="image" src="https://github.com/user-attachments/assets/7f29e95b-b6c5-4d83-98c9-3f519c9b8247" />
-
-
-Autopsy can provide numerous artifacts for analysts to identify compromise of a host. Autopsy also helps provide details to ensure that threats can be eradicated further in the IR process
-
-
--------------
-
-
-Malware Analysis
-After malware has been extracted, additional steps can be taken to analyze the full extent of the malware’s capabilities and follow-on actions that the malware may have conducted. A sandbox environment is needed for this analysis.
-
-﻿
-
-Cuckoo Sandbox provides the capability to execute malware in a safe environment while also providing automated malware analysis. Cuckoo creates a malware behavior report that provides details on the malware capabilities and the extent of the malware’s infection in the sandbox. The attached Portable Document Format (PDF) file provides an example of a Cuckoo malware report.
-
-
-
-
-
------------------
-
-
-Perform Host Forensic Analysis
-A user reports that their system has been acting strangely and the company’s firewall has been reporting strange traffic originating from the system. The machine has been forensically imaged. The following lab demonstrates performance of host malware analysis:
-
-Locate the malware on the system.
-
-Extract the simulated malware using Volatility/Autopsy.
-
-Extract malicious behavior from the malware using Cuckoo Sandbox.
-
-Analyze memory for additional IOCs using Volatility, and extract IOCs from the disk image using Autopsy.
-
-
-Identify the Malware for Analysis
-﻿
-
-Complete the steps in the following workflow to identify the malware to be analyzed, using Volatility.
+Complete the steps in the following workflow to identify assets on the OT network and demonstrate potential negative impacts of active scanning in an OT network. 
 
 ﻿
 
 Workflow
 ﻿
 
-1. Open the Virtual Machine (VM) cuckoo. The login credentials are as follows:
+1. Open a console session to the Virtual Machine (VM) hmi-1.
+
+﻿
+
+The HMI, illustrated in Figure 29.1-2, is a critical device that allows plant operators to monitor and control processes associated with an FWTS:
+
+﻿
+<img width="816" height="614" alt="image" src="https://github.com/user-attachments/assets/31583cd2-e3f5-4f04-8ad0-09f986251680" />
+
+
+2. Open the VM win-hunt. The login credentials are as follows:
 
 Username: trainee
 Password: CyberTraining1!
-﻿
 
 
-2. Open the desktop folder Lab1, right-click and select Open in Terminal.
 
-﻿
-
-
-3. Run the following command to determine the type of profile needed to examine the memory capture:
-
-volatility imageinfo -f Lab1.vmem
-NOTE: Check all commands for errors after pasting them into a terminal.﻿
-
-﻿
-
-The output clarifies that the best profile for this memory capture is WinXPSP2x64.
-
-﻿
+3. Open Zenmap by selecting the Nmap - Zenmap GUI desktop shortcut.
 
 
-4. Run the following command to analyze processes in the memory image:
-
-volatility pstree -f Lab1.vmem --profile=WinXPSP2x64
-﻿
-
-The output shows that an executable that should not be there is running in memory. The executable, toteslegit.exe, is not a normal Windows executable and should be examined further.
-
-﻿
+4. Select the drop-down arrow for the Target field, and select the pre-populated address ranges. These address ranges were selected based on the network diagram provided by the system owner. 
 
 
-5. Run the following command to view the open connections on the system when the memory was captured:
 
-volatility connscan -f Lab1.vmem --profile=WinXPSP2x64
-﻿
+<img width="675" height="202" alt="image" src="https://github.com/user-attachments/assets/f8925620-70d7-435c-bc78-ebed12af1e21" />
 
-Two listed connections are returned. Two identical Process Identifiers (PID) are returned for the same process. This is because one is in physical memory, or Random Access Memory (RAM), and the other is mirrored in the system pagefile. They both point to the same PID, which is listed in the command from Step 4. The PID is attached to the executable toteslegit.exe, whose associated PID is 2660.
 
-﻿
+The Command field is automatically updated with the selected address ranges. This scan profile performs a full TCP connect scan against a small subset of ports that may be found in an ICS network. The command also performs a traceroute to help visualize the network path from the Zenmap scanning host to the target networks. A Cyber Defense Analyst (CDA) typically performs a more complete port scan, but the number of ports in this exercise is reduced to save time.
 
-Extract the Malware, and Make It Available for Analysis 
-﻿
 
-Complete the steps in the following workflow to extract the executable from the disk image and make it available for malware analysis.
+<img width="677" height="222" alt="image" src="https://github.com/user-attachments/assets/cb53df13-4d76-436c-b6c2-5fb97b8b02f8" />
 
-﻿
+5. Select Scan
 
-Workflow
-﻿
+<img width="674" height="204" alt="image" src="https://github.com/user-attachments/assets/f71cbc51-d459-46e1-b7ea-ecdd94ea2b83" />
 
-1. Open a web browser, and input the Uniform Resource Locator (URL) localhost:9999/autopsy to access the running Autopsy web service.
+Once the scan is complete, an Nmap done message appears at the bottom of the Nmap Output display
+
+<img width="671" height="711" alt="image" src="https://github.com/user-attachments/assets/013dd609-37ab-4c71-a450-631b78a371ce" />
+
+6. Select the Topology tab for a high-level visualization of node distribution based on the traceroute feature of Nmap
+
+<img width="674" height="714" alt="image" src="https://github.com/user-attachments/assets/babdfc2a-bf59-4c48-b714-efa74ed343e9" />
+
+The Nmap scan detected most of the hosts in the scanned networks. However, the scanning activity had a negative impact on some assets in the network. 
+
+
+7. Close the Zenmap console by selecting the X in the upper right corner and selecting Close anyway when prompted. 
+
+
+8. Return to the VM hmi-1 console session.
+
+
+The HMI display is no longer visible. The HMI software did not know how to interpret the received data associated with the scan, causing a failure condition. Thus, operators cannot use this terminal to monitor and control the FWTS until the failure is corrected. This is an example of potential impacts that active interactions with ICS components can have. 
+
+
+Keep the VMs hmi-1 and win-hunt open, as they are used in the next workflow
+
+--------------
+
+Passive Enumeration of Industrial Control System Networks
+The following exercise demonstrates how the tool GRASSMARLIN can be used to identify assets in an ICS network through passive detection. GRASSMARLIN is an open-source project developed by the National Security Agency (NSA) that can passively map and visually display an ICS/SCADA network topology while safely conducting device discovery, accounting, and reporting on these critical systems. GRASSMARLIN is capable of extracting this data from live network capture, ingesting a packet capture, parsing Zeek logs, or consuming Cisco® router/switch configuration files and Address Resolution Protocol/Media Access Control (ARP/MAC) caches. The exercise uses a GRASSMARLIN session that was created using offline packet capture from the vCity Power Plant FWTS OT network. 
 
 ﻿
 
-2. Select New Case.
-
-﻿
-
-
-3. In the Case Name field, enter toteslegit, and select New Case at the bottom of the page.
-
-﻿
-
-
-4. Select Add Host on the next screen.
-
-﻿
-
-
-5. Select Add Host.
-
-﻿
-
-
-6. Select Add Image.
-
-﻿
-
-
-7. Select Add Image File.
-
-﻿
-
-
-8. In the Location box, enter /home/trainee/Desktop/Lab1/Lab1.E01. Leave the Type selection as Disk and the Import Method as Symlink.
-
-﻿
-
-
-9. Select Next at the bottom of the page.
-
-﻿
-
-
-10. Select Add.
-
-﻿
-
-
-11. Select OK.
-
-﻿
-
-The next screen lists the file image options.
-
-﻿
-
-
-12. Select the radio button next to C:/, and select Analyze under it.
-
-﻿
-
-
-13. Select File Analysis at the top of the screen.
-
-﻿
-
-
-14. Enter toteslegit in the File Name search box.
-
-﻿
-
-The first file returned is the malicious executable file.
-
-﻿
-
-
-15. Select the name of the malicious executable to view the contents of the file.
-
-﻿
-
-Because the file is a compiled binary, it is not possible to see all of its contents. 
-
-﻿
-
-
-16. To save the file to disk so that it may be examined in a malware sandbox, select Export, and select Save File when the dialog box appears.
-
-﻿
-
-Analyze the Malware
-﻿
-
-Complete the steps in the following workflow to analyze the malware using Cuckoo Sandbox.
-
-﻿
-
-Workflow
-﻿
-
-1. Open a web browser, and enter localhost:8080 in the address bar.
-
-﻿
-
-
-2. In the Cuckoo Sandbox interface that appears, select Submit a file for analysis.
-
-﻿
-
-
-3. In the dialog box, select Downloads to access the directory that the malicious executable is saved in.
-
-﻿
-
-
-4. Select the malicious file, vol2-C.Documents.and.Settings.Administrator.My.Documents.toteslegit.exe, to load it into Cuckoo for analysis.
-
-﻿
-
-
-5. Select Analyze in the upper right corner of the window that opens.
-
-﻿
-
-
-When the analysis is complete, the status indicator on the right side changes from Running to Reported.
-
-﻿
-
-6. Select the name of the file to open a new tab displaying the results of the scan.
-
-﻿
-
-
-7. Scroll down the summary window, and view the findings. 
-
-﻿
-
-Stealthy malware sometimes returns few findings in a malware sandbox due to features that prevent detection. Malware authors commonly use a custom packer that can obfuscate the contents of the malware from scanners. The malware in this workflow has been packed in this way.
-
-﻿
-
-8. Review the Signature findings and Behavioral Analysis tabs in Cuckoo to review details of the malware as shown below:
-
-
-
-<img width="1358" height="445" alt="image" src="https://github.com/user-attachments/assets/b34a9d9d-c1d4-4f24-87ee-b0a74becd6bf" />
-
-<img width="1244" height="591" alt="image" src="https://github.com/user-attachments/assets/e79f25f5-26a0-45f1-9a66-10bd9ac49921" />
-
-The behavioral analysis tab is visible through the menu on the left side of Cuckoo’s display. 
-
-
-Use this workflow to answer the following questions.
-
-
-Keep the VM open, as it is used in an upcoming workflow
-
-
--------------
-
-
-Attack Entry Points
-When an incident is suspected, it is important to identify the primary entry point of the malware. The primary entry point is generally found when gathering evidence in the incident. Identifying this initial entry is key to understanding the depth of the attack and helps to improve defenses when remediated.
-
-﻿
-
-However, when malware compromises a host, additional entry points are often created. These attack vectors are referred to as secondary and tertiary entry points. A secondary entry point is an alternative entry point that an attacker provides for themselves to ensure accessibility to a system or network. Tertiary entry points can be any number of additional entry points created by the attacker to further ensure accessibility to a system or network. Both secondary and tertiary entry points incorporate the same techniques. All additional entry points, including both tertiary and secondary, provide new methods of entry so that defenders have more difficulty stopping the attack. Identifying additional entry points is critical to completely remediating a compromised host.
-
-﻿
-
-Identifying attackers’ additional entry points requires an understanding of common secondary and tertiary threat actor entry points. Common techniques for creating additional entry points include the following (and are shown in Figure 38.1-2):
-
-Finding additional exposed or insecure assets.
-Removing security controls.
-Sending phishing emails.
-Generating backdoors.
-Creating new accounts.
-Performing drive-by downloads.
-﻿
-<img width="1667" height="834" alt="image" src="https://github.com/user-attachments/assets/930ad4b9-92d1-4a36-9a41-a2fc5a46baa1" />
-
-
-When reviewing an incident, analysts must trace all activity conducted by the attacker to identify secondary or tertiary entry points and prevent future follow-on compromises of the attack. Entry points can be detected through such methods as analysis with Volatility or Autopsy, and Cuckoo Sandbox can also identify some entry methods associated with malware.
-
-
--------------
-
-Identify Additional Attack Entry Points
-An attacker recently targeted an organization with a phishing campaign. The phishing emails had a malicious executable attached and were used to establish a foothold in the organization’s systems. In the following lab, discover an additional entry point and analyze the activity that resulted from its use.
-
-﻿
-
-Find a Phishing Email Attack Entry Point
-﻿
-
-Complete the steps in the following workflow to find a phishing email in memory and extract the URL of a malicious link in the email, using Volatility.
-
-﻿
-
-The VM should still be open from the prior workflow. If it is not open, log in using the following credentials:
+NOTE: The VM win-hunt should remain open from the prior workflow. If it has been closed, log in again using the following credentials:
 
 Username: trainee
 Password: CyberTraining1!
@@ -424,912 +175,684 @@ Password: CyberTraining1!
 Workflow
 ﻿
 
-
-1. Open the desktop folder Lab2, right-click and select Open in Terminal.
-
-﻿
-
-
-2. Run the following command to determine the type of profile needed to examine the memory capture:
-
-volatility imageinfo -f Lab2.vmem
-﻿
-
-The output shows that the best profile for this memory capture is WinXPSP2x64. 
+1. Open GRASSMARLIN by selecting the GrassMarlin shortcut on the desktop.
 
 ﻿
 
+2. Select File  > Open Session:
 
-The user reports that the email was in their inbox and that they saved the email to their My Documents folder with the filename important!. 
+<img width="318" height="288" alt="image" src="https://github.com/user-attachments/assets/f6525dc3-99d4-45db-9f7e-4b083465fba2" />
 
-﻿
-
-3. Run the following command to locate the file in memory:
-
-volatility -f Lab2.vmem --profile=WinXPSP2x64 filescan | grep important
-﻿
+3. Select Documents > OT Network Map.gm3, and select Open:
 
 
-The returned output shows a single email and a link file. The first returned result is the saved email in the user’s My Documents folder. 
+<img width="845" height="483" alt="image" src="https://github.com/user-attachments/assets/689bee27-39b0-49be-8e7f-43f0877a1dca" />
 
-﻿
-
-4. To extract the email from the memory capture, run the following command:
-
-sudo volatility -f Lab2.vmem -–profile=WinXPSP2x64 dumpfiles –Q 0x0000000002ea3720 –n –D /home/trainee/Desktop/Lab2
-﻿
-
-This command extracts the email message and saves it to the Lab 2 folder with the filename file.None.0xfffffadfe74e7cf0.important!.eml.dat.
-
-﻿
+The saved session may require up to 2 minutes to load. The session data was created by ingesting approximately 1.3 gigabytes (GB) of network traffic that was captured by the Network Analyst team monitoring the OT network. Parsing the 1.3 GB of packet capture by GRASSMARLIN required about 15 minutes, which is why the session data was preloaded for the exercise. 
 
 
-5. To view the contents of the email, run the following command:
-
-strings 'file.None.0xfffffadfe74e7cf0.important!.eml.dat'
-﻿
-
-Using this workflow, answer the following question.
-
-﻿
-
-Keep the VM open, as it is used in the next workflow.
+GRASSMARLIN can analyze the captured network traffic to identify network assets as well as define communication flows between these assets. GRASSMARLIN also ships with profiles that can be used to fingerprint the observed device types and protocols.
 
 
----------------------
+Once the session loads, the Logical Graph tab is populated with the identified devices, as depicted in Figure 29.1-10. GRASSMARLIN was able to use device fingerprinting to observe Modbus traffic and properly label ICS devices with a power line icon. By default, the detected assets are separated into subnets based on /24 subnet masks, which does not accurately match the network layout. GRASSMARLIN provides the ability to specify custom subnets to enhance the visualization.
+
+<img width="645" height="730" alt="image" src="https://github.com/user-attachments/assets/b98fb22d-71cc-4e8f-9a8e-c9d7d68f35ed" />
+
+4. From the toolbar, select Packet Capture > Manage Networks
+
+<img width="430" height="247" alt="image" src="https://github.com/user-attachments/assets/64b0bba9-291f-4a0b-84ba-d131fd1366d8" />
+
+5. Remove the existing network definitions by selecting the Classless Inter-Domain Routing (CIDR) blocks and selecting the Delete key on the keyboard:
+
+<img width="450" height="134" alt="image" src="https://github.com/user-attachments/assets/07037c13-5854-45c4-969c-7d486f86c51d" />
+
+6. In the Add CIDR field, enter the first CIDR block of 172.16.80.0/29, and select the Add CIDR button
+
+<img width="447" height="296" alt="image" src="https://github.com/user-attachments/assets/e77e6c54-2b12-4593-a2a6-92506ed00a04" />
+
+7. Repeat the previous step to add the following CIDR blocks:
+172.16.80.8/29
+172.16.80.16/28
+172.16.79.32/29
+
+8. Select Finish to complete the process
+
+<img width="446" height="292" alt="image" src="https://github.com/user-attachments/assets/ddb2903d-3bc3-4e1b-b072-d04d481aeedd" />
+GRASSMARLIN has updated the Logical Graph to properly identify devices in their appropriate subnets:
+
+<img width="726" height="784" alt="image" src="https://github.com/user-attachments/assets/25170195-2334-46e4-9446-d051ceb47168" />
 
 
-Find a Drive-By Download Attack Entry Point
-Complete the steps in the following workflow to find the URL in memory of a drive-by download and extract the URL of the malicious link, using Volatility. 
+GRASSMARLIN can also provide information about the type of ICS components that were discovered.
+ 
+9. In the left pane, select the drop-down arrow to the left of the 172.16.80.0/29 subnet. Right-click 172.16.80.2, and select View Details for 172.16.80.2
 
-﻿
+<img width="508" height="400" alt="image" src="https://github.com/user-attachments/assets/e77adde5-0e7a-47fe-99fc-1d890c4e27eb" />
 
-The VM should still be open from the prior workflow. If it is not open, log in using the following credentials:
+10. Resize the Node Details window that appears so that the device attributes are visible
 
-Username: trainee
-Password: CyberTraining1!
-﻿
-
-Workflow
-﻿
+<img width="289" height="488" alt="image" src="https://github.com/user-attachments/assets/3465882c-a07d-4fb6-8f8d-4c8a5211d71c" />
 
 
-1. Open the desktop folder Lab3, right-click and select Open in Terminal.
+GRASSMARLIN has provided several pieces of information based on its fingerprinting capability. In addition to possible product and OS matches, it provides valuable insight into this device’s functional role in the OT network. In this case, 172.16.80.2 has been identified as a Master Terminal Unit (MTU), which is synonymous with an HMI.
 
-﻿
-
-
-2. Run the following command to determine the type of profile needed to examine the memory capture: 
-
-volatility imageinfo -f Lab3.vmem
-﻿
-
-The output shows that the best profile for this scan is WinXPSP2x64.
-
-﻿
+<img width="422" height="727" alt="image" src="https://github.com/user-attachments/assets/7c0479b7-8462-4745-a915-08ceb5a3bc29" />
 
 
-3. Run the following command to check the process list to see which web browser the user was running:
-
-volatility –f Lab3.vmem --profile=WinXPSP2x64 pslist
-﻿
-
-﻿IEXPLORE.EXE is running on the system, with PID 648.
-
-﻿
-
-4. Execute the following command to pull the browser history from memory and identify the malicious link:
-
-volatility –f Lab3.vmem –-profile=WinXPSP2x64 iehistory
-﻿
-
-Use this workflow to answer the following question.
+11. Close the Node Details window.
 
 
------------------
+12. Select the drop-down arrow to the left of the 172.16.80.8/29 subnet. Right-click 172.16.80.10, and select View Details for 172.16.80.10
 
 
-### CDAH-M28L2-Breach Scoping and Evidence Gathering ###
+<img width="434" height="432" alt="image" src="https://github.com/user-attachments/assets/cb3300c3-35fd-4fef-9638-e9b033bd9931" />
 
 
-Gathering Threat Intelligence
-Understanding the depth of an attack allows Host Analysts to defend against malicious threat actors. The investigation begins as soon as an initial breach is discovered. 
-
-﻿
-
-Having a clear methodology for gathering threat intelligence allows Host Analysts to use their time and resources efficiently. After an incident has occurred and been properly identified, threat intelligence must be gathered, as seen in Figure 28.2-1 below.
-
-﻿
-
-The four steps, or phases, of the process of gathering threat intelligence are as follows:
-
-Scope
-Analyze
-Extract
-Report
-
-<img width="2048" height="675" alt="image" src="https://github.com/user-attachments/assets/685e55ec-4ef7-4d47-b9ce-6fbd16924bf0" />
+13. After resizing the window, view the device attributes. In this case, the device category has been properly identified as a PLC:
 
 
-
-Each phase of the intelligence-gathering and reporting process relies on one another. If the scope of an investigation is not fully known, but the team moves to the analysis stage anyway, there may be critical assets breached by an attack that go unnoticed due to improper categorization of the scope of the event. 
-
-
-The same principle applies to each phase of this process. Each phase must be thoroughly conducted in order to adequately perform investigations and incident response.
-
+<img width="441" height="794" alt="image" src="https://github.com/user-attachments/assets/69601160-d654-4525-8175-8fb1080adf49" />
 
 
 ---------------
 
-Scoping, Analyzing, and Extracting Evidence
-Identify the Scope
-﻿
+### CDAH-M29L2-ICS Protocols and Implementations ###
 
-If a breach occurs, defensive operators must gather a thorough understanding of all affected assets and software. 
-
-﻿
-
-This process is known as Breach Scoping, as seen in part one of Figure 28.2-2 below:
-
-
-<img width="2048" height="1024" alt="image" src="https://github.com/user-attachments/assets/c4b891a1-f336-4b61-aaf5-f4ef55e277cc" />
-
-Breach Scoping helps cyber defense analysts understand the entirety of a threat, and provides assets for the investigation. After an attack has occurred, analysts must survey the organization’s network for indicators of assets that may be potentially involved in the scope of the attack. 
-
-
-Common tools for identifying potential attacker activity are Security Incident and Event Management (SIEM) systems, and Intrusion Detection Systems (IDS). These tools help generate alerts and allow analysts to search and view devices that have evidence of threat actor activity. 
-
-
-When identifying the scope of the breach, specific searches are conducted to determine all involved assets. Searches help create a list that can be used to categorize all possible devices that may have been accessed by threat actor activity. Once all assets involved in the scope of the attack are identified, defenders can start gathering threat intelligence.
-
-
-Gather Evidence
-
-
-When a breach occurs, an investigation must be opened. After initial access and the scope of the breach has been identified, finding key details of threat actor activity is the next step. This process is referred to as Acquiring Cyber Threat Intelligence (CTI).
-
-
-Analyze and Extract Evidence
-
-
-As with the breach scope, a SIEM can be used to identify threat actor activity and potentially malicious software. Additionally, an IDS may discover malware in transit across the network. 
-
-
-Identifying malicious activity leads to analyzing any malicious files and software. Threat actors often execute malicious files after breaching networks. In order to understand the malware, any afflicted assets must be quarantined and forensic images should be created of their memory and disks. 
-
-
-The quarantining process is dictated by the organization’s Incident Response Team (IRT). The IRT is responsible for executing the quarantine process (if possible) for any afflicted devices. When a device is quarantined, the forensic images can be used to transport the state of the system, as well as to retain any malware or malicious activities. Once images are created, specialized tools can be used to analyze the images and find threat actor activity. 
-
-
-Extracting Evidence with Volatility and Autopsy
-Volatility can be used to analyze and gather evidence of additional threat actor activity. In the memory images of an attacked device, artifacts are left behind. These artifacts can be used to identify specific actions that occurred, or files that were executed.
-
-
-If a malicious file is executed, the file can be analyzed and extracted. Autopsy works similarly to Volatility, but with system disk images. Any malicious files or traceable actions left on system disks can be analyzed and extracted using Autopsy.
-
-
-Executing Malware with Cuckoo
-When malware is extracted by Volatility or Autopsy, the malware can be executed in a safe environment, such as Cuckoo. Cuckoo helps identify the characteristics of a malicious file, such as activities caused by malware. Cuckoo generates a report of the malware that provides details such as a rating of the malware’s malicious capability, actions capable by the malware, and more. 
-
-
-Once evidence has been gathered, a full report can be created of the incident.
-
-
--------------------
-
-
-
-Identify the Scope
-An attacker used malware to compromise multiple hosts on an organization’s network. Initial malware delivery results in the compromise of one host and the attacker pivots with additional malware to compromise additional hosts. 
+Industrial Control System Protocols
+To understand how ICS networks and components communicate, familiarity with the underlying protocols in use is necessary. Protocols implemented in ICS networks are designed to communicate with specialized hardware to complete particular tasks, such as reading sensor values or sending control instructions to an end device. Additionally, some protocols have unique requirements, depending on their applications, such as an emphasis on reliable transport, efficiency due to low-bandwidth communications streams, and extremely low latency to support real-time operations. 
 
 ﻿
 
-Use Elastic to identify the scope of the breach and determine indicators of additional compromised hosts.
+Like some Information Technology (IT) protocols, ICS protocols can be proprietary or open standard. Proprietary protocols are maintained by the vendors that developed them. The use of these protocols is restricted by licensing requirements and, in general, interoperate only with other devices produced by the vendor. Additionally, the technical information behind the development of the protocols is retained by the vendor and not shared publicly. Open-standard protocols, on the other hand, are free to use by anyone. They are usually designed and developed by organizations like the Institute of Electrical and Electronics Engineers/Internet Engineering Task Force (IEEE/IETF) or as a joint effort by many organizations.
+
+
+----------------
+
+Common Industrial Control System Protocols
+Dozens of communications protocols currently exist in ICSs throughout the world. Some protocols are extremely specialized and used in only certain applications, whereas others have seen widespread adoption throughout the industry. Brief descriptions of some of today’s most common ICS communications protocols follow.
+
+﻿
+
+Modbus
+﻿
+
+Modbus is a data communications protocol originally published by Modicon in 1979 and later adopted as one of the first open-standard ICS protocols. Modbus is one of the most commonly used communications protocols in ICS networks. 
+
+﻿
+
+Modbus is a serial protocol that communicates over Recommended Standard 232 (RS232) or RS485 serial connections. A variant known as Modbus/TCP (Transmission Control Protocol) exists that can communicate over Ethernet networks using TCP port 502 by default. 
+
+﻿
+
+Modbus employs a client–server (originally documented as master/slave) architecture for communications. The client initiates communication with the servers to poll for information or send commands to the end device. The Modbus protocol allows a maximum of 247 Modbus devices per network segment. Figure 29.2-1 provides an illustration of the Modbus process:
+
+﻿
+
+
+<img width="2500" height="1114" alt="image" src="https://github.com/user-attachments/assets/b1fca3b0-037a-4a8f-9f26-885c9d10c01f" />
+
+
+PROFIBUS/PROFINET
+
+
+PROFIBUS is an open-standard communications protocol used widely in factory and process automation systems. PROFIBUS is a serial protocol that communicates over RS232 or RS485 serial connections. 
+
+
+PROFINET is an updated version of PROFIBUS that communicates over industrial Ethernet networks. 
+
+
+DNP3
+
+
+Distributed Network Protocol 3 (DNP3) is used almost exclusively by electric, gas, and water utilities for remote communications between Supervisory Control and Data Acquisition (SCADA) equipment and control centers. This protocol operates over RS232 and RS485 serial connections but can also be encapsulated in Transmission Control Protocol/Internet Protocol (TCP/IP) or transmitted via radio or modem for long-distance communications. 
+
+
+DNP3 supports end-to-end encryption via Virtual Private Network (VPN) tunnels or Transport Layer Security (TLS) encryption. DNP3 also supports authentication and implementation or role-based access controls. 
+
+
+Open Platform Communications
+
+
+Open Platform Communications (OPC) is an open-standard communications protocol evolved from the earlier Object Linking and Embedding (OLE) implementation for process control. The purpose of OPC is to act as an abstraction layer between Human-Machine Interface (HMI) or SCADA systems and Programmable Logic Controllers (PLC) that may be relying on several different protocols, such as Modbus or PROFIBUS. 
+
+
+Essentially, the control and monitoring devices, such as HMI and SCADA servers, communicate directly with OPC servers using the OPC protocol. The OPC server then translates the commands to the appropriate protocol (for example, Modbus or PROFIBUS) in order to communicate with target devices, such as a PLC or actuator. 
+
+
+OPC can provide security through encrypted communications, the use of digital certificates, and enforcing authentication and authorization.
+
+
+WirelessHART
+
+
+WirelessHART (where HART is an acronym for Highway Addressable Remote Transducer) is a protocol that uses a 2.4-gigahertz (GHz) wireless mesh network to communicate with field devices. WirelessHART has a communication range of 200 meters between each device and can be an excellent way to connect field devices when physical connections are not feasible. WirelessHART enforces Advanced Encryption Standard (AES)-128 encryption for device communication.
+
+
+
+-----------------
+
+Industrial Control System Protocol Security
+From a cybersecurity perspective, the majority of ICS protocols and applications lack what are considered standard security controls in modern enterprise networks. 
+
+﻿
+
+Many ICS protocols were designed before widespread adoption of modern network-based communication technologies. Prior to the internet, ICS systems were isolated within a plant and required physical access to control and monitor them. These legacy protocols typically relied on direct serial connections between HMIs, PLCs, and end devices. Because these systems were traditionally air gapped, security was not a consideration when the protocols were developed. 
+
+﻿
+
+As modern network technologies became widely adopted in corporate environments, organizations began to converge IT and Operational Technology (OT) environments. Legacy ICS protocols were adapted to support transport over Ethernet and IP networks, but they were not always updated to include common security controls, such as authentication and encryption. 
+
+﻿
+
+Modbus is an example of an ICS protocol that was updated to enable transport over IT networks. Modbus TCP communications are sent as cleartext between a client and server over the network. If an attacker were present on a Modbus TCP network, they could eavesdrop on device communications to view commands and responses. Additionally, Modbus TCP does not support authentication or authorization technologies. This means that any properly formatted Modbus TCP message is accepted and processed by an ICS device that uses Modbus TCP. In this case, an attacker can easily send commands to control field devices or send incorrect sensor values to an HMI monitoring a process. 
+
+﻿
+
+In addition to insecure protocols, many ICS networks use applications and servers that lack basic security controls. These applications were traditionally deployed by controls engineers without an IT or cybersecurity background. This can result in such applications as databases or web servers being deployed with default configurations and left unauthenticated. It is also reasonable to assume that these applications and the servers that host them are older, unpatched systems. In some cases, these assets may be intentionally deployed without authentication. Consider an HMI terminal that controls a critical process. Failure to properly authenticate with the HMI may result in a lockout that prevents an OT engineer from controlling the process. In OT environments, availability of critical assets and processes is almost always prioritized over the implementation of a security control. 
+
+﻿
+
+Another contributing factor to the lack of security controls in ICS environments is vendor requirements for warranties and support contracts. Many Distributed Control Systems (DCS) consist of several components, such as control software, HMIs, preconfigured PLCs, and field devices. All these components are built and tested by the vendor before they are installed in an organization’s ICS environment. Updating Operating Systems (OS) or making configuration changes alters the vendor’s baseline and might affect a system’s ability to operate properly. Such changes are generally prohibited by the vendor. Instead, the only authorized changes or updates are those specifically supplied by the vendor as part of a support contract. Such product updates may have extremely long lead times. In some cases, receiving critical security updates from a vendor may take years. 
+
+
+------------------
+
+Control a PLC with Modbus
+The following lab provides a simulated PLC that controls a voltage regulator. Using a command line–based Modbus tool, complete the steps in the workflow to remotely control the PLC. This lab demonstrates how an attacker can take advantage of the lack of security in the Modbus protocol to manipulate control system processes.
 
 ﻿
 
 Workflow
 ﻿
 
-1. Log in to the Virtual Machine (VM) cuckoo-hunt with the following credentials:
+1. Open the Virtual Machine (VM) win-hunt. The login credentials are as follows:
+
 
 Username: trainee
 Password: CyberTraining1!
 ﻿
 
-2. Open Firefox and go to the Elastic instance by entering the following address:
-
-https://199.63.64.92/
-﻿
-
-3. Log in to Security Onion with the following credentials:
-
-Username: trainee@jdmss.lan
-Password: CyberTraining1!
-﻿
-
-4. Select Kibana from the left pane. 
+2. Select the ModbusPal desktop shortcut.
 
 ﻿
 
-5. Set the Time Range filter to Feb 7 2023 between 13:30 and 13:50.
+3. Import the PLC simulation project file by selecting the Load button and opening the file PLC_Simulation.xmpp located in C:\users\trainee\Documents:
+
+
+﻿<img width="300" height="403" alt="image" src="https://github.com/user-attachments/assets/e36a3de2-8b60-4e44-b35e-94aafcee0d02" />
+
+
+<img width="472" height="365" alt="image" src="https://github.com/user-attachments/assets/801927ab-9859-4aad-907e-85bdd758532a" />
+
+4. Activate the simulation by selecting the Play button to start the automation, and select Run to start the Modbus server. Select the eye icon to the right of the PLC object to view the PLC settings
+
+
+<img width="446" height="601" alt="image" src="https://github.com/user-attachments/assets/391bf8c0-5203-4afe-86ce-1e7a2b9d7678" />
+
+By default, the existing holding registers are displayed. In Modbus, holding registers are used to represent values obtained by reading sensors or to configure set points for a process. The three main fields of interest are Address, Value, and Name. The Address field is used when sending Modbus commands to the PLC to specify the register that is to be read or changed. The Value field displays what the register is currently set to. The Name field, also known as a tag, provides context to associate the register with the part of the physical process it controls. The Name field is only locally significant, meaning this is not a field that can be remotely queried using Modbus commands. 
+
+
+For this example, registers 1 through 4 are in use. The first register represents a reading of input voltage to the voltage regulator. Because this register is reading a sensed value, it fluctuates as the input voltage changes. The OutputVoltage register is a configured set point that specifies what voltage the regulator should maintain; in this case, the regulator is configured to output 120 volts (V). The MinVoltage and MaxVoltage are used as safety settings that should trigger an alert if the output voltage goes below 110 V or above 130 V.
+
+
+<img width="419" height="429" alt="image" src="https://github.com/user-attachments/assets/6ee9e161-00e3-4c6d-8f41-614bed3403b7" />
+
+5. Select the Coils tab to view the configured coils.
+
+
+Modbus coils differ from registers in that they are binary and represent a condition of on (1) or off (0). Coils are typically used to set or read the condition of a switch or a feature. In this example, the OutputEnabled coil is set to 1, which means the voltage regulator is turned on and outputting voltage. The SafetyOverride coil represents a setting that would disable the generation of alerts if the MinVoltage or MaxVoltage thresholds were breached. (This feature is currently disabled.)
+
+<img width="421" height="429" alt="image" src="https://github.com/user-attachments/assets/9b9c3320-5d71-4b0a-9d81-96e6a5d0b1c2" />
+6. Select the run_ctmodbus.bat desktop icon to open the ctmodbus tool.
+
+
+A ctmodbus command prompt appears.
+
+
+7. In the ctmodbus terminal, run the help command. 
+
+
+This displays a list of available commands and brief descriptions of their operation. Select Enter again to acknowledge the help dialog and return to the prompt: 
+
+
+<img width="676" height="372" alt="image" src="https://github.com/user-attachments/assets/30fb4a11-b786-4aa0-be87-0b4453f0de9e" />
+
+8. Run the following command to open a session with the Modbus simulator: 
+
+
+connect tcp 127.0.0.1:502
+
+
+
+9. Once connected, a Success message appears. Select the Enter key to acknowledge the message and return to the prompt:
+
+
+<img width="319" height="149" alt="image" src="https://github.com/user-attachments/assets/95656e86-3863-4020-89d6-9bdd921ba594" />
+
+
+Authentication is not required to send commands to the PLC.
+
+
+The read holdingRegisters command can be used to query the holding register values of the PLC. To use the command, provide the holding register addresses to be queried. The numbering of holding register addresses on the PLC is different from what Modbus uses when sending commands. On the PLC address, numbering starts with 1, but with Modbus commands, register addresses start at 0. 
+
+
+10. Run the following command to read the values for the first five holding registers on the PLC:
+
+
+read holdingRegisters 0-4
+
+
+
+11. Compare the output from the read holdingRegisters command to the holding registers displayed in the PLC.
+
+
+Addresses 0–4 in the command output correspond with addresses 1–5 on the PLC. Also, as previously mentioned, the register names, or tags, are not provided in the output. This means that an attacker can query all the registers and obtain the current values, but they do not know what each register represents
+
+
+<img width="282" height="271" alt="image" src="https://github.com/user-attachments/assets/e385ab9e-face-4522-8a26-a075773525f2" />
+
+
+<img width="419" height="429" alt="image" src="https://github.com/user-attachments/assets/3c12a260-5277-45fd-8dfd-ca6892d3af19" />
+
+The read coils command operates just like the read holdingRegisters command. Provide the addresses of the coils to be read. Again, coil addressing in Modbus starts at 0.
+
+
+12. Run the following command to read the first two coil values on the PLC:
+
+
+read coils 0-1
+
+
+
+The returned coil values match what is displayed on the PLC
+
+
+<img width="207" height="225" alt="image" src="https://github.com/user-attachments/assets/ab1ac914-ef58-4c18-8550-236ec791e852" />
+
+<img width="421" height="429" alt="image" src="https://github.com/user-attachments/assets/b15ee9f8-8038-4be9-b455-6d1893f513d0" />
+
+Registers and coils can also be modified remotely by using the write command. The syntax for this command is as follows:
+
+
+write (register|coil) (address) (value)
+
+
+
+13. Run the following command to increase the MaxVoltage holding register value to 240 V: 
+
+
+write register 3 240
+
+
+
+The PLC now displays the updated value of 240
+
+
+
+<img width="250" height="144" alt="image" src="https://github.com/user-attachments/assets/baed4f9c-1752-48ec-9805-9d80226042d6" />
+
+
+<img width="418" height="430" alt="image" src="https://github.com/user-attachments/assets/0a9356a2-80b1-4ec3-a999-6b9e86ce217f" />
+
+14. Run the following command to configure the PLC’s OutputVoltage to 220 V:
+
+
+write register 1 220
+
+
+
+The PLC is now set to deliver an output voltage of 220 V. This configuration would create an overvoltage situation that could cause physical damage to equipment
+
+
+<img width="249" height="142" alt="image" src="https://github.com/user-attachments/assets/0e44a869-27c8-4442-9c16-bc0df2965dc7" />
+
+<img width="416" height="427" alt="image" src="https://github.com/user-attachments/assets/588ae4cd-23c9-45de-95eb-410e770f2b8d" />
+
+15. Run the following command to turn on the safety override:
+
+
+
+
+write coil 1 1
+
+
+
+The SafetyOverride coil has now been enabled, which disables the safety system, creating yet another dangerous situation for this control system
+
+
+<img width="260" height="144" alt="image" src="https://github.com/user-attachments/assets/689c18aa-2bae-4bb9-9e6f-f59f755bf344" />
+
+
+<img width="418" height="429" alt="image" src="https://github.com/user-attachments/assets/040330a6-77b6-4827-9cfa-cfd15a0d392d" />
+
+----------------
+
+
+### CDAH-M29L3-Availability and Visibility in ICS ###
+
+ICS Host Analysis Tools
+Host analysis tools are used in an ICS environment to gather information about the host computer or device on which the ICS runs. 
 
 ﻿
 
-Scope the breach of the attack by finding any devices connected to the attacker’s Internet Protocol (IP) address. The details from the initial attack were reported as coming from user Tammy Wall. 
+Host Analysis tools gather information such as the following:
+
+Installed software 
+Network configurations
+System-level details
+This information is used to identify vulnerabilities and potential security risks in the ICS, and to understand the overall configuration of the system. 
 
 ﻿
 
-6. Enter the following filter to see logs from this user:
-
-user.name: tammy.wall
-﻿
-
-The host IP of the device used by tammy.wall is 172.16.4.4. The device usage details can be inferred since the source.ip field is part of the internal subnet and presents login and connection data for this user. This activity is not considered irregular. 
+Host analysis tools are also used to monitor a system for changes and to detect suspicious activity. An example of this would be a software program that runs on individual devices within an ICS environment, gathers data, and analyzes the state of the system during a cyber incident. 
 
 ﻿
 
-7. On the Available Fields menu, select the Destination IP field to see a list of the top IPs with which this device opened connections.
+There are differences between the analysis tools used in ICS and those used in IT environments.
 
 ﻿
 
-Any IPs within the 172.16 subnets are part of the organization. As seen in Figure 28.2-3 below, the IP 104.53.222.103 is likely not part of the organization. 
+ICS Environments 
+﻿
 
-<img width="494" height="731" alt="image" src="https://github.com/user-attachments/assets/c8231a0e-1d71-4251-ba47-9ccb91885c1d" />
-
-8. Locate 104.53.222.103 and select Add as Filter to further explore the connection. 
-
-
-A single log is displayed about a network connection detected between 172.16.4.4 and 104.53.222.103. 
-
-
-9. Examining this connection by scrolling down to the message section of the log as seen in Figure 28.2-4 below:
-
-
-<img width="1888" height="793" alt="image" src="https://github.com/user-attachments/assets/9063e31f-965f-4929-ba7c-e0adc2e060c4" />
-
-From this message, the image C:\Users\tammy.wall\Downloads\stream-installer.exe is identified as the initiator of the connection. This indicates an internal device opened a connection to this device via a file on the system.
-
-
-To further identify connections from the remote host, a filter can be used to show if any other connections were established containing that IP. 
-
-
-10. Remove the current filter and apply the following filter to view any logs containing the remote IP:
-agent.type: winlogbeat AND 104.53.222.103
-
-
-
-The only log displayed is the one found from the previous search. This indicates that this IP was only used to establish connection to this host. However, the attacker could have established further communications by using their connection to 172.16.4.4, or could have altered their IP address for certain attacks. 
-
-
-A key element of the message is from the stream-installer executable. To view activity resulting from this connection, create a filter to see if a similar connection was used.
-
-
-11. Apply the following filter to see any other logs containing the stream-installer executable:
-agent.type: winlogbeat AND “stream-installer.exe”
-
-
-
-12. Expand the first log and identify the destination and host IPs.  
-
-
-13. Identify the IP that belongs to eng-wkstn-3. This connection illustrates that the victim box connected to the device 172.16.2.5 on the network with the same malicious file stream-installer.exe. 
-
-
-14. Locate the filter file.target and select Visualize to view the full names of the values. Analyze the results. 
-
-
-15. Select Back to navigate to the discover Kibana page.
-
-
-16. Enter the following filter to include searching for the discovered executable:
-agent.type: winlogbeat AND “stream-update.exe”
-
-
-
-17. Analyze the new search results for additional devices. Select destination.ip from the Filter menu to view destination addresses.
-
-
-The address appears similar to the same external IP address found earlier, 104.53.222.103. This is another external address being called to by the executable. 
-
-
-18. Select the host.ip filter in the left menu to view connected devices, as shown in Figure 28.2-5 below.
-
-<img width="495" height="624" alt="image" src="https://github.com/user-attachments/assets/4619dc33-b384-4eef-8e67-0f38b5fc663f" />
-
-
-The previous IP from eng-wkstn-3 is present as 172.16.4.4. The new IP 172.16.3.3 is associated with the host bp-wkstn-2. This workstation is shown to be communicating with the 104.53.222.92 address. Further examination of the logs from this search show that no other connections were created to other workstations involving the suspected processes. 
-
-
-This portion of the investigation shows the scope of the attack
-
-<img width="1089" height="669" alt="image" src="https://github.com/user-attachments/assets/8168cc0f-df7b-40d5-9e52-16a357485ac7" />
-
-
-------------------
-
-Gather Threat Intelligence
-The scope of the breach has been identified. The devices involved were quarantined and images have been provided to the CPT for analysis. 
+ICS analysis tools are designed to work with the specialized hardware and software tools used in industrial environments. These tools typically have features for working with Programmable Logic Controllers (PLC) and other industrial control systems. 
 
 ﻿
 
-Use Volatility to analyze the eng-wkstn-3 memory image, extract initial malware and secondary malware, and perform malware analysis in Cuckoo.
+ICS tools also have features for interacting with field devices and sensors used to gather data from the physical environment, as seen in Figure 29.3-1 below:
 
-﻿
 
-Workflow
-﻿
+<img width="3324" height="1878" alt="image" src="https://github.com/user-attachments/assets/8f435b87-efa7-4f02-8208-32f4cd287a76" />
 
-1. Log in to the VM cuckoo-hunt with the following credentials:
+IT Environments
 
-Username: trainee
-Password: CyberTraining1!
-﻿
 
-2. Right-click the Evidence folder on the Desktop, and then select Open in Terminal.
+IT analysis tools are generally designed to work with standard IT hardware and software, such as servers, desktop computers, and networks. These tools may have features for working with common IT protocols and services such as Transmission Control Protocol (TCP), Internet Protocol (IP), and Active Directory (AD).
 
-﻿
 
-The profile of the memory image in evidence, memdump.mem, needs to be identified. The imageinfo command returns this value, but the command can take up to ten minutes to complete. 
+Modern ICS environments consist of a combination of specialized ICS devices and commodity IT hardware and operating systems. The integration of IT components in ICS networks provides the opportunity to use traditional IT IR tools when investigating a compromised ICS environment. 
 
-﻿
 
-In order to save time, the imageinfo command output is displayed in Figure 28.2-6 below:
+However, it is common for the IT components in an ICS environment to be outdated legacy systems that are incompatible with newer host analysis tools and software. For example, imagine trying to use PowerShell to query a 20-year-old WindowsXP device. 
 
 
-<img width="2048" height="683" alt="image" src="https://github.com/user-attachments/assets/f73a5222-ae3c-4af2-b76f-b9d883ae3395" />
-
-4. Run the following command to identify processes from the memory dump image using the profile Win10x64_14393:
-vol.py psscan -f memdump.mem --profile=Win10x64_14393
-
-
-
-5. Search the output and determine if the files identified in the previous Kibana analysis are running. 
-
-
-6. Analyze the psscan output, as seen in Figure 28.2-7 below, and identify the PID of processes stream-update. and stream-install: 
-<img width="2048" height="627" alt="image" src="https://github.com/user-attachments/assets/744ba4df-3301-4ea0-8407-fc0bfe27d84c" />
-
-7. Run the following command to perform a scan of the full path of stream-update. using PID 1740:
-vol.py cmdline -p 1740 -f memdump.mem -–profile=Win10x64_14393
-
-
-
-The output confirms this is the same executable found running in Kibana.
-
-
-8. Run the following command to perform a scan of the full path of stream-install using PID 4328:
-vol.py cmdline -p 4328 -f memdump.mem -–profile=Win10x64_14393
-
-
-
-Again, the output confirms that this is the same executable found in Kibana.
-
-
-9. For further analysis, the process must be extracted to identify malicious activity. Use the following commands to extract the process to the Extracts folder:
-vol.py procdump -p 4328 -u -f memdump.mem -–profile=Win10x64_14393 –-dump-dir=Extracts/
-
-
-
-10. Use Cuckoo to analyze extracted files for malware. Open a Terminal window and run the following command:
-cuckoo web
-
-
-
-11. Open Mozilla Firefox and navigate to the following address:
-localhost:8000
-
-
-
-12. In the Cuckoo web browser, select Submit A File For Analysis.
-
-
-13. Navigate to /Desktop/Evidence/Extracts and select executable.4328.exe.
-
-
-14. Select Analyze.
-
-
-15. Once the task is finished, the file status should change to Reported. Select executable.4328.exe to review the analysis summary.
-
-
-The file displays a threat score of 6.2 out of 10 due to numerous signs of malicious behavior.
-
-
-The behaviors identified in the sandbox, shown in Figure 28.2-8 below, indicate that the file is a packer with a callout to a remote.
-
-<img width="1779" height="519" alt="image" src="https://github.com/user-attachments/assets/0170006e-830c-4f27-8a06-cedb6c38c818" />
-
-17. For the stream-update.exe file, perform Step 10 to Step 13. This file has already been extracted to the /home/trainee/Desktop/Evidence/ folder. 
-
-
-Use the Cuckoo report to answer the following questions
-
-
-
-------------------------
-
-Reporting Threat Intelligence
-Creating a report of an incident is a thorough process. Many organizations have specific criteria for what must be included in an incident report. 
-
-﻿
-
-Creating an Incident Report
-﻿
-
-The Cyber Warfare Publication (CWP) 3-33.4 explains reporting requirements for Cyber Protection Teams (CPT). CPTs report through their Operational Control (OPCON) chain of command. All actions taken by CPTs are reported to the U.S. Cyber Command (USCYBERCOM), Joint Force Headquarters–Department of Defense Information Network (JFHQ-DODIN), and the network commander. Reports are shared with other organizations, when possible, as a courtesy regarding situational awareness. 
-
-﻿
-
-According to the CWP 3-33.4, reports must include the following details:
-
-Root cause of issues
-Indicators of Compromise (IOC)
-Malware observed, identified, or discovered
-Detection techniques and observables
-Actions taken to address the issue
-Impact to the supported mission
-In the private sector, a similar approach is applied. However, reports made in the private sector vary by organization, and may require additional details about an incident. Additionally, private sector reporting may be subject to regulations or common practices that result in public disclosure of the incident. 
-
-﻿
-
-Using Incident Reports
-﻿
-
-After a report is created, a comparison can be made to determine if the activity is attributed to threat actor groups, or Advanced Persistent Threat (APT) groups. When behavior of the attacker matches or is similar to the known behavior of APTs, this information must be added to the report. 
-
-﻿
-
-Well-supported organizations have an IRT to respond to incidents. All details of discovered malware must be directly reported to the organization’s IRT. When reporting to the IRT, any details that can lead to further damage in the organization must be relayed immediately. 
-
-﻿
-
-For example, if a defensive analyst is analyzing malicious activity on a quarantined host and discovers activity of the threat actor pivoting to other devices on the network, those devices may also need to be quarantined. This activity should be reported to the organization’s IRT. Interactions with the IRT should be continuous throughout the investigation.
-+
-
-
---------------
-
-### CDAH-M28L3-Eradicate Threats and Restore Connectivity ###
-
-Containment, Eradication, and Recovery
-The IR life cycle consists of four phases:
-
-Preparation
-Detection and Analysis
-Containment, Eradication, and Recovery
-Post-Incident Activity
-﻿Figure 28.3-1 displays these four phases of the continuous IR life cycle:
-
-
-<img width="2500" height="1253" alt="image" src="https://github.com/user-attachments/assets/77a044c8-c5b7-4f8a-83bd-c8309803bb3d" />
-
-
-When Cyber Protection Teams (CPT) are not actively responding to an incident, they are in the Preparation phase of IR. In this phase, CPTs maintain readiness through deliberate mission planning, preparation, execution, and assessment. A CPT’s work in IR is intended to supplement a local organization’s network defenders. When CPTs arrive onsite, they enter the Detection and Analysis phase by conducting their own Mission Analysis (MA). A CPT begins the Containment, Eradication, and Recovery phases of IR only after the operation has been approved, in accordance with the processes and tasks determined during the earlier phases of IR. This lesson addresses this third phase. 
-
-
-Procedures Performed on Compromised Hosts
-
-
-In the Containment, Eradication, and Recovery phase, procedures are reactive in nature, as an incident has occurred and hosts are compromised. Procedures in this phase are designed to prevent the spread of the adversarial presence in the network. Such procedures are performed directly on the compromised hosts and include isolating the hosts from the operational network (removing all network connectivity and placing in a sandbox environment), removing all adversarial presence (removing all malware and indicators associated with the incident), and returning the hosts to the operational network (verifying the adversarial presence is removed). The adversary can infect hosts using various methods. During this phase, analysts may be required to perform a wide range of tasks. Some tasks may include removing executable (.exe) files, registry keys, network connections, and user accounts. When the procedures in this phase are complete, the hosts are no longer compromised and may return to the operational network.
-
-
-
----------------
-
-
-Analyze a Compromised Virtual Machine
-Scenario
-﻿
-
-An incident has occurred within the network. Recently, remote service application malware was found operating on VMs within the network. When executed, the malware initiates a Remote Access Trojan (RAT) where code is executed on the infected VM remotely. The incident is contained within the win-admin VMs located in the Information Technology (IT) subnet of the network. The win-admin VMs are used by IT administrators and contain large amounts of sensitive information regarding the organization’s IT infrastructure, mission, and users. 
-
-﻿
-
-Upon detecting the malware, the IR team quickly enacted the Containment, Eradication, and Recovery phase of the plan. The Containment portion of the phase was completed by removing and isolating the infected VMs from the operational network. To discover artifacts and functionality of the malware, dynamic analysis was completed. Table 28.3-1 provides the findings of the dynamic analysis: 
-
-﻿
-<img width="2500" height="2235" alt="image" src="https://github.com/user-attachments/assets/b249b575-5074-4a60-8fbd-aa4148c2a43a" />
-
-
-The Containment portion of the IR plan is complete. The IR team has removed and isolated all infected VMs from the operational network and has moved to the Eradication portion of the phase, where the VMs are analyzed for malicious artifacts. Any artifacts found are removed. 
-
-
-Assist the IR team by accessing the win-admin-2 VM and identify locations where the eradication needs to occur. Not all findings listed on the attached Incident Response Findings document may be currently present on the win-admin-2 VM.
-
-
-Workflow
-
-
-1. Log in to the VM win-admin-2 with the following credentials:
-Username: Trainee
-Password: CyberTraining1!
-
-
-
-2. Analyze the VM, and identify artifacts on the VM. Answer the following question.
-
-
-
---------------------
-
-
-Identifying Threats
-The VM win-admin-2 includes the following findings.
-
-﻿
-
-Malicious Executables and Applications
-﻿
-
-dc.exe is found within the C:\Users\trainee\Downloads directory. Figure 28.3-2 confirms that the dc.exe file found is a Remote Service Application
-
-
-<img width="500" height="649" alt="image" src="https://github.com/user-attachments/assets/6b269a0d-e10e-4c79-bb62-3aec60db0b33" />
-
-The DarkComet-RAT-5.3.1-master folder, containing the DarkComet application, is located as a hidden folder within the C:\Program Files directory.
-
-
-Microsoft Defender SmartScreen
-
-
-Microsoft Defender SmartScreen protects against phishing or malware websites and applications and against downloads of potentially malicious files. By disabling SmartScreen, one of the host’s first lines of defense is removed. Figure 28.3-3 displays Check apps and files “Off”:
-
-<img width="402" height="350" alt="image" src="https://github.com/user-attachments/assets/f5a9f533-2221-422a-97c9-d3eeaae42ac6" />
-
-
-RDP
-
-
-Remote Desktop Protocol (RDP) allows for remote connections to the host. The RDP setting is available via System settings. The setting is useful for administrators and engineers but can also be maliciously leveraged by the adversary. The Enable Remote Desktop setting should only be “On” for known reasons and expected work. Figure 28.3-4 displays RDP “On”:
-
-<img width="514" height="352" alt="image" src="https://github.com/user-attachments/assets/28c93231-4012-4e60-a911-ff2b94b80d40" />
-
-
-
-
----------------------
-
-
-Eradicate Threats
-Complete the steps in the following workflow to eradicate threats that have been identified on the VM win-admin-2.
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to the VM win-admin-2 with the following credentials:
-
-Username: Trainee
-Password: CyberTraining1!
-﻿
-
-2. Complete the eradication portion of the win-admin-2 VM by completing the following tasks:
-
-Delete dc.exe and the DarkComet-RAT-5.3.1-master file and directory.
-Set the Check apps and files setting to “On” within Windows Defender SmartScreen.
-Set the Enable Remote Desktop setting to “Off.”
-
-Once the tasks in Step 2 are complete, the threats on the VM have been eradicated.
-
--------------
-
-Recovery
-During the Recovery portion of the Containment, Eradication, and Recovery phase of the IR life cycle, procedures focus on confirming and validating the completion of each task in the Eradication phase. Procedures are performed directly on the compromised host during Recovery and may include analyzing the host for any unidentified adversarial presence, confirming removal of all adversarial presence, and enabling connectivity to the operational network. When the procedures in this portion of the phase are complete, the host no longer contains adversarial presence and may return to the operational network.
-
-﻿
-
-Aid Recovery with Sysinternals
-﻿
-
-The Windows Sysinternals suite allows for quick and efficient monitoring, managing, and troubleshooting of processes within the Windows Operating System (OS). Sysinternals was installed on the compromised VMs to aid in IR efforts. Access the win-admin-2 VM, and, using Sysinternals, check for any remaining adversarial presence.
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to the VM win-admin-2 with the following credentials:
-
-Username: Trainee
-Password: CyberTraining1!
-﻿
-
-2. Access Sysinternals at C:\Users\trainee\Desktop\SysinternalsSuite. 
-
-﻿
-
-3. Open Autoruns64, and let Autoruns64 scan for 3 minutes.
-
-﻿
-
-4. Analyze the data contained within Autoruns64, and review the data for any use of DarkComet and associated .exe files. 
-
-------------------
-
-
-Additional .exe File
-Figure 28.3-5 shows the Autoruns data that reveals the IMDCSC.exe file associated with the DarkComet RAT:
-
-<img width="1929" height="165" alt="image" src="https://github.com/user-attachments/assets/875cb3c6-41fa-4ea3-a8d9-e8dff64699d5" />
-
-The IMDCSC.exe file is executing out of HKCU\SOFTWARE\Microsoft\Windows\CurrentVersion\Run within the registry. IMDCSC.exe is typically found within the Documents folder of the host and is used by applications for remote access. IMDCSC.exe does not have a visible window and is started by the entry in the registry. IMDCSC.exe is able to record keyboard and mouse inputs, manipulate other programs, and monitor applications.
-
-<img width="1920" height="831" alt="image" src="https://github.com/user-attachments/assets/77ff7875-b8a6-4110-a8c1-8f6b567c195f" />
-<img width="1088" height="459" alt="image" src="https://github.com/user-attachments/assets/db4487ab-9a8c-4804-a358-59c332b17085" />
-
---------------
-
-Scheduled Task
-Figure 28.3-6 shows the Autoruns data that reveals the IMDCSC.exe file associated with the \RSA scheduled task:
-
-﻿<img width="1547" height="122" alt="image" src="https://github.com/user-attachments/assets/d9765d2c-32b0-434c-ad7f-4643c236924d" />
-
-The scheduled task allows for an additional layer of persistence on the compromised host. The registry entry and scheduled tasks both allow the IMDCSC.exe file to start on the host.
-
-
-Summary
-
-
-With the aid of the Sysinternals suite, the compromised win-admin-2 host recovery efforts were examined. Through the use of Autoruns, an additional .exe file and subsequent persistence techniques were discovered. Each of the new adversarial components must be removed from the VM. Once the components are removed and their removal is verified, the VM may be returned to the network.
-
------------------
-
-
-Return from Isolation
-Scenario
-﻿
-
-Continue aiding in the IR efforts. Consider the list of facts uncovered in the previous two exercises. A security baseline is a list of components that must be removed for the host’s return from isolation. Table 28.3-2 contains the secure baseline for all other hosts in the incident:
-
-
-<img width="3335" height="3559" alt="image" src="https://github.com/user-attachments/assets/cc074e42-eecf-4029-b16c-39888af4b118" />
-
-
-Table 28.3-3 contains Windows PowerShell cmdlets that allow for quick access to components found in Table 28.3-2. Table 28.3-3 contains only components where PowerShell speeds up access to components. Although this is possible with PowerShell, some components are easier to access through their settings location.
-
-
-<img width="1600" height="823" alt="image" src="https://github.com/user-attachments/assets/ece52e12-fd55-4d23-adf7-a1a9291bf2e3" />
-
-
-With the aid of Windows PowerShell and Sysinternals, evaluate the win-admin-3 and win-admin-4 VMs associated with the incident for their readiness to return from isolation by completing the next two exercises. 
-
-
-Workflow
-
-
-1. Log in to VM win-admin-3 with the following credentials:
-Username: Trainee
-Password: CyberTraining1!
-
-
-
-2. Review and validate each component of the security baseline for the removal of adversarial presence. Answer the following question.
-
-
-
--------------
-
-
-Security Baseline
-The VM win-admin-3 includes two of the security baseline components and is not ready to be removed from isolation. All adversarial presence on the host has not been removed. Figure 28.3-7 displays the RDP setting “On” within Windows Settings
-
-<img width="502" height="394" alt="image" src="https://github.com/user-attachments/assets/723ecc3c-b6ea-4340-840e-6fcef279b087" />
-
-
-Figure 28.3-8 displays the output from Autoruns64. Although the dc.exe file was removed from the host, the \RSA scheduled task is still present on the VM
-
-
-<img width="2043" height="206" alt="image" src="https://github.com/user-attachments/assets/fd7a3668-139f-4570-a417-033c015bd965" />
-
-
-
---------------
-
-
-Further Analysis
-Continue the analysis with VM win-admin-4.
-
-﻿
-
-Workflow
-﻿
-
-1. Log in to VM win-admin-4 with the following credentials:
-
-Username: Trainee
-Password: CyberTraining1!
-﻿
-
-2. Review and validate each component of the security baseline to validate the removal of adversarial presence. Answer the following question.
-<img width="1413" height="742" alt="image" src="https://github.com/user-attachments/assets/23a47b4e-e6f5-4cde-8086-9eaa3d8bd420" />
-<img width="1123" height="577" alt="image" src="https://github.com/user-attachments/assets/ca17b3e7-0f6e-46c1-9afd-fa82d4c5f4bd" />
-
------------------
-
-
-Further Assessment Summary
-Summary
-﻿
-
-The DarkComet-RAT-5.3.1-master folder is found hidden on the VM win-admin-4. The use of the dir -force cmdlet quickly identifies the folder within C:\Program Files, as shown in Figure 28.3-9:
-
-<img width="502" height="209" alt="image" src="https://github.com/user-attachments/assets/520c9480-d749-4266-8186-fac0ecb8dfdd" />
-
-The DarkComet-RAT-5.3.1-master folder is empty. Although the folder does not contain any files, it must be deleted prior to the host’s removal from isolation.
-
-
-------------------
-
-
-
-### CDAH-M28L4-OPSEC Considerations in IR Processes ###
-
-OPSEC and Incident Response
-OPSEC is the process of protecting sensitive information against adversaries, as shown in Figure 28.4-1 below. 
-
-﻿
-
-Suppose malware was discovered on a device in a network. The functionality and origin of the malware is unknown. Maintaining OPSEC throughout the phases of IR is a priority because it allows the mission and operating environment to function without further compromise.
-
-﻿
-
-For example, malware can contain sophisticated capabilities, making it highly contagious to other devices that can easily compromise critical information on the network. 
-
-﻿
-
-Analysts must ensure that any devices found with malware are quarantined and isolated from the network. The analyst should return devices to operation only when the malware is eradicated and the incident is fully resolved. 
-
-﻿
-
-The five steps, or phases, of the OPSEC process are as follows: 
-
-Identify critical information
-Assess the risk
-Analyze threats
-Analyze vulnerabilities
-Perform countermeasures
-
-<img width="2500" height="1465" alt="image" src="https://github.com/user-attachments/assets/08633d72-6741-42af-8c89-307560c4b107" />
-
-1. Identification of Critical Information
-In the first phase, critical information is identified, defined, and recorded. Examples of critical information include, but are not limited to, the following: domains, Internet Protocol (IP) addresses, subnets, computer names, physical addresses, and Personal Identifiable Information (PII). 
-
-
-2. Analysis of Threats
-In the second phase, physical and virtual threats are identified. Facts such as who, what, where, when, why, and how are considered at this stage. Organizations must analyze threats by the level of impact on operations, assets, or individuals, and the likelihood of those threats occurring. 
-
-
-3. Analysis of Vulnerabilities
-In the third phase, an analysis of both internal and external weak points is conducted. The weak points are areas of the networks that may be exploited by adversaries. Decision makers must be honest and clear about the organization's components and configurations that may be vulnerable to attack. External components must also be analyzed during this stage. External components that are not directly controlled by the organization may include third-party software and contractors. 
-
-
-4. Assessment of Risks
-In the fourth phase, each portion of the organization's infrastructure is evaluated in terms of risk and exposure to the mission. Management must create a clear risk strategy that defines each level of risk and the amount of risk they are comfortable handling.
-
-
-5. Application of Appropriate Countermeasures
-In the final phase, a comprehensive countermeasure strategy is synthesized as a result of all previous stages. The selected strategy protects critical information, mitigates threats, patches vulnerabilities, and minimizes risk. With the strategy in place, IR personnel are able to quickly and accurately address the incident while maintaining as much OPSEC as possible.
-
-
--------------------
-
-
-Enacting the IR Plan and Maintaining OPSEC
-As shown in Figure 28.4-2 below, when an IR plan is put into action, compromised devices must be isolated, and threats must be eradicated
-
-
-<img width="2500" height="588" alt="image" src="https://github.com/user-attachments/assets/a26da076-913e-4ca8-a354-522ade800c46" />
-
-Isolation of Compromised Devices
-
-
-The IR team must quickly remove compromised devices from the network. The longer the compromised devices remain on the network, the likelihood for further infection increases. Network backups of devices and Virtual Machine (VM) snapshots may be activated and used during this time. Compromised devices must be placed in a sandbox environment, which is an environment that is isolated from all other networks. The sandbox environment allows analysts to investigate the incident, conducting static and dynamic analysis of any malware.
-
-
-Eradicating Threats
-
-
-The IR team must accurately remove all adversarial presence from compromised devices. Compromised devices may have an adversarial presence in the form of malware. The malware must be statically and dynamically analyzed to record its artifacts, functionalities, and capabilities. The IR team produces a checklist once analysis is completed. The checklist identifies how the malware is removed and defines parameters that allow for a safe return of devices to the network. 
-
-
-IR Recovery Checklist
-
-
-Checklists are used across all IR phases to verify tasks and configurations. Recovering from an incident includes the eradication of threats on compromised devices and returning the devices to the network to resume normal operations. A recovery checklist includes items such as tasks, activities, and configurations to be verified as complete prior to a return of the network. 
-
-
-Figure 28.4-3 below, and attached, is an example of a Containment, Eradication, and Recovery checklist. The checklist contains overarching tasks, but since each incident is different, specific tasks and eradication methods may change. This example is not based on the NIST documentation and is a visual example only
-
-
-<img width="2500" height="2379" alt="image" src="https://github.com/user-attachments/assets/39353771-07bc-408b-864d-b38c04384c37" />
-
-
---------------
-
-Restoring Operational Capabilities
-Scenario
-﻿
-
-An administrator operating on the win-admin-2 VM opened a link from an email. The email sender posed as a user of the network who was requesting administrative support. 
-
-﻿
-
-Shortly after the link was opened, a security analyst monitoring the network noticed a large amount of network requests originating from the win-admin-2 VM. While addressing the request of the email, the administrator logged on to the win-admin-3 VM, and selected the link on that VM also. As a result of the opening the link, both VMs were infected with malware. 
-
-﻿
-
-The win-admin-2 and win-admin-3 VMs are used by Information Technology (IT) administrators. Both VMs contain large amounts of sensitive information regarding the organization's IT infrastructure, mission, and users. The security analyst quickly realized what occurred, contacted the IR team, and the IR plan was enacted. 
-
-﻿
-
-The IR team quickly enacted the Containment, Eradication, and Recovery phase of the plan, and isolated the win-admin-2 and win-admin-3 VMs from the network. The security analyst watched the network closely for suspicious activity, such as additional spikes in network requests. 
-
-﻿
-
-The IR team conducted dynamic analysis of the malware and compiled the details of their findings, as seen in Table 28.4-1 below:
-
-<img width="2500" height="1972" alt="image" src="https://github.com/user-attachments/assets/b03c9408-db7d-4ef1-8dc4-c26fc573ef00" />
-
-
-The Eradication phase of the IR plan was completed, with IR personnel removing all adversarial presence on the isolated VMs. The IR team moved to the Recovery phase, where the VMs were verified as free of malware and any other adversarial presence. 
-
-
-The IR team developed a recovery checklist, based on tasks completed during the Eradication phase, to aid in the return of the VMs to the network. The recovery checklist is found below in Figure 28.4-4. 
-
-
-<img width="2500" height="1906" alt="image" src="https://github.com/user-attachments/assets/7ee2718b-7379-48b2-b14f-03ca540a2378" />
+While there is some overlap between the functionality of ICS and IT analysis tools, they are designed to address different types of hardware, software, and security concerns. Due to the differences between ICS and IT analysis tools, incident response in ICS environments often requires specialized knowledge and expertise that may not be required in IT environments.
 
 
 ------------
 
-
-Post-Exploit Recovery Errors
-The Windows Sysinternals suite allows for quick and efficient validation of each of the components on the recovery checklist. Errors with the post-exploit recovery process are easily identified through use of applications such as Process Explorer and Autoruns. 
-
-﻿
-
-The two errors found on the win-admin-3 VM are as follows: 
-
-Lazr.exe operating on win-admin-3
-
-StartIT is a scheduled task on win-admin-3
-
-Error One
-﻿
-
-Process Explorer (procexp64) provides a live snapshot of all of the processes running on the VM. At the top of the application, Lazr.exe is entered as a filter, as seen in Figure 28.4-5 below. On win-admin-2, when the filter is entered, nothing is returned. This confirms that Lazr.exe is not operating on that VM. 
+ICS Host Analysis Constraints
+In many cases, analysts do not have permission to deploy collection sensors or agents in a mission partner’s ICS environment. In these situations, analysts have to rely on offline artifact analysis to investigate the potential compromise of ICS networks. 
 
 ﻿
 
-Figure 28.4-5 below shows the output of the filter when entered on the win-admin-3 VM
+For offline analysis, use forensics acquisition tools that perform functions such as the following: 
 
-<img width="1400" height="312" alt="image" src="https://github.com/user-attachments/assets/26d17e2e-b5e8-4cbc-8286-4bfb7f7b181e" />
+Disk imaging
+Memory image capture
+Artifact extraction
+Once artifacts are gathered, they can be loaded onto a dedicated forensics workstation, or offline SIEM for analysis.
 
-The output of the filter confirms Lazr.exe is operating on the win-admin-3 VM.
+﻿
 
-
-Error Two
-
-
-Autoruns (Autoruns64) provides a live snapshot on a variety of objects such as system extensions, toolbars, scheduled tasks, auto-start services, and registry entries on the VM. At the top of the application, Lazr.exe is entered as a filter, as seen in Figure 28.4-6 below. On win-admin-2, when the filter is entered, nothing is returned. This confirms that no objects related to the Lazr.exe malware are present on win-admin-2. 
-
-
-Figure 28.4-6 below shows the output of the filter on the win-admin-3 VM
-
-<img width="2048" height="1252" alt="image" src="https://github.com/user-attachments/assets/409a03cb-102b-4ed8-bfaf-da54819873be" />
-
-The output of the filter confirms Lazr.exe is included in the StartIT scheduled task, operating out of the C:\Users\Public\Documents directory.
+As seen in Figure 29.3-2 below, there are several constraints that may prevent an analyst from running host analysis and forensic acquisition tools on ICS components. 
 
 
-Summary
+
+<img width="1600" height="872" alt="image" src="https://github.com/user-attachments/assets/fa64727b-9adb-4783-880a-b1e65e829c1b" />
 
 
-With the use of the Windows Sysinternals suite, an error in recovery operations was discovered on the win-admin-3 VM. Process Explorer was used to discover Lazr.exe operating on the VM. Further analysis with Autoruns confirmed the StartIT scheduled task is still present on the VM, referencing Lazr.exe in the C:\Users\Public\Documents directory. 
+
+Operational Constraints
 
 
-During recovery operations the Lazr.exe malware was not correctly removed from the C:\Users\Public\Documents directory. As a result, the scheduled task is still valid and executes when a user logs on. 
+ICS components are often critical to the operation of a facility or process, and running forensic acquisition tools on these components may disrupt or interfere with their normal operation. In some cases, it is not possible to shut down or disconnect the ICS components in order to perform the forensic acquisition, which can make it difficult or impossible to gather the necessary data.
 
 
-The win-admin-3 VM must remain in isolation until all adversarial presence is removed and its removal is accurately verified.
+Physical Constraints
+
+
+ICS components are often located in remote or difficult-to-access locations, such as in underground mines, offshore oil platforms, or remote substations. In such cases, it may be difficult or impossible for an analyst to physically access the components in order to perform the forensic acquisition. 
+
+
+Technical Constraints
+
+
+Many ICS components use specialized hardware and software that may not be compatible with standard forensic acquisition tools. This can make it difficult or impossible for an analyst to gather the necessary data from the components using standard techniques.
+
+
+Safety Constraints
+
+
+Some ICS components may be located in hazardous environments, such as in nuclear power plants or chemical processing facilities, where the use of forensic acquisition tools may pose a safety risk to the analyst.
+
+
+These constraints pose a unique challenge to host analysts that are responding to an incident in an ICS environment. In an ICS incident response scenario, analysts must work closely with the mission partner to identify the best opportunities for artifact collection within the ICS
+
+
+-------------
+
+ICS Remediation
+During the IR process, once a compromise has been identified, the team moves to contain and eradicate the threat. In IT networks, this can involve isolating infected hosts with access controls, or physically disconnecting the hosts from the network. 
+
+ ﻿
+
+Once containment has been achieved, the team attempts to eradicate the infection by performing the following actions: 
+
+Device replacement
+Reverting the device to a known good state
+Re-imaging the device
+Critical Processes
+﻿
+
+In an ICS network, it may not be possible to disconnect and replace infected components that are part of a critical process. When an infected ICS component is part of a critical process, and cannot be replaced until a scheduled maintenance window is available, ICS networks may need to remain in the containment phase for an extended period of time. 
+
+﻿
+
+In such cases, the main goal of containment is to minimize the attacker's ability to cause damage to the critical process while still allowing the process to operate. This can be achieved by implementing security controls such as network segmentation and access control lists. 
+
+﻿
+
+ICS Devices
+﻿
+
+To further complicate matters, it may not be possible to make configuration changes that support containment on the infected device itself. ICS device configuration is often tightly controlled. Therefore, changes to the configuration may invalidate the vendor-approved operating baseline and cause system instability. 
+
+﻿
+
+Additionally, the ICS device may not be equipped with the appropriate utilities to support containment, such as a host-based firewall. It may be necessary to make the containment and isolation configuration on network devices such as switches, routers, or firewalls.
+
+
+---------------------
+
+IR Practices and ICS Systems, Part 1
+A mission partner that operates a chemical processing plant has detected malicious cyber activity in their enterprise IT network. The mission partner is concerned that the attacker has moved laterally from the enterprise IT network to the ICS network. The mission partner has requested a threat hunting team to investigate the ICS network for signs of compromise. Due to the critical nature of the ICS system, all analysis will be performed offline using datasets provided by the mission partner. 
+
+﻿
+
+Workflow
+﻿
+
+The mission partner has provided a GRASSMARLIN capture of baseline traffic flows in the ICS network that can be used as a starting point for the investigation. ICS network traffic is useful for baselining because it is extremely deterministic and predictable. 
+
+﻿
+
+Use GRASSMARLIN to investigate new connections detected in the ICS network that deviate from the baseline.
+
+﻿
+
+1. Log in to the Virtual Machine (VM) win-hunt with the following credentials:
+
+Username: trainee
+Password: CyberTraining1!
+﻿
+
+2. Select the GrassMarlin shortcut on the Desktop.
+
+﻿
+
+3. Select File, and then select Open Session.
+
+﻿
+
+4. Select baseline.gm3 from the Desktop/Case folder, and then select Open. 
+
+﻿
+
+Observe the baseline communications present in the ICS network, as seen in Figure 29.3-3 below:
+
+
+<img width="978" height="725" alt="image" src="https://github.com/user-attachments/assets/65f42c03-ea32-4cdb-b7e2-6a8750b9948b" />
+
+5. Open the post_exploit.gm3 file by repeating Step 3 and Step 4. Select No when prompted to save the current file. 
+
+
+Keep this VM open for use in the upcoming workflow. 
+
+
+Compare the baseline and post_exploit environments to answer the following questions. 
+
+
+
+-------------
+
+IR Practices and ICS Systems, Part 1
+A mission partner that operates a chemical processing plant has detected malicious cyber activity in their enterprise IT network. The mission partner is concerned that the attacker has moved laterally from the enterprise IT network to the ICS network. The mission partner has requested a threat hunting team to investigate the ICS network for signs of compromise. Due to the critical nature of the ICS system, all analysis will be performed offline using datasets provided by the mission partner. 
+
+﻿
+
+Workflow
+﻿
+
+The mission partner has provided a GRASSMARLIN capture of baseline traffic flows in the ICS network that can be used as a starting point for the investigation. ICS network traffic is useful for baselining because it is extremely deterministic and predictable. 
+
+﻿
+
+Use GRASSMARLIN to investigate new connections detected in the ICS network that deviate from the baseline.
+
+﻿<img width="1917" height="827" alt="image" src="https://github.com/user-attachments/assets/a228f4c8-3bf2-45b2-88a1-a315082573b3" />
+
+---------------------
+
+IR Practices and ICS Systems, Part 2
+Comparing the baseline and current network traffic reveals that there is a new connection between 172.16.79.35 and a device outside of the ICS network. A network map provided by the mission partner, as seen in Figure 29.3-4 below, shows that the 172.16.79.35 device is the control system data historian server. 
+
+﻿
+
+A data historian is a centralized database used in ICS networks to collect health and performance data from control system devices. The mission partner also confirmed that the 172.16.4.20 IP address is part of a client workstation subnet in the enterprise IT network. The mission partner highlighted that this communication path is abnormal. 
+
+﻿<img width="2048" height="2048" alt="image" src="https://github.com/user-attachments/assets/6fa81ae4-9963-463e-805d-079dd6a2afd2" />
+
+
+Use the event logs in the Desktop/Case/Logs directory to continue the investigation.
+
+
+Workflow
+
+
+1. Log in to the VM win-hunt with the following credentials:
+Username: trainee
+Password: CyberTraining1!
+
+
+
+2. If open, close GRASSMARLIN. Select Close, and then select No when prompted to save changes.
+
+
+3. Navigate to the Desktop/Case/Logs directory and open sysmon.evtx in Windows Event Viewer.
+
+
+4. Select the Date and Time column header to sort the events from oldest to newest. Navigate to the first event.
+
+
+Sysmon provides valuable log information pertaining to file creation, process creation, and network connections. This log source can help identify the process that is communicating with the external host 172.16.4.20.
+
+
+5. Select the Find icon in the Action pane. 
+
+
+6. Enter the following destination IP address:
+172.16.4.20
+
+
+
+7. Select Find Next.
+
+
+Event Viewer moves to the first log that contains the IP address of 172.16.4.20. 
+
+
+8. Click Close on the Find dialog box.
+
+
+As seen in Figure 29.3-5, below, the network connection log displays several pieces of information that are useful for further investigation such as the filename, the location where payload.exe was created, the SourceIp, and more. 
+
+<img width="661" height="826" alt="image" src="https://github.com/user-attachments/assets/626af6af-98c2-4ad8-8f5e-79cfc3113edd" />
+
+
+Knowledge Check
+Sysmon generates a log entry when a new process is created. This log is represented by Event ID 1.
+
+﻿
+
+Find the Process Create Sysmon log associated with payload.exe to answer the following question. 
+
+﻿
+
+Question:
+﻿
+
+What is the MD5 Hash of payload.exe?
+
+<img width="1085" height="607" alt="image" src="https://github.com/user-attachments/assets/9304d03f-59fb-4fca-a6c1-6dd5d31a3b41" />
+
+
+Knowledge Check
+Sysmon generates a log entry whenever a new file is created. This log is represented by Event ID 11.
+
+﻿
+
+Find the Sysmon log associated with payload.exe to answer the following question.
+
+﻿
+
+Question:
+﻿
+
+At what UTC time was the payload.exe file created?
+﻿
+<img width="1127" height="574" alt="image" src="https://github.com/user-attachments/assets/c156f8e8-23f0-4232-877d-60b01b2f1c64" />
+
+
+Knowledge Check
+Migrating to already-running processes is one method that an attacker uses to avoid detection. Sysmon Event ID 8 can aid in the detection of process migration techniques. 
+
+﻿
+
+Find the Sysmon CreateRemoteThread Detected log associated with payload.exe to answer the following question.
+
+﻿
+
+Question:
+﻿
+
+What is the filename of the TargetImage that the attacker migrated into? 
+
+<img width="1131" height="474" alt="image" src="https://github.com/user-attachments/assets/d05652ee-624d-48f6-a271-b0b4bd5935fc" />
+
+
+Knowledge Check
+﻿
+
+The compromised ICS host, 172.16.79.35, and the running vmtoold.exe process represent critical components of the mission partners OT network.
+
+﻿
+
+The mission partner requires a course of action that stops the identified malicious cyber activity while maintaining the highest level of availability for the ICS host, and the vmtoolsd.exe process. The mission partner stated that changes to the existing server configuration must be avoided due to vendor requirements. 
+
+﻿
+
+Question:
+﻿
+
+Which action should the mission partner perform?
