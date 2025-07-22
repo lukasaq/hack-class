@@ -1,7 +1,187 @@
 
+Here are all the commands found in the file, along with their switches and parameters as presented:
 
+---
 
+### Windows Commands
 
+**netsh interface show interface**
+- Switches/Parameters: None  
+- Description: Displays all network interfaces for the host.
+
+**netsh interface set interface Ethernet0 disable**
+- Switches/Parameters:
+  - set interface: Sets parameters for a specified interface.
+  - Ethernet0: The interface to modify.
+  - disable: Disables the interface.
+- Description: Disables the interface Ethernet0.
+
+---
+
+### PowerShell Commands
+
+**Get-FileHash {FILENAME} -Algorithm MD5**
+- Switches/Parameters:
+  - {FILENAME}: The file to hash.
+  - -Algorithm MD5: Specifies the hashing algorithm (MD5).
+- Description: Generates MD5 hashes for evidence files.
+
+**Get-ChildItem $path1 -recurse | where {$_.name -match $pattern1} | Select name**
+- Switches/Parameters:
+  - $path1: Directory to search.
+  - -recurse: Recursively search subdirectories.
+  - where {$_.name -match $pattern1}: Filter files matching pattern.
+  - Select name: Output file names.
+- Description: Finds files matching a specific pattern in a directory.
+
+**Get-ChildItem $path2 -recurse | where {$_.name -match $pattern2} | Select name**
+- Switches/Parameters similar to above, for a different path/pattern.
+
+**Get-Content -Path C:\Hosts\Hosts.txt**
+- Switches/Parameters:
+  - -Path: Specifies file path.
+- Description: Reads the list of hosts from a file.
+
+**Invoke-Command -ComputerName $hosts {Get-ChildItem "C:\Users\Public\Documents\forge.py"}**
+- Switches/Parameters:
+  - -ComputerName: Target computer(s).
+  - {Get-ChildItem "C:\Users\Public\Documents\forge.py"}: Command to execute remotely.
+- Description: Remotely checks for the presence of forge.py.
+
+**Remove-Item -Path "\\$onehost\c$\Users\Public\Documents\forge.py" -Force -Recurse**
+- Switches/Parameters:
+  - -Path: Path to the file.
+  - -Force: Force removal.
+  - -Recurse: Remove items recursively.
+- Description: Removes the forge.py file from remote hosts.
+
+---
+
+### Registry Commands
+
+**REG DELETE \\cdah-wrks0\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run\DriverUpdate**
+- Switches/Parameters:
+  - REG DELETE: Deletes registry keys/values.
+  - \\cdah-wrks0\HKEY_LOCAL_MACHINE\...: Remote registry path.
+- Description: Deletes the DriverUpdate registry key remotely.
+
+**REG DELETE \\cdah-wrks2\HKEY_LOCAL_MACHINE\SOFTWARE\WOW6432Node\Microsoft\Windows\CurrentVersion\Run\DriverUpdate**
+- Similar as above for another host.
+
+---
+
+### Linux Commands
+
+**sudo -s**
+- Switches/Parameters:
+  - -s: Start a shell as root.
+- Description: Escalates privileges to root.
+
+**iptables -S**
+- Switches/Parameters: None  
+- Description: Displays rules per direction (input, forward, output).
+
+**iptables -L**
+- Switches/Parameters: None  
+- Description: Displays rules as a table.
+
+**iptables -F**
+- Switches/Parameters: None  
+- Description: Flushes (removes) all rules.
+
+**iptables -A INPUT -p tcp --dport 22 -s 199.63.64.51 -m conntrack --ctstate NEW,ESTABLISHED -j ACCEPT**
+- Switches/Parameters:
+  - -A INPUT: Append rule to INPUT chain.
+  - -p tcp: Protocol TCP.
+  - --dport 22: Destination port 22.
+  - -s 199.63.64.51: Source IP.
+  - -m conntrack --ctstate NEW,ESTABLISHED: Use connection tracking for new/established connections.
+  - -j ACCEPT: Accept matching packets.
+
+**iptables -A OUTPUT -p tcp --sport 22 -d 199.63.64.51 -m conntrack --ctstate ESTABLISHED -j ACCEPT**
+- Switches/Parameters:
+  - -A OUTPUT: Append rule to OUTPUT chain.
+  - -p tcp: Protocol TCP.
+  - --sport 22: Source port 22.
+  - -d 199.63.64.51: Destination IP.
+  - -m conntrack --ctstate ESTABLISHED: Connection state established.
+  - -j ACCEPT: Accept matching packets.
+
+**iptables -A INPUT -p icmp -j DROP**
+- Switches/Parameters:
+  - -A INPUT: Append rule to INPUT chain.
+  - -p icmp: Protocol ICMP.
+  - -j DROP: Drop matching packets.
+
+**iptables -A INPUT -p tcp --dport 21 -j REJECT**
+- Switches/Parameters:
+  - -A INPUT: Append to INPUT chain.
+  - -p tcp: Protocol TCP.
+  - --dport 21: Destination port 21.
+  - -j REJECT: Reject matching packets.
+
+**iptables -A OUTPUT -s 10.10.64.154 -j DROP**
+- Switches/Parameters:
+  - -A OUTPUT: Append to OUTPUT chain.
+  - -s 10.10.64.154: Source IP.
+  - -j DROP: Drop matching packets.
+
+---
+
+### Auditing/Scanning Tools
+
+**nmap -sV [target IP]**
+- Switches/Parameters:
+  - -sV: Probe open ports to determine service/version info.
+  - [target IP]: Target IP address.
+
+**ping [target IP]**
+- Switches/Parameters:  
+  - [target IP]: Target IP address.
+
+**nc [target IP] [port]**
+- Switches/Parameters:
+  - [target IP]: Target IP address.
+  - [port]: Target port.
+
+---
+
+### Cuckoo Sandbox
+
+**cuckoo web -H 0.0.0.0 -p 8080**
+- Switches/Parameters:
+  - web: Start web UI.
+  - -H 0.0.0.0: Bind to all interfaces.
+  - -p 8080: Port 8080.
+
+---
+
+### Windows File and YARA Commands
+
+**dir /a C:\Windows\system32\update.exe**
+- Switches/Parameters:
+  - /a: Display all files.
+  - Path to file.
+
+**cd C:\Users\trainee\Desktop**
+- Switches/Parameters:
+  - Path to directory.
+
+**yara64.exe meterpreter.txt C:\Windows\System32**
+- Switches/Parameters:
+  - meterpreter.txt: YARA rule file.
+  - C:\Windows\System32: Directory to scan.
+
+**sc query winlogbeat**
+- Switches/Parameters:
+  - query: Query the status of a service.
+  - winlogbeat: Service name.
+
+---
+
+If you need further breakdown (e.g., explanations or examples for each command/switch), let me know!
+
+---
 
 Here are all the workflows extracted from the file m31-m35.md. Each workflow is shown with its relevant steps, exactly as described in the document:
 
