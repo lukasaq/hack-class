@@ -270,7 +270,7 @@ Save the file as rule1.yar in the directory C:\Users\trainee\Downloads\yara. Thi
 
 
 Enter the following command in Command Prompt: 
-yara64.exe rule1.yar Rocket.exe
+yara64.exe -r rule1.yar Rocket.exe
 
 
 --------------
