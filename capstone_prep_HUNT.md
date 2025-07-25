@@ -1,3 +1,30 @@
+
+CDAH-M35-Hunt
+
+hunt 9 questions
+
+2x questions --> IOC and TTP analysis ( intel Document )
+1x Question --> volatility ( 2.0 ) and kibana
+ ( network activity )
+6x Questions --> kibana
+
+- Identify Persistence (mod3, lesson)
+  (registry, schedule task, services, starup folder)
+
+- process Exeution Analysis
+
+  - identify schedule task (x2)
+    (exculde irrelevant noise: 'and not "puppet"')
+  - event log analysis
+   ( windows & sysmon event codes )
+  - file Share maybe 4 but dont mistake for a variable
+    
+
+--profile-Win10x64_19041
+
+
+------------------------------------------
+
 As seen in Figure 35-1 and Figure 35-2 below, run the following command to see a list of processes:
 python3.7
 python3.7 vol.py -f /home/trainee/Downloads/memory.dmp windows.pstree
