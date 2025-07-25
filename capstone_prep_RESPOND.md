@@ -1,3 +1,24 @@
+response:(7 questions)
+
+2x Question --> linux permissions enumeration
+
+1x question --> linux file enumeration
+	(using a provided file)
+
+2x questions network analysis
+	- IP:port (what linux method used for downloading)
+ 	- Linux /etc/host file configuration
+
+1x question --> identify stolen credentials
+
+1x question --> timeline of events, question 5-6
+	-modify sigmac rules
+ sigmac -t es-qs <path .yml file> -c winlogbeat
+
+---------------------------
+
+
+
 <img width="1811" height="413" alt="image" src="https://github.com/user-attachments/assets/f6035bf5-e2dc-48c1-adc2-bc91d6f2770e" /><img width="1828" height="318" alt="image" src="https://github.com/user-attachments/assets/2fdb4154-d4f1-42d8-b90f-115c953b9b2b" />
 
 Which two users attempted to access the UltimateFeast directory?
