@@ -4,8 +4,12 @@ CDAH-M35-Hunt
 hunt 9 questions
 
 2x questions --> IOC and TTP analysis ( intel Document )
+
+
 1x Question --> volatility ( 2.0 ) and kibana
  ( network activity )
+
+ 
 6x Questions --> kibana
 
 - Identify Persistence (mod3, lesson)
