@@ -21,7 +21,7 @@ hunt 9 questions
     (exculde irrelevant noise: 'and not "puppet"')
   - event log analysis
    ( windows & sysmon event codes )
-  - file Share maybe 4 but dont mistake for a variable
+  - file Share maybe $ but dont mistake for a variable
     
 
 --profile-Win10x64_19041
