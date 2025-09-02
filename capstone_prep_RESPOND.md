@@ -3,7 +3,7 @@ how to do sigmac command
 
 python sigmac -t es-qs ../rules/windows/sysmon/sysmon_quarkspw_filedump.yml -c winlogbeat
 
-
+if need more info refer to mod one teat review:-)
 
 
 
