@@ -1,3 +1,12 @@
+
+how to do sigmac command 
+
+python sigmac -t es-qs ../rules/windows/sysmon/sysmon_quarkspw_filedump.yml -c winlogbeat
+
+
+
+
+
 response:(7 questions)
 
 2x Question --> linux permissions enumeration
